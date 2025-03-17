@@ -18,6 +18,8 @@ const costSchema = z.object({
     water_price: z.string().min(1, "Su fiyatı zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) > 0),
     wheat_kg: z.string().min(1, "Gerekli buğday miktarı zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) > 0),
     wheat_price: z.string().min(1, "Buğday kg fiyatı zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) > 0),
+    bran_kg: z.string().min(1, "Çıkan kepek miktarı zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) >= 0),
+    bran_price: z.string().min(1, "Kepek kg fiyatı zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) >= 0),
     labor_cost: z.string().min(1, "İşçilik maliyeti zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) >= 0),
     bag_cost: z.string().min(1, "Çuval maliyeti zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) >= 0),
     profit_margin: z.string().min(1, "Kâr oranı zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) >= 0 && Number(val) <= 100),
@@ -54,6 +56,7 @@ const FormField = ({ label, id, type = "text", step, register, error }: FormFiel
 
 export function PriceCalculator() {
     const [finalPrice, setFinalPrice] = useState<number | null>(null);
+    const [branRevenue, setBranRevenue] = useState<number | null>(null);
 
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
         resolver: zodResolver(costSchema),
@@ -64,6 +67,8 @@ export function PriceCalculator() {
             water_price: "0",
             wheat_kg: "0",
             wheat_price: "0",
+            bran_kg: "0",
+            bran_price: "0",
             labor_cost: "0",
             bag_cost: "0",
             profit_margin: "10",
@@ -76,10 +81,18 @@ export function PriceCalculator() {
         const wheatCost = Number(data.wheat_kg) * Number(data.wheat_price);
         const laborCost = Number(data.labor_cost);
         const bagCost = Number(data.bag_cost);
-        const totalCost = electricityCost + waterCost + wheatCost + laborCost + bagCost;
+
+        // Kepek Geliri Hesaplama
+        const branRevenue = Number(data.bran_kg) * Number(data.bran_price);
+
+        // Güncellenmiş Toplam Maliyet = (Giderler - Kepek Geliri)
+        const totalCost = (electricityCost + waterCost + wheatCost + laborCost + bagCost) - branRevenue;
+
+        // Kâr ve Satış Fiyatı Hesaplama
         const profit = totalCost * (Number(data.profit_margin) / 100);
         const finalPrice = totalCost + profit;
 
+        setBranRevenue(branRevenue);
         setFinalPrice(finalPrice);
     };
 
@@ -97,16 +110,15 @@ export function PriceCalculator() {
                         <FormField label="Litre başına su fiyatı (₺)" id="water_price" type="number" register={register("water_price")} error={errors.water_price} />
                         <FormField label="Çuval başına gereken buğday miktarı (kg)" id="wheat_kg" type="number" register={register("wheat_kg")} error={errors.wheat_kg} />
                         <FormField label="Buğdayın kg fiyatı (₺)" id="wheat_price" type="number" register={register("wheat_price")} error={errors.wheat_price} />
-                        <FormField label="Çuval başına işçilik maliyeti (₺)" id="labor_cost" type="number" register={register("labor_cost")} error={errors.labor_cost} />
-                        <FormField label="50 kg PP çuval maliyeti (₺)" id="bag_cost" type="number" register={register("bag_cost")} error={errors.bag_cost} />
-                        <FormField label="Hedef Kâr Oranı (%)" id="profit_margin" type="number" register={register("profit_margin")} error={errors.profit_margin} />
-
+                        <FormField label="Çıkan Kepek Miktarı (kg)" id="bran_kg" type="number" register={register("bran_kg")} error={errors.bran_kg} />
+                        <FormField label="Kepek Kg Fiyatı (₺)" id="bran_price" type="number" register={register("bran_price")} error={errors.bran_price} />
                         <Button type="submit" className="w-full h-12 text-base rounded-xl">Hesapla</Button>
                     </form>
 
                     {finalPrice !== null && (
                         <div className="mt-4">
                             <h3 className="text-lg font-bold">Satış Fiyatı: {finalPrice.toFixed(2)} ₺</h3>
+                            <p className="text-sm text-muted-foreground">Kepek Geliri: {branRevenue?.toFixed(2)} ₺</p>
                         </div>
                     )}
                 </CardContent>
