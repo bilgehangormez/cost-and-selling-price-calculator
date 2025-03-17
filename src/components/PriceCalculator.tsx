@@ -18,7 +18,6 @@ const costSchema = z.object({
     bran_kg: z.string().min(1, "Çıkan kepek miktarı zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir sayı girin"),
     bran_price: z.string().min(1, "Kepek kg fiyatı zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir sayı girin"),
     labor_cost: z.string().min(1, "İşçilik maliyeti zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir sayı girin"),
-    bag_cost: z.string().min(1, "50 kg çuval maliyeti zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir sayı girin"),
     pp_bag_price: z.string().min(1, "1 adet 50 kg PP çuval fiyatı zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir sayı girin"),
     target_profit: z.string().min(1, "50 kg Çuvalda Hedeflenen Kâr zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir sayı girin"),
 });
@@ -39,16 +38,14 @@ export function PriceCalculator() {
         const electricityCost = parseFloat(data.electricity_kwh) * parseFloat(data.electricity_price);
         const wheatCost = parseFloat(data.wheat_kg) * parseFloat(data.wheat_price);
         const laborCost = parseFloat(data.labor_cost);
-        const bagCost = parseFloat(data.bag_cost);
         const ppBagCost = parseFloat(data.pp_bag_price);
         const branRevenue = parseFloat(data.bran_kg) * parseFloat(data.bran_price);
-        const totalCost = (electricityCost + wheatCost + laborCost + bagCost + ppBagCost) - branRevenue;
+        const totalCost = (electricityCost + wheatCost + laborCost + ppBagCost) - branRevenue;
         const finalPrice = totalCost + parseFloat(data.target_profit);
 
         console.log("✅ Hesaplanan toplam maliyet:", totalCost);
         console.log("✅ Hedeflenen kâr eklendikten sonraki fiyat:", finalPrice);
 
-        // **useState güncellemeleri**
         setBranRevenue(() => branRevenue);
         setFinalPrice(() => finalPrice);
 
@@ -73,24 +70,6 @@ export function PriceCalculator() {
                             <Label htmlFor="electricity_price">Güncel kW fiyatı (₺)</Label>
                             <Input id="electricity_price" type="number" step="0.01" {...register("electricity_price")} />
                             {errors.electricity_price && <p className="text-red-500">{errors.electricity_price.message}</p>}
-                        </div>
-
-                        <div>
-                            <Label htmlFor="wheat_kg">50 kg Un için Gereken Buğday Miktarı (kg)</Label>
-                            <Input id="wheat_kg" type="number" step="0.01" {...register("wheat_kg")} />
-                            {errors.wheat_kg && <p className="text-red-500">{errors.wheat_kg.message}</p>}
-                        </div>
-
-                        <div>
-                            <Label htmlFor="wheat_price">Buğdayın kg fiyatı (₺)</Label>
-                            <Input id="wheat_price" type="number" step="0.01" {...register("wheat_price")} />
-                            {errors.wheat_price && <p className="text-red-500">{errors.wheat_price.message}</p>}
-                        </div>
-
-                        <div>
-                            <Label htmlFor="labor_cost">İşçilik Maliyeti (₺)</Label>
-                            <Input id="labor_cost" type="number" step="0.01" {...register("labor_cost")} />
-                            {errors.labor_cost && <p className="text-red-500">{errors.labor_cost.message}</p>}
                         </div>
 
                         <div>
