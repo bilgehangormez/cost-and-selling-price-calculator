@@ -82,11 +82,11 @@ export class CostCalculator {
     }
 }
 
-// Fiyat ve yüzdelik formatlayıcılar
+// **Fiyat ve yüzdelik formatlayıcılar**
 export const formatPrice = (value: number): string => {
     return new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY" }).format(value);
 };
 
 export const formatPercentage = (value: number): string => {
-    return %${Math.round(value)};
+    return `%${Math.round(value)}`;
 };
