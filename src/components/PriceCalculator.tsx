@@ -27,22 +27,31 @@ type FormData = z.infer<typeof costSchema>;
 export function PriceCalculator() {
     const [finalPrice, setFinalPrice] = useState<number | null>(null);
     const [branRevenue, setBranRevenue] = useState<number | null>(null);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null); // Hata mesajlarını tutar
 
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
         resolver: zodResolver(costSchema),
     });
 
     const onSubmit = (data: FormData) => {
-        const electricityCost = parseFloat(data.electricity_kwh) * parseFloat(data.electricity_price);
-        const wheatCost = parseFloat(data.wheat_kg) * parseFloat(data.wheat_price);
-        const laborCost = parseFloat(data.labor_cost);
-        const bagCost = parseFloat(data.bag_cost);
-        const branRevenue = parseFloat(data.bran_kg) * parseFloat(data.bran_price);
-        const totalCost = (electricityCost + wheatCost + laborCost + bagCost) - branRevenue;
-        const finalPrice = totalCost + parseFloat(data.target_profit);
+        try {
+            console.log("Form Verileri:", data); // Debug için log ekledik
 
-        setBranRevenue(branRevenue);
-        setFinalPrice(finalPrice);
+            const electricityCost = parseFloat(data.electricity_kwh) * parseFloat(data.electricity_price);
+            const wheatCost = parseFloat(data.wheat_kg) * parseFloat(data.wheat_price);
+            const laborCost = parseFloat(data.labor_cost);
+            const bagCost = parseFloat(data.bag_cost);
+            const branRevenue = parseFloat(data.bran_kg) * parseFloat(data.bran_price);
+            const totalCost = (electricityCost + wheatCost + laborCost + bagCost) - branRevenue;
+            const finalPrice = totalCost + parseFloat(data.target_profit);
+
+            setBranRevenue(branRevenue);
+            setFinalPrice(finalPrice);
+            setErrorMessage(null); // Hata yoksa sıfırla
+        } catch (error) {
+            console.error("Hesaplama Hatası:", error);
+            setErrorMessage("Hesaplama sırasında bir hata oluştu. Lütfen tüm değerleri doğru girin.");
+        }
     };
 
     return (
@@ -72,24 +81,6 @@ export function PriceCalculator() {
                         </div>
 
                         <div>
-                            <Label htmlFor="wheat_price">Buğdayın kg fiyatı (₺)</Label>
-                            <Input id="wheat_price" type="number" step="0.01" {...register("wheat_price")} />
-                            {errors.wheat_price && <p className="text-red-500">{errors.wheat_price.message}</p>}
-                        </div>
-
-                        <div>
-                            <Label htmlFor="bran_kg">Çıkan Kepek Miktarı (kg)</Label>
-                            <Input id="bran_kg" type="number" step="0.01" {...register("bran_kg")} />
-                            {errors.bran_kg && <p className="text-red-500">{errors.bran_kg.message}</p>}
-                        </div>
-
-                        <div>
-                            <Label htmlFor="bran_price">Kepek Kg Fiyatı (₺)</Label>
-                            <Input id="bran_price" type="number" step="0.01" {...register("bran_price")} />
-                            {errors.bran_price && <p className="text-red-500">{errors.bran_price.message}</p>}
-                        </div>
-
-                        <div>
                             <Label htmlFor="labor_cost">İşçilik Maliyeti (₺)</Label>
                             <Input id="labor_cost" type="number" step="0.01" {...register("labor_cost")} />
                             {errors.labor_cost && <p className="text-red-500">{errors.labor_cost.message}</p>}
@@ -100,6 +91,8 @@ export function PriceCalculator() {
                             <Input id="target_profit" type="number" step="0.01" {...register("target_profit")} />
                             {errors.target_profit && <p className="text-red-500">{errors.target_profit.message}</p>}
                         </div>
+
+                        {errorMessage && <p className="text-red-600 font-semibold">{errorMessage}</p>}
 
                         <Button type="submit" className="w-full h-12 text-base rounded-xl">Hesapla</Button>
                     </form>
