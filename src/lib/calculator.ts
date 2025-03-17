@@ -24,9 +24,9 @@ export class CostCalculator {
     constructor(
         electricity_kwh: number,
         electricity_price: number,
-        wheat_kg: number,
+        wheat_kg: number, // ✅ "50 kg Un için Gereken Buğday Miktarı"
         wheat_price: number,
-        labor_cost: number,
+        labor_cost: number, // ✅ İşçilik maliyeti hesaplamada mevcut
         bag_cost: number,
         bran_kg: number,
         bran_price: number,
@@ -72,7 +72,7 @@ export class CostCalculator {
     }
 }
 
-// Fiyat ve yüzdelik formatlayıcılar
+// **Fiyat ve yüzdelik formatlayıcılar**
 export const formatPrice = (value: number): string => {
     return new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY" }).format(value);
 };
