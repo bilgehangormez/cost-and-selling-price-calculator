@@ -24,7 +24,7 @@ type FormData = z.infer<typeof costSchema>;
 
 export function PriceCalculator() {
     const [finalPrice, setFinalPrice] = useState<number | null>(null);
-    const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+    const { handleSubmit } = useForm<FormData>({  // 🔥 Kullanılmayan `register` ve `errors` kaldırıldı!
         resolver: zodResolver(costSchema),
     });
 
