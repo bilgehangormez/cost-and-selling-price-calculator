@@ -1,4 +1,4 @@
-import { PriceCalculator } from "@/components/price-calculator";
+import { PriceCalculator } from "@/components/PriceCalculator"; // Güncellenmiş bileşeni kullanıyoruz
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 
@@ -7,7 +7,7 @@ export default function Home() {
     <div className="relative min-h-screen flex flex-col">
       <Header />
       <main className="flex-1">
-        <PriceCalculator />
+        <PriceCalculator /> {/* Yeni maliyet hesaplama bileşeni entegre edildi */}
       </main>
       <Footer />
     </div>
