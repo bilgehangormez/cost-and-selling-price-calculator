@@ -10,84 +10,36 @@ import { useState } from "react";
 import { useForm, UseFormRegisterReturn } from "react-hook-form";
 import { z } from "zod";
 
-// Form Schemas
+// Form Schemas (Ondalıklı Sayılar Destekleniyor!)
 const costSchema = z.object({
-    electricity_kwh: z.string().min(1, "Gerekli kW miktarı zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) > 0),
-    electricity_price: z.string().min(1, "Güncel kW fiyatı zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) > 0),
-    wheat_kg: z.string().min(1, "Gerekli buğday miktarı zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) > 0),
-    wheat_price: z.string().min(1, "Buğday kg fiyatı zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) > 0),
-    bran_kg: z.string().min(1, "Çıkan kepek miktarı zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) >= 0),
-    bran_price: z.string().min(1, "Kepek kg fiyatı zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) >= 0),
-    labor_cost: z.string().min(1, "İşçilik maliyeti zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) >= 0),
-    bag_cost: z.string().min(1, "Çuval maliyeti zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) >= 0),
-    profit_margin: z.string().min(1, "Kâr oranı zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) >= 0 && Number(val) <= 100),
+    electricity_kwh: z.string().min(1, "Gerekli kW miktarı zorunludur").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Pozitif bir sayı girin"),
+    electricity_price: z.string().min(1, "Güncel kW fiyatı zorunludur").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Pozitif bir sayı girin"),
+    wheat_kg: z.string().min(1, "Gerekli buğday miktarı zorunludur").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Pozitif bir sayı girin"),
+    wheat_price: z.string().min(1, "Buğday kg fiyatı zorunludur").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Pozitif bir sayı girin"),
+    bran_kg: z.string().min(1, "Çıkan kepek miktarı zorunludur").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "Pozitif veya sıfır girin"),
+    bran_price: z.string().min(1, "Kepek kg fiyatı zorunludur").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "Pozitif veya sıfır girin"),
+    labor_cost: z.string().min(1, "İşçilik maliyeti zorunludur").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "Pozitif veya sıfır girin"),
+    bag_cost: z.string().min(1, "Çuval maliyeti zorunludur").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "Pozitif veya sıfır girin"),
+    target_profit: z.string().min(1, "Hedef Kâr zorunludur").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "Pozitif veya sıfır girin"),
 });
 
 type FormData = z.infer<typeof costSchema>;
 
-// Form Field Component
-interface FormFieldProps {
-    label: string;
-    id: string;
-    type?: string;
-    step?: string;
-    placeholder?: string;
-    register: UseFormRegisterReturn;
-    error?: { message?: string };
-}
-
-const FormField = ({ label, id, type = "text", step, register, error }: FormFieldProps) => (
-    <div>
-        <Label htmlFor={id} className="text-sm font-medium text-muted-foreground">
-            {label}
-        </Label>
-        <Input
-            id={id}
-            type={type}
-            step={step}
-            {...register}
-            className={cn("mt-1.5 h-12 rounded-xl bg-muted/50 px-4", error && "border-red-500 focus-visible:ring-red-500")}
-        />
-        {error?.message && <p className="text-sm text-red-500 mt-1">{error.message}</p>}
-    </div>
-);
-
 export function PriceCalculator() {
     const [finalPrice, setFinalPrice] = useState<number | null>(null);
-    const [branRevenue, setBranRevenue] = useState<number | null>(null);
-
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
         resolver: zodResolver(costSchema),
-        defaultValues: {
-            electricity_kwh: "0",
-            electricity_price: "0",
-            wheat_kg: "0",
-            wheat_price: "0",
-            bran_kg: "0",
-            bran_price: "0",
-            labor_cost: "0",
-            bag_cost: "0",
-            profit_margin: "10",
-        }
     });
 
     const onSubmit = (data: FormData) => {
-        const electricityCost = Number(data.electricity_kwh) * Number(data.electricity_price);
-        const wheatCost = Number(data.wheat_kg) * Number(data.wheat_price);
-        const laborCost = Number(data.labor_cost);
-        const bagCost = Number(data.bag_cost);
-
-        // Kepek Geliri Hesaplama
-        const branRevenue = Number(data.bran_kg) * Number(data.bran_price);
-
-        // Güncellenmiş Toplam Maliyet = (Giderler - Kepek Geliri)
+        const electricityCost = parseFloat(data.electricity_kwh) * parseFloat(data.electricity_price);
+        const wheatCost = parseFloat(data.wheat_kg) * parseFloat(data.wheat_price);
+        const laborCost = parseFloat(data.labor_cost);
+        const bagCost = parseFloat(data.bag_cost);
+        const branRevenue = parseFloat(data.bran_kg) * parseFloat(data.bran_price);
         const totalCost = (electricityCost + wheatCost + laborCost + bagCost) - branRevenue;
+        const finalPrice = totalCost + parseFloat(data.target_profit);
 
-        // Kâr ve Satış Fiyatı Hesaplama
-        const profit = totalCost * (Number(data.profit_margin) / 100);
-        const finalPrice = totalCost + profit;
-
-        setBranRevenue(branRevenue);
         setFinalPrice(finalPrice);
     };
 
@@ -99,21 +51,10 @@ export function PriceCalculator() {
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                        <FormField label="50 kg çuval başına gereken kW" id="electricity_kwh" type="number" register={register("electricity_kwh")} error={errors.electricity_kwh} />
-                        <FormField label="Güncel kW fiyatı (₺)" id="electricity_price" type="number" register={register("electricity_price")} error={errors.electricity_price} />
-                        <FormField label="Çuval başına gereken buğday miktarı (kg)" id="wheat_kg" type="number" register={register("wheat_kg")} error={errors.wheat_kg} />
-                        <FormField label="Buğdayın kg fiyatı (₺)" id="wheat_price" type="number" register={register("wheat_price")} error={errors.wheat_price} />
-                        <FormField label="Çıkan Kepek Miktarı (kg)" id="bran_kg" type="number" register={register("bran_kg")} error={errors.bran_kg} />
-                        <FormField label="Kepek Kg Fiyatı (₺)" id="bran_price" type="number" register={register("bran_price")} error={errors.bran_price} />
+                        <FormField label="Hedef Kâr (₺)" id="target_profit" type="number" step="0.01" register={register("target_profit")} error={errors.target_profit} />
                         <Button type="submit" className="w-full h-12 text-base rounded-xl">Hesapla</Button>
                     </form>
-
-                    {finalPrice !== null && (
-                        <div className="mt-4">
-                            <h3 className="text-lg font-bold">Satış Fiyatı: {finalPrice.toFixed(2)} ₺</h3>
-                            <p className="text-sm text-muted-foreground">Kepek Geliri: {branRevenue?.toFixed(2)} ₺</p>
-                        </div>
-                    )}
+                    {finalPrice !== null && <div className="mt-4"><h3 className="text-lg font-bold">Satış Fiyatı: {finalPrice.toFixed(2)} ₺</h3></div>}
                 </CardContent>
             </Card>
         </div>
