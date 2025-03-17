@@ -14,8 +14,6 @@ import { z } from "zod";
 const costSchema = z.object({
     electricity_kwh: z.string().min(1, "Gerekli kW miktarı zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) > 0),
     electricity_price: z.string().min(1, "Güncel kW fiyatı zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) > 0),
-    water_liters: z.string().min(1, "Gerekli su miktarı zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) > 0),
-    water_price: z.string().min(1, "Su fiyatı zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) > 0),
     wheat_kg: z.string().min(1, "Gerekli buğday miktarı zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) > 0),
     wheat_price: z.string().min(1, "Buğday kg fiyatı zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) > 0),
     bran_kg: z.string().min(1, "Çıkan kepek miktarı zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) >= 0),
@@ -63,8 +61,6 @@ export function PriceCalculator() {
         defaultValues: {
             electricity_kwh: "0",
             electricity_price: "0",
-            water_liters: "0",
-            water_price: "0",
             wheat_kg: "0",
             wheat_price: "0",
             bran_kg: "0",
@@ -77,7 +73,6 @@ export function PriceCalculator() {
 
     const onSubmit = (data: FormData) => {
         const electricityCost = Number(data.electricity_kwh) * Number(data.electricity_price);
-        const waterCost = Number(data.water_liters) * Number(data.water_price);
         const wheatCost = Number(data.wheat_kg) * Number(data.wheat_price);
         const laborCost = Number(data.labor_cost);
         const bagCost = Number(data.bag_cost);
@@ -86,7 +81,7 @@ export function PriceCalculator() {
         const branRevenue = Number(data.bran_kg) * Number(data.bran_price);
 
         // Güncellenmiş Toplam Maliyet = (Giderler - Kepek Geliri)
-        const totalCost = (electricityCost + waterCost + wheatCost + laborCost + bagCost) - branRevenue;
+        const totalCost = (electricityCost + wheatCost + laborCost + bagCost) - branRevenue;
 
         // Kâr ve Satış Fiyatı Hesaplama
         const profit = totalCost * (Number(data.profit_margin) / 100);
@@ -106,8 +101,6 @@ export function PriceCalculator() {
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         <FormField label="50 kg çuval başına gereken kW" id="electricity_kwh" type="number" register={register("electricity_kwh")} error={errors.electricity_kwh} />
                         <FormField label="Güncel kW fiyatı (₺)" id="electricity_price" type="number" register={register("electricity_price")} error={errors.electricity_price} />
-                        <FormField label="50 kg çuval başına su miktarı (L)" id="water_liters" type="number" register={register("water_liters")} error={errors.water_liters} />
-                        <FormField label="Litre başına su fiyatı (₺)" id="water_price" type="number" register={register("water_price")} error={errors.water_price} />
                         <FormField label="Çuval başına gereken buğday miktarı (kg)" id="wheat_kg" type="number" register={register("wheat_kg")} error={errors.wheat_kg} />
                         <FormField label="Buğdayın kg fiyatı (₺)" id="wheat_price" type="number" register={register("wheat_price")} error={errors.wheat_price} />
                         <FormField label="Çıkan Kepek Miktarı (kg)" id="bran_kg" type="number" register={register("bran_kg")} error={errors.bran_kg} />
