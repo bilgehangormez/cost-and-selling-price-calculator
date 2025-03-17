@@ -31,18 +31,6 @@ export function PriceCalculator() {
 
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
         resolver: zodResolver(costSchema),
-        defaultValues: {
-            electricity_kwh: "0",
-            electricity_price: "0",
-            wheat_kg: "0",
-            wheat_price: "0",
-            bran_kg: "0",
-            bran_price: "0",
-            labor_cost: "0",
-            bag_cost: "0",
-            pp_bag_price: "0",
-            target_profit: "0",
-        },
     });
 
     const onSubmit = (data: FormData) => {
@@ -50,13 +38,13 @@ export function PriceCalculator() {
         const wheatCost = parseFloat(data.wheat_kg) * parseFloat(data.wheat_price);
         const laborCost = parseFloat(data.labor_cost);
         const bagCost = parseFloat(data.bag_cost);
-        const ppBagPrice = parseFloat(data.pp_bag_price);
+        const ppBagCost = parseFloat(data.pp_bag_price); // ✅ PP Çuval Maliyeti Hesaplamaya Eklendi
         const branRevenue = parseFloat(data.bran_kg) * parseFloat(data.bran_price);
-        const totalCost = (electricityCost + wheatCost + laborCost + bagCost + ppBagPrice) - branRevenue;
+        const totalCost = (electricityCost + wheatCost + laborCost + bagCost + ppBagCost) - branRevenue;
         const finalPrice = totalCost + parseFloat(data.target_profit);
 
-        setBranRevenue(branRevenue);
-        setFinalPrice(finalPrice);
+        setBranRevenue(branRevenue); // ✅ Artık bu değer state olarak saklanıyor
+        setFinalPrice(finalPrice); // ✅ Artık bu değer state olarak saklanıyor
     };
 
     return (
@@ -110,19 +98,26 @@ export function PriceCalculator() {
                         </div>
 
                         <div>
-                            <Label htmlFor="bag_cost">50 kg Çuval Maliyeti (₺)</Label>
-                            <Input id="bag_cost" type="number" step="0.01" {...register("bag_cost")} />
-                            {errors.bag_cost && <p className="text-red-500">{errors.bag_cost.message}</p>}
-                        </div>
-
-                        <div>
-                            <Label htmlFor="pp_bag_price">1 Adet 50 kg PP Çuval Fiyatı (₺)</Label>
+                            <Label htmlFor="pp_bag_price">1 adet 50 kg PP Çuval Fiyatı (₺)</Label>
                             <Input id="pp_bag_price" type="number" step="0.01" {...register("pp_bag_price")} />
                             {errors.pp_bag_price && <p className="text-red-500">{errors.pp_bag_price.message}</p>}
                         </div>
 
+                        <div>
+                            <Label htmlFor="target_profit">50 kg Çuvalda Hedeflenen Kâr (₺)</Label>
+                            <Input id="target_profit" type="number" step="0.01" {...register("target_profit")} />
+                            {errors.target_profit && <p className="text-red-500">{errors.target_profit.message}</p>}
+                        </div>
+
                         <Button type="submit" className="w-full h-12 text-base rounded-xl">Hesapla</Button>
                     </form>
+
+                    {finalPrice !== null && (
+                        <div className="mt-4">
+                            <h3 className="text-lg font-bold">Satış Fiyatı: {finalPrice.toFixed(2)} ₺</h3>
+                            <p className="text-sm text-muted-foreground">Kepek Geliri: {branRevenue?.toFixed(2)} ₺</p>
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         </div>
