@@ -1,28 +1,10 @@
 {
-    "name": "Platform Fiyat Hesaplayıcı",
-    "short_name": "Fiyat Hesaplayıcı",
-    "description": "Online platformlarda satış yapanlar için komisyon, KDV ve kar hesaplama aracı",
+    "name": "Un Üretim Maliyeti ve Satış Fiyatı Hesaplayıcı",
+    "short_name": "Un Fiyat Hesaplayıcı",
+    "description": "Un üretim sürecindeki maliyetleri hesaplayarak satış fiyatınızı belirleyin.",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#ffffff",
-    "orientation": "portrait-primary",
-    "icons": [
-        {
-            "src": "/icon-192x192.png",
-            "sizes": "192x192",
-            "type": "image/png",
-            "purpose": "any maskable"
-        },
-        {
-            "src": "/icon-384x384.png",
-            "sizes": "384x384",
-            "type": "image/png"
-        },
-        {
-            "src": "/icon-512x512.png",
-            "sizes": "512x512",
-            "type": "image/png"
-        }
-    ]
+    "orientation": "portrait-primary"
 }
