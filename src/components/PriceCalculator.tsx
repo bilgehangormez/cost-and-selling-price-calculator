@@ -13,7 +13,7 @@ import { z } from "zod";
 const costSchema = z.object({
     electricity_kwh: z.string().min(1, "Gerekli kW miktarı zorunludur").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Pozitif bir sayı girin"),
     electricity_price: z.string().min(1, "Güncel kW fiyatı zorunludur").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Pozitif bir sayı girin"),
-    wheat_kg: z.string().min(1, "Çuval başına gereken buğday miktarı zorunludur").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Pozitif bir sayı girin"),
+    wheat_kg: z.string().min(1, "50 kg Un için Gereken Buğday Miktarı zorunludur").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Pozitif bir sayı girin"),
     wheat_price: z.string().min(1, "Buğday kg fiyatı zorunludur").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Pozitif bir sayı girin"),
     bran_kg: z.string().min(1, "Çıkan kepek miktarı zorunludur").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "Pozitif veya sıfır girin"),
     bran_price: z.string().min(1, "Kepek kg fiyatı zorunludur").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "Pozitif veya sıfır girin"),
@@ -66,7 +66,7 @@ export function PriceCalculator() {
                         </div>
 
                         <div>
-                            <Label htmlFor="wheat_kg">Çuval başına gereken buğday miktarı (kg)</Label>
+                            <Label htmlFor="wheat_kg">50 kg Un için Gereken Buğday Miktarı (kg)</Label>
                             <Input id="wheat_kg" type="number" step="0.01" {...register("wheat_kg")} />
                             {errors.wheat_kg && <p className="text-red-500">{errors.wheat_kg.message}</p>}
                         </div>
@@ -87,6 +87,12 @@ export function PriceCalculator() {
                             <Label htmlFor="bran_price">Kepek Kg Fiyatı (₺)</Label>
                             <Input id="bran_price" type="number" step="0.01" {...register("bran_price")} />
                             {errors.bran_price && <p className="text-red-500">{errors.bran_price.message}</p>}
+                        </div>
+
+                        <div>
+                            <Label htmlFor="labor_cost">İşçilik Maliyeti (₺)</Label>
+                            <Input id="labor_cost" type="number" step="0.01" {...register("labor_cost")} />
+                            {errors.labor_cost && <p className="text-red-500">{errors.labor_cost.message}</p>}
                         </div>
 
                         <div>
