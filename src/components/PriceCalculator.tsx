@@ -2,12 +2,15 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-// Form Schemas (Ondalıklı Sayılar Destekleniyor!)
+// Form Şeması (Ondalıklı Sayılar Destekleniyor)
 const costSchema = z.object({
     electricity_kwh: z.string().min(1, "Gerekli kW miktarı zorunludur").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Pozitif bir sayı girin"),
     electricity_price: z.string().min(1, "Güncel kW fiyatı zorunludur").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Pozitif bir sayı girin"),
@@ -24,7 +27,9 @@ type FormData = z.infer<typeof costSchema>;
 
 export function PriceCalculator() {
     const [finalPrice, setFinalPrice] = useState<number | null>(null);
-    const { handleSubmit } = useForm<FormData>({  // 🔥 Kullanılmayan `register` ve `errors` kaldırıldı!
+    
+    // 🔥 `register` tekrar eklendi, giriş alanları çalışacak
+    const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
         resolver: zodResolver(costSchema),
     });
 
@@ -48,9 +53,57 @@ export function PriceCalculator() {
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                        {/* 🔥 Form giriş alanları (input'lar) tekrar eklendi! */}
+                        <div>
+                            <Label htmlFor="electricity_kwh">50 kg çuval başına gereken kW</Label>
+                            <Input id="electricity_kwh" type="number" step="0.01" {...register("electricity_kwh")} />
+                            {errors.electricity_kwh && <p className="text-red-500">{errors.electricity_kwh.message}</p>}
+                        </div>
+
+                        <div>
+                            <Label htmlFor="electricity_price">Güncel kW fiyatı (₺)</Label>
+                            <Input id="electricity_price" type="number" step="0.01" {...register("electricity_price")} />
+                            {errors.electricity_price && <p className="text-red-500">{errors.electricity_price.message}</p>}
+                        </div>
+
+                        <div>
+                            <Label htmlFor="wheat_kg">Buğday miktarı (kg)</Label>
+                            <Input id="wheat_kg" type="number" step="0.01" {...register("wheat_kg")} />
+                            {errors.wheat_kg && <p className="text-red-500">{errors.wheat_kg.message}</p>}
+                        </div>
+
+                        <div>
+                            <Label htmlFor="wheat_price">Buğday kg fiyatı (₺)</Label>
+                            <Input id="wheat_price" type="number" step="0.01" {...register("wheat_price")} />
+                            {errors.wheat_price && <p className="text-red-500">{errors.wheat_price.message}</p>}
+                        </div>
+
+                        <div>
+                            <Label htmlFor="bran_kg">Çıkan Kepek Miktarı (kg)</Label>
+                            <Input id="bran_kg" type="number" step="0.01" {...register("bran_kg")} />
+                            {errors.bran_kg && <p className="text-red-500">{errors.bran_kg.message}</p>}
+                        </div>
+
+                        <div>
+                            <Label htmlFor="bran_price">Kepek kg fiyatı (₺)</Label>
+                            <Input id="bran_price" type="number" step="0.01" {...register("bran_price")} />
+                            {errors.bran_price && <p className="text-red-500">{errors.bran_price.message}</p>}
+                        </div>
+
+                        <div>
+                            <Label htmlFor="target_profit">Hedef Kâr (₺)</Label>
+                            <Input id="target_profit" type="number" step="0.01" {...register("target_profit")} />
+                            {errors.target_profit && <p className="text-red-500">{errors.target_profit.message}</p>}
+                        </div>
+
                         <Button type="submit" className="w-full h-12 text-base rounded-xl">Hesapla</Button>
                     </form>
-                    {finalPrice !== null && <div className="mt-4"><h3 className="text-lg font-bold">Satış Fiyatı: {finalPrice.toFixed(2)} ₺</h3></div>}
+
+                    {finalPrice !== null && (
+                        <div className="mt-4">
+                            <h3 className="text-lg font-bold">Satış Fiyatı: {finalPrice.toFixed(2)} ₺</h3>
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         </div>
