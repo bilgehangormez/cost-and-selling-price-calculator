@@ -19,6 +19,7 @@ const costSchema = z.object({
     bran_price: z.string().min(1, "Kepek kg fiyatı zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir sayı girin"),
     labor_cost: z.string().min(1, "İşçilik maliyeti zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir sayı girin"),
     bag_cost: z.string().min(1, "50 kg çuval maliyeti zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir sayı girin"),
+    pp_bag_price: z.string().min(1, "1 adet 50 kg PP çuval fiyatı zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir sayı girin"),
     target_profit: z.string().min(1, "50 kg Çuvalda Hedeflenen Kâr zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir sayı girin"),
 });
 
@@ -39,6 +40,7 @@ export function PriceCalculator() {
             bran_price: "0",
             labor_cost: "0",
             bag_cost: "0",
+            pp_bag_price: "0",
             target_profit: "0",
         },
     });
@@ -48,8 +50,9 @@ export function PriceCalculator() {
         const wheatCost = parseFloat(data.wheat_kg) * parseFloat(data.wheat_price);
         const laborCost = parseFloat(data.labor_cost);
         const bagCost = parseFloat(data.bag_cost);
+        const ppBagPrice = parseFloat(data.pp_bag_price);
         const branRevenue = parseFloat(data.bran_kg) * parseFloat(data.bran_price);
-        const totalCost = (electricityCost + wheatCost + laborCost + bagCost) - branRevenue;
+        const totalCost = (electricityCost + wheatCost + laborCost + bagCost + ppBagPrice) - branRevenue;
         const finalPrice = totalCost + parseFloat(data.target_profit);
 
         setBranRevenue(branRevenue);
@@ -107,20 +110,19 @@ export function PriceCalculator() {
                         </div>
 
                         <div>
-                            <Label htmlFor="target_profit">50 kg Çuvalda Hedeflenen Kâr (₺)</Label>
-                            <Input id="target_profit" type="number" step="0.01" {...register("target_profit")} />
-                            {errors.target_profit && <p className="text-red-500">{errors.target_profit.message}</p>}
+                            <Label htmlFor="bag_cost">50 kg Çuval Maliyeti (₺)</Label>
+                            <Input id="bag_cost" type="number" step="0.01" {...register("bag_cost")} />
+                            {errors.bag_cost && <p className="text-red-500">{errors.bag_cost.message}</p>}
+                        </div>
+
+                        <div>
+                            <Label htmlFor="pp_bag_price">1 Adet 50 kg PP Çuval Fiyatı (₺)</Label>
+                            <Input id="pp_bag_price" type="number" step="0.01" {...register("pp_bag_price")} />
+                            {errors.pp_bag_price && <p className="text-red-500">{errors.pp_bag_price.message}</p>}
                         </div>
 
                         <Button type="submit" className="w-full h-12 text-base rounded-xl">Hesapla</Button>
                     </form>
-
-                    {finalPrice !== null && (
-                        <div className="mt-4">
-                            <h3 className="text-lg font-bold">Satış Fiyatı: {finalPrice.toFixed(2)} ₺</h3>
-                            <p className="text-sm text-muted-foreground">Kepek Geliri: {branRevenue?.toFixed(2)} ₺</p>
-                        </div>
-                    )}
                 </CardContent>
             </Card>
         </div>
