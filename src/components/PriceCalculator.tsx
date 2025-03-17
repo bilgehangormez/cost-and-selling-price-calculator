@@ -11,15 +11,15 @@ import { z } from "zod";
 
 // Form Şeması (Ondalıklı Sayılar Destekleniyor)
 const costSchema = z.object({
-    electricity_kwh: z.string().min(1, "Gerekli kW miktarı zorunludur").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Pozitif bir sayı girin"),
-    electricity_price: z.string().min(1, "Güncel kW fiyatı zorunludur").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Pozitif bir sayı girin"),
-    wheat_kg: z.string().min(1, "50 kg Un için Gereken Buğday Miktarı zorunludur").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Pozitif bir sayı girin"),
-    wheat_price: z.string().min(1, "Buğday kg fiyatı zorunludur").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Pozitif bir sayı girin"),
-    bran_kg: z.string().min(1, "Çıkan kepek miktarı zorunludur").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "Pozitif veya sıfır girin"),
-    bran_price: z.string().min(1, "Kepek kg fiyatı zorunludur").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "Pozitif veya sıfır girin"),
-    labor_cost: z.string().min(1, "İşçilik maliyeti zorunludur").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "Pozitif veya sıfır girin"),
-    bag_cost: z.string().min(1, "50 kg çuval maliyeti zorunludur").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "Pozitif veya sıfır girin"),
-    target_profit: z.string().min(1, "50 kg Çuvalda Hedeflenen Kâr zorunludur").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "Pozitif veya sıfır girin"),
+    electricity_kwh: z.string().min(1, "Gerekli kW miktarı zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir sayı girin"),
+    electricity_price: z.string().min(1, "Güncel kW fiyatı zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir sayı girin"),
+    wheat_kg: z.string().min(1, "50 kg Un için Gereken Buğday Miktarı zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir sayı girin"),
+    wheat_price: z.string().min(1, "Buğday kg fiyatı zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir sayı girin"),
+    bran_kg: z.string().min(1, "Çıkan kepek miktarı zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir sayı girin"),
+    bran_price: z.string().min(1, "Kepek kg fiyatı zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir sayı girin"),
+    labor_cost: z.string().min(1, "İşçilik maliyeti zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir sayı girin"),
+    bag_cost: z.string().min(1, "50 kg çuval maliyeti zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir sayı girin"),
+    target_profit: z.string().min(1, "50 kg Çuvalda Hedeflenen Kâr zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir sayı girin"),
 });
 
 type FormData = z.infer<typeof costSchema>;
@@ -30,6 +30,17 @@ export function PriceCalculator() {
 
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
         resolver: zodResolver(costSchema),
+        defaultValues: {
+            electricity_kwh: "0",
+            electricity_price: "0",
+            wheat_kg: "0",
+            wheat_price: "0",
+            bran_kg: "0",
+            bran_price: "0",
+            labor_cost: "0",
+            bag_cost: "0",
+            target_profit: "0",
+        },
     });
 
     const onSubmit = (data: FormData) => {
