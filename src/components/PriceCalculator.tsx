@@ -75,15 +75,39 @@ export function PriceCalculator() {
                         </div>
 
                         <div>
-                            <Label htmlFor="pp_bag_price">1 adet 50 kg PP Çuval Fiyatı (₺)</Label>
-                            <Input id="pp_bag_price" type="number" step="0.01" {...register("pp_bag_price")} />
-                            {errors.pp_bag_price && <p className="text-red-500">{errors.pp_bag_price.message}</p>}
+                            <Label htmlFor="wheat_kg">50 kg Un için Gereken Buğday Miktarı (kg)</Label>
+                            <Input id="wheat_kg" type="number" step="0.01" {...register("wheat_kg")} />
+                            {errors.wheat_kg && <p className="text-red-500">{errors.wheat_kg.message}</p>}
                         </div>
 
                         <div>
-                            <Label htmlFor="target_profit">50 kg Çuvalda Hedeflenen Kâr (₺)</Label>
-                            <Input id="target_profit" type="number" step="0.01" {...register("target_profit")} />
-                            {errors.target_profit && <p className="text-red-500">{errors.target_profit.message}</p>}
+                            <Label htmlFor="wheat_price">Buğdayın kg fiyatı (₺)</Label>
+                            <Input id="wheat_price" type="number" step="0.01" {...register("wheat_price")} />
+                            {errors.wheat_price && <p className="text-red-500">{errors.wheat_price.message}</p>}
+                        </div>
+
+                        <div>
+                            <Label htmlFor="bran_kg">Çıkan Kepek Miktarı (kg)</Label>
+                            <Input id="bran_kg" type="number" step="0.01" {...register("bran_kg")} />
+                            {errors.bran_kg && <p className="text-red-500">{errors.bran_kg.message}</p>}
+                        </div>
+
+                        <div>
+                            <Label htmlFor="bran_price">Kepek Kg Fiyatı (₺)</Label>
+                            <Input id="bran_price" type="number" step="0.01" {...register("bran_price")} />
+                            {errors.bran_price && <p className="text-red-500">{errors.bran_price.message}</p>}
+                        </div>
+
+                        <div>
+                            <Label htmlFor="labor_cost">İşçilik Maliyeti (₺)</Label>
+                            <Input id="labor_cost" type="number" step="0.01" {...register("labor_cost")} />
+                            {errors.labor_cost && <p className="text-red-500">{errors.labor_cost.message}</p>}
+                        </div>
+
+                        <div>
+                            <Label htmlFor="pp_bag_price">1 adet 50 kg PP Çuval Fiyatı (₺)</Label>
+                            <Input id="pp_bag_price" type="number" step="0.01" {...register("pp_bag_price")} />
+                            {errors.pp_bag_price && <p className="text-red-500">{errors.pp_bag_price.message}</p>}
                         </div>
 
                         <Button type="submit" className="w-full h-12 text-base rounded-xl">Hesapla</Button>
