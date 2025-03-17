@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Logo } from "@/components/ui/logo";
 
 function GitHubIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -24,23 +23,15 @@ export function Header() {
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex flex-col sm:flex-row sm:items-center py-3 sm:py-4">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-between w-full">
+                        <div>
                             <Link href="/" className="inline-flex">
-                                <Logo size={40} />
+                                <h1 className="font-bold text-lg sm:text-xl">Un Üretim Maliyeti ve Satış Fiyatı Hesaplayıcı</h1>
                             </Link>
-                            <div>
-                                <Link href="/" className="inline-flex">
-                                    <h1 className="font-bold text-lg sm:text-xl">Pazar Yeri Fiyat Hesaplayıcı</h1>
-                                </Link>
-                                <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-                                    Pazar yeri ürünleriniz için fiyat, kar ve maliyet hesaplayın
-                                </p>
-                            </div>
                         </div>
                         <div className="sm:hidden">
                             <Link
-                                href="https://github.com/erkineren/platform-price-calculator"
+                                href="https://github.com/bilgehangormez/cost-and-selling-price-calculator"
                                 target="_blank"
                                 className="flex items-center p-2 text-muted-foreground hover:text-primary transition-colors"
                                 aria-label="GitHub Repository"
@@ -51,7 +42,7 @@ export function Header() {
                     </div>
                     <div className="hidden sm:flex items-center ml-auto">
                         <Link
-                            href="https://github.com/erkineren/platform-price-calculator"
+                            href="https://github.com/bilgehangormez/cost-and-selling-price-calculator"
                             target="_blank"
                             className="flex items-center p-2 text-muted-foreground hover:text-primary transition-colors"
                             aria-label="GitHub Repository"
@@ -63,4 +54,4 @@ export function Header() {
             </div>
         </header>
     );
-} 
+}
