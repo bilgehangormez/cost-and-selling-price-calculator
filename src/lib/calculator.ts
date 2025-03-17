@@ -5,6 +5,7 @@ export interface CalculationResult {
     wheatCost: number;
     laborCost: number;
     bagCost: number;
+    branRevenue: number; // Kepek Geliri
     totalCost: number;
     profit: number;
     finalPrice: number;
@@ -19,6 +20,8 @@ export class CostCalculator {
     private wheat_price: number;
     private labor_cost: number;
     private bag_cost: number;
+    private bran_kg: number;
+    private bran_price: number;
     private profit_margin: number;
 
     constructor(
@@ -30,6 +33,8 @@ export class CostCalculator {
         wheat_price: number,
         labor_cost: number,
         bag_cost: number,
+        bran_kg: number,
+        bran_price: number,
         profit_margin: number
     ) {
         this.electricity_kwh = electricity_kwh;
@@ -40,6 +45,8 @@ export class CostCalculator {
         this.wheat_price = wheat_price;
         this.labor_cost = labor_cost;
         this.bag_cost = bag_cost;
+        this.bran_kg = bran_kg;
+        this.bran_price = bran_price;
         this.profit_margin = profit_margin;
     }
 
@@ -50,7 +57,13 @@ export class CostCalculator {
         const laborCost = this.labor_cost;
         const bagCost = this.bag_cost;
 
-        const totalCost = electricityCost + waterCost + wheatCost + laborCost + bagCost;
+        // **Kepek Geliri Hesaplama**
+        const branRevenue = this.bran_kg * this.bran_price;
+
+        // **Toplam Maliyet = Giderler - Kepek Geliri**
+        const totalCost = (electricityCost + waterCost + wheatCost + laborCost + bagCost) - branRevenue;
+
+        // **Kâr ve Satış Fiyatı Hesaplama**
         const profit = totalCost * (this.profit_margin / 100);
         const finalPrice = totalCost + profit;
 
@@ -61,6 +74,7 @@ export class CostCalculator {
             wheatCost,
             laborCost,
             bagCost,
+            branRevenue, // Kepekten gelen gelir
             totalCost,
             profit,
             finalPrice
