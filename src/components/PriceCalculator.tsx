@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -53,7 +52,6 @@ export function PriceCalculator() {
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                        {/* 🔥 Form giriş alanları (input'lar) tekrar eklendi! */}
                         <div>
                             <Label htmlFor="electricity_kwh">50 kg çuval başına gereken kW</Label>
                             <Input id="electricity_kwh" type="number" step="0.01" {...register("electricity_kwh")} />
@@ -64,30 +62,6 @@ export function PriceCalculator() {
                             <Label htmlFor="electricity_price">Güncel kW fiyatı (₺)</Label>
                             <Input id="electricity_price" type="number" step="0.01" {...register("electricity_price")} />
                             {errors.electricity_price && <p className="text-red-500">{errors.electricity_price.message}</p>}
-                        </div>
-
-                        <div>
-                            <Label htmlFor="wheat_kg">Buğday miktarı (kg)</Label>
-                            <Input id="wheat_kg" type="number" step="0.01" {...register("wheat_kg")} />
-                            {errors.wheat_kg && <p className="text-red-500">{errors.wheat_kg.message}</p>}
-                        </div>
-
-                        <div>
-                            <Label htmlFor="wheat_price">Buğday kg fiyatı (₺)</Label>
-                            <Input id="wheat_price" type="number" step="0.01" {...register("wheat_price")} />
-                            {errors.wheat_price && <p className="text-red-500">{errors.wheat_price.message}</p>}
-                        </div>
-
-                        <div>
-                            <Label htmlFor="bran_kg">Çıkan Kepek Miktarı (kg)</Label>
-                            <Input id="bran_kg" type="number" step="0.01" {...register("bran_kg")} />
-                            {errors.bran_kg && <p className="text-red-500">{errors.bran_kg.message}</p>}
-                        </div>
-
-                        <div>
-                            <Label htmlFor="bran_price">Kepek kg fiyatı (₺)</Label>
-                            <Input id="bran_price" type="number" step="0.01" {...register("bran_price")} />
-                            {errors.bran_price && <p className="text-red-500">{errors.bran_price.message}</p>}
                         </div>
 
                         <div>
