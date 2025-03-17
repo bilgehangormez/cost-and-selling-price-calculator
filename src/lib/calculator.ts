@@ -6,7 +6,7 @@ export interface CalculationResult {
     bagCost: number;
     branRevenue: number; // Kepek Geliri
     totalCost: number;
-    profit: number;
+    targetProfit: number; // 50 kg çuval başına manuel girilen hedef kâr
     finalPrice: number;
 }
 
@@ -19,7 +19,7 @@ export class CostCalculator {
     private bag_cost: number;
     private bran_kg: number;
     private bran_price: number;
-    private profit_margin: number;
+    private target_profit: number; // Kullanıcıdan manuel alınan hedef kâr
 
     constructor(
         electricity_kwh: number,
@@ -30,7 +30,7 @@ export class CostCalculator {
         bag_cost: number,
         bran_kg: number,
         bran_price: number,
-        profit_margin: number
+        target_profit: number // Kullanıcıdan manuel giriş
     ) {
         this.electricity_kwh = electricity_kwh;
         this.electricity_price = electricity_price;
@@ -40,7 +40,7 @@ export class CostCalculator {
         this.bag_cost = bag_cost;
         this.bran_kg = bran_kg;
         this.bran_price = bran_price;
-        this.profit_margin = profit_margin;
+        this.target_profit = target_profit; // Kullanıcıdan gelen kar
     }
 
     public calculateCosts(): CalculationResult {
@@ -55,9 +55,8 @@ export class CostCalculator {
         // **Toplam Maliyet = Giderler - Kepek Geliri**
         const totalCost = (electricityCost + wheatCost + laborCost + bagCost) - branRevenue;
 
-        // **Kâr ve Satış Fiyatı Hesaplama**
-        const profit = totalCost * (this.profit_margin / 100);
-        const finalPrice = totalCost + profit;
+        // **Final Satış Fiyatı (Hedef Kâr manuel giriliyor)**
+        const finalPrice = totalCost + this.target_profit;
 
         return {
             productCost: totalCost,
@@ -67,7 +66,7 @@ export class CostCalculator {
             bagCost,
             branRevenue, // Kepekten gelen gelir
             totalCost,
-            profit,
+            targetProfit: this.target_profit, // Kullanıcıdan manuel gelen hedef kar
             finalPrice
         };
     }
