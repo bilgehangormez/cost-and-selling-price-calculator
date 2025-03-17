@@ -65,21 +65,25 @@ export function PriceCalculator() {
                         <div>
                             <Label htmlFor="electricity_kwh">50 kg çuval başına gereken kW</Label>
                             <Input id="electricity_kwh" type="number" step="0.01" {...register("electricity_kwh")} />
+                            {errors.electricity_kwh && <p className="text-red-500">{errors.electricity_kwh.message}</p>}
                         </div>
 
                         <div>
                             <Label htmlFor="electricity_price">Güncel kW fiyatı (₺)</Label>
                             <Input id="electricity_price" type="number" step="0.01" {...register("electricity_price")} />
+                            {errors.electricity_price && <p className="text-red-500">{errors.electricity_price.message}</p>}
                         </div>
 
                         <div>
                             <Label htmlFor="pp_bag_price">1 adet 50 kg PP Çuval Fiyatı (₺)</Label>
                             <Input id="pp_bag_price" type="number" step="0.01" {...register("pp_bag_price")} />
+                            {errors.pp_bag_price && <p className="text-red-500">{errors.pp_bag_price.message}</p>}
                         </div>
 
                         <div>
                             <Label htmlFor="target_profit">50 kg Çuvalda Hedeflenen Kâr (₺)</Label>
                             <Input id="target_profit" type="number" step="0.01" {...register("target_profit")} />
+                            {errors.target_profit && <p className="text-red-500">{errors.target_profit.message}</p>}
                         </div>
 
                         <Button type="submit" className="w-full h-12 text-base rounded-xl">Hesapla</Button>
