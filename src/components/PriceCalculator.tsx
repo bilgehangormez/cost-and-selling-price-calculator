@@ -35,15 +35,15 @@ export function PriceCalculator() {
     const { register, handleSubmit, watch } = useForm<FormData>({
         resolver: zodResolver(costSchema),
         defaultValues: {
-            electricity_kwh: "0",
-            electricity_price: "0",
+            electricity_kwh: "",
+            electricity_price: "",
             randiman: "75", // %75 randıman varsayılan
-            wheat_price: "0",
-            bran_price: "0",
-            bonkalit_price: "0",
-            labor_cost: "0",
-            bag_cost: "0",
-            target_profit: "0",
+            wheat_price: "",
+            bran_price: "",
+            bonkalit_price: "",
+            labor_cost: "",
+            bag_cost: "",
+            target_profit: "",
         }
     });
 
@@ -111,10 +111,14 @@ export function PriceCalculator() {
 
                         {/* Manuel Giriş Alanları */}
                         <Label>📌 **Maliyet Girdileri**</Label>
-                        <Input placeholder="Elektrik kW" {...register("electricity_kwh")} />
-                        <Input placeholder="Elektrik Fiyatı (₺)" {...register("electricity_price")} />
-                        <Input placeholder="Randıman (%)" {...register("randiman")} />
-                        <Input placeholder="Hedeflenen Kâr (₺)" {...register("target_profit")} />
+                        <Label>Elektrik kW</Label>
+                        <Input {...register("electricity_kwh")} />
+                        <Label>Elektrik Fiyatı (₺)</Label>
+                        <Input {...register("electricity_price")} />
+                        <Label>Randıman (%)</Label>
+                        <Input {...register("randiman")} />
+                        <Label>Hedeflenen Kâr (₺)</Label>
+                        <Input {...register("target_profit")} />
 
                         <Button type="submit" className="w-full h-12 text-base rounded-xl">Hesapla</Button>
                     </form>
