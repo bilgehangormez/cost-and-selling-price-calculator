@@ -1,4 +1,4 @@
-import randimanOranlari from "@/src/randiman_oranları.json"; // 📌 Randıman verisini JSON'dan al
+import randimanOranlari from "@/src/randiman_oranlari.json"; // 📌 Randıman verisini JSON'dan al
 
 export interface CalculationResult {
     productCost: number;
