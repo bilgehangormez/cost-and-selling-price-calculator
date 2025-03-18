@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -25,36 +25,10 @@ const costSchema = z.object({
 
 type FormData = z.infer<typeof costSchema>;
 
-// FormField Bileşeni
-interface FormFieldProps {
-    label: string;
-    id: string;
-    type?: string;
-    step?: string;
-    register: any;
-    error?: { message?: string };
-}
-
-const FormField = ({ label, id, type = "text", step, register, error }: FormFieldProps) => (
-    <div>
-        <Label htmlFor={id} className="text-sm font-medium text-muted-foreground">
-            {label}
-        </Label>
-        <Input
-            id={id}
-            type={type}
-            step={step}
-            {...register}
-            className="mt-1.5 h-12 rounded-xl bg-muted/50 px-4"
-        />
-        {error?.message && <p className="text-sm text-red-500 mt-1">{error.message}</p>}
-    </div>
-);
-
 export function PriceCalculator() {
-    const [finalPrice, setFinalPrice] = useState<number | null>(null);
-    const [branRevenue, setBranRevenue] = useState<number | null>(null);
-    const [bonkalitRevenue, setBonkalitRevenue] = useState<number | null>(null);
+    const [finalPrice, setFinalPrice] = useState<number>(0);
+    const [branRevenue, setBranRevenue] = useState<number>(0);
+    const [bonkalitRevenue, setBonkalitRevenue] = useState<number>(0);
     const [wheatRequired, setWheatRequired] = useState<number>(0);
     const [branKg, setBranKg] = useState<number>(0);
     const [bonkalitKg, setBonkalitKg] = useState<number>(0);
@@ -75,35 +49,39 @@ export function PriceCalculator() {
         }
     });
 
+    // Otomatik hesaplamalar için watch() kullanıldı
+    const randimanValue = parseFloat(watch("randiman"));
+    const bonkalitValue = parseFloat(watch("bonkalit_percentage"));
+    const wheatPrice = parseFloat(watch("wheat_price"));
+    const branPrice = parseFloat(watch("bran_price"));
+    const bonkalitPrice = parseFloat(watch("bonkalit_price"));
+
+    useEffect(() => {
+        if (!isNaN(randimanValue) && randimanValue > 0) {
+            const calculatedWheat = 50 / (randimanValue / 100);
+            setWheatRequired(calculatedWheat);
+
+            const totalByproduct = calculatedWheat - 50;
+            const calculatedBonkalit = totalByproduct * (bonkalitValue / 100);
+            const calculatedBran = totalByproduct - calculatedBonkalit;
+
+            setBonkalitKg(calculatedBonkalit);
+            setBranKg(calculatedBran);
+
+            setBonkalitRevenue(calculatedBonkalit * bonkalitPrice);
+            setBranRevenue(calculatedBran * branPrice);
+        }
+    }, [randimanValue, bonkalitValue, branPrice, bonkalitPrice]);
+
     const onSubmit = (data: FormData) => {
-        const randimanValue = parseFloat(data.randiman);
-        const bonkalitValue = parseFloat(data.bonkalit_percentage);
-
-        // 50 kg un için gerekli buğday miktarı hesaplanıyor
-        const wheatRequiredCalc = 50 / (randimanValue / 100);
-        const totalByproduct = wheatRequiredCalc - 50;
-        const bonkalitAmount = totalByproduct * (bonkalitValue / 100);
-        const branAmount = totalByproduct - bonkalitAmount;
-
-        setWheatRequired(wheatRequiredCalc);
-        setBranKg(branAmount);
-        setBonkalitKg(bonkalitAmount);
-
-        // Maliyet hesaplamaları
         const electricityCost = parseFloat(data.electricity_kwh) * parseFloat(data.electricity_price);
-        const wheatCost = wheatRequiredCalc * parseFloat(data.wheat_price);
+        const wheatCost = wheatRequired * wheatPrice;
         const laborCost = parseFloat(data.labor_cost);
         const bagCost = parseFloat(data.bag_cost);
+        const totalCost = (electricityCost + wheatCost + laborCost + bagCost) - (branRevenue + bonkalitRevenue);
+        const calculatedFinalPrice = totalCost + parseFloat(data.target_profit);
 
-        // Gelir hesaplamaları
-        const branRevenueValue = branAmount * parseFloat(data.bran_price);
-        const bonkalitRevenueValue = bonkalitAmount * parseFloat(data.bonkalit_price);
-        const totalCost = (electricityCost + wheatCost + laborCost + bagCost) - (branRevenueValue + bonkalitRevenueValue);
-        const finalPriceValue = totalCost + parseFloat(data.target_profit);
-
-        setBranRevenue(branRevenueValue);
-        setBonkalitRevenue(bonkalitRevenueValue);
-        setFinalPrice(finalPriceValue);
+        setFinalPrice(calculatedFinalPrice);
     };
 
     return (
@@ -116,23 +94,54 @@ export function PriceCalculator() {
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         <Label>Otomatik Hesaplanan Değerler</Label>
                         <div className="grid grid-cols-2 gap-4">
-                            <Input type="number" value={wheatRequired.toFixed(2)} disabled className="bg-gray-200 px-4" />
-                            <Label>Gerekli Buğday (kg)</Label>
+                            <div>
+                                <Label>Gerekli Buğday (kg)</Label>
+                                <Input type="number" value={wheatRequired.toFixed(2)} disabled className="bg-gray-200 px-4" />
+                            </div>
 
-                            <Input type="number" value={branKg.toFixed(2)} disabled className="bg-gray-200 px-4" />
-                            <Label>Çıkan Kepek (kg)</Label>
+                            <div>
+                                <Label>Çıkan Kepek (kg)</Label>
+                                <Input type="number" value={branKg.toFixed(2)} disabled className="bg-gray-200 px-4" />
+                            </div>
 
-                            <Input type="number" value={bonkalitKg.toFixed(2)} disabled className="bg-gray-200 px-4" />
-                            <Label>Çıkan Bonkalit (kg)</Label>
+                            <div>
+                                <Label>Çıkan Bonkalit (kg)</Label>
+                                <Input type="number" value={bonkalitKg.toFixed(2)} disabled className="bg-gray-200 px-4" />
+                            </div>
                         </div>
 
-                        <FormField label="50 kg çuval başına gereken kW" id="electricity_kwh" type="number" register={register("electricity_kwh")} error={errors.electricity_kwh} />
-                        <FormField label="Güncel kW fiyatı (₺)" id="electricity_price" type="number" register={register("electricity_price")} error={errors.electricity_price} />
-                        <FormField label="Randıman (%)" id="randiman" type="number" step="0.1" register={register("randiman")} error={errors.randiman} />
-                        <FormField label="Bonkalit (%)" id="bonkalit_percentage" type="number" step="0.1" register={register("bonkalit_percentage")} error={errors.bonkalit_percentage} />
+                        <div>
+                            <Label>50 kg çuval başına gereken kW</Label>
+                            <Input type="number" {...register("electricity_kwh")} />
+                            {errors.electricity_kwh && <p className="text-red-500">{errors.electricity_kwh.message}</p>}
+                        </div>
+
+                        <div>
+                            <Label>Güncel kW fiyatı (₺)</Label>
+                            <Input type="number" {...register("electricity_price")} />
+                            {errors.electricity_price && <p className="text-red-500">{errors.electricity_price.message}</p>}
+                        </div>
+
+                        <div>
+                            <Label>Randıman (%)</Label>
+                            <Input type="number" {...register("randiman")} />
+                            {errors.randiman && <p className="text-red-500">{errors.randiman.message}</p>}
+                        </div>
+
+                        <div>
+                            <Label>Bonkalit (%)</Label>
+                            <Input type="number" {...register("bonkalit_percentage")} />
+                            {errors.bonkalit_percentage && <p className="text-red-500">{errors.bonkalit_percentage.message}</p>}
+                        </div>
 
                         <Button type="submit" className="w-full h-12 text-base rounded-xl">Hesapla</Button>
                     </form>
+
+                    {finalPrice > 0 && (
+                        <div className="mt-4 p-2 border rounded-lg bg-gray-50">
+                            <h3 className="text-lg font-bold">Satış Fiyatı: {finalPrice.toFixed(2)} ₺</h3>
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         </div>
