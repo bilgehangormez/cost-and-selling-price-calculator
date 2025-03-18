@@ -1,4 +1,11 @@
-import randimanOranlari from "@/randiman_oranlari.json";
+import fs from "fs";
+import path from "path";
+
+// 📌 JSON verisini içe aktarma (Next.js için uygun yöntem)
+const randimanOranlariPath = path.join(process.cwd(), "src/randiman_oranlari.json");
+const randimanOranlari: Record<number, { un_miktari: number; kepek: number; bonkalit: number }> = JSON.parse(
+    fs.readFileSync(randimanOranlariPath, "utf-8")
+);
 
 export interface CalculationResult {
     productCost: number;
@@ -15,8 +22,6 @@ export interface CalculationResult {
     branKg: number;
     bonkalitKg: number;
 }
-
-const randimanData: Record<string, { un_miktari: number; kepek: number; bonkalit: number }> = randimanOranlari;
 
 export class CostCalculator {
     private electricity_kwh: number;
@@ -51,32 +56,37 @@ export class CostCalculator {
         this.target_profit = parseFloat(target_profit) || 0;
     }
 
+    // ✅ **En Yakın Randımanı Bulma**
     private getClosestRandimanData(): { un_miktari: number; kepek: number; bonkalit: number } {
-        const randimanKeys = Object.keys(randimanData).map(Number);
+        const randimanKeys = Object.keys(randimanOranlari).map(Number);
         const closestRandiman = randimanKeys.reduce((prev, curr) =>
             Math.abs(curr - this.randiman) < Math.abs(prev - this.randiman) ? curr : prev
         );
 
         console.warn(`⚠️ Girilen randıman (${this.randiman}%) bulunamadı! En yakın değer: ${closestRandiman}%`);
 
-        return randimanData[String(closestRandiman)] || { un_miktari: 75, kepek: 20, bonkalit: 5 };
+        return randimanOranlari[closestRandiman] || { un_miktari: 75, kepek: 20, bonkalit: 5 };
     }
 
     public calculateCosts(): CalculationResult {
-        const randimanValue = randimanData[String(this.randiman)] || this.getClosestRandimanData();
+        const randimanValue = randimanOranlari[this.randiman] || this.getClosestRandimanData();
 
+        // ✅ **Buğday, kepek ve bonkalit hesaplamaları**
         const wheatRequired = (randimanValue.un_miktari * 50) / 100;
         const branKg = (randimanValue.kepek * 50) / 100;
         const bonkalitKg = (randimanValue.bonkalit * 50) / 100;
 
+        // ✅ **Maliyet hesaplamaları**
         const electricityCost = this.electricity_kwh * this.electricity_price;
         const wheatCost = wheatRequired * this.wheat_price;
         const laborCost = this.labor_cost;
         const bagCost = this.bag_cost;
 
+        // ✅ **Kepek ve bonkalit gelir hesaplamaları**
         const branRevenue = branKg * this.bran_price;
         const bonkalitRevenue = bonkalitKg * this.bonkalit_price;
 
+        // ✅ **Toplam maliyet ve satış fiyatı hesaplamaları**
         const totalCost = (electricityCost + wheatCost + laborCost + bagCost) - (branRevenue + bonkalitRevenue);
         const finalPrice = totalCost + this.target_profit;
 
