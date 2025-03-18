@@ -14,8 +14,7 @@ export interface CalculationResult {
     bonkalitKg: number;
 }
 
-// ✅ `fs` modülü yerine `fetch` kullanılıyor!
-const fetchRandimanData = async (): Promise<Record<string, any>> => {
+const fetchRandimanData = async (): Promise<Record<string, { un_miktari: number; kepek: number; bonkalit: number }>> => {
     const response = await fetch("/randiman_oranlari.json");
     return response.json();
 };
@@ -30,7 +29,7 @@ export class CostCalculator {
     private bran_price: number;
     private bonkalit_price: number;
     private target_profit: number;
-    private randimanData: Record<string, any> = {};
+    private randimanData: Record<string, { un_miktari: number; kepek: number; bonkalit: number }> = {};
 
     constructor(
         electricity_kwh: string,
