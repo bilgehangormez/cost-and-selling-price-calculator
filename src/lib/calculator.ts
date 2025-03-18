@@ -1,4 +1,4 @@
-import randimanOranlari from "@/randiman_oranlari.json"; // 📌 Randıman verisini JSON'dan al
+import randimanOranlari from "@/randiman_oranlari.json";
 
 export interface CalculationResult {
     productCost: number;
@@ -16,7 +16,6 @@ export interface CalculationResult {
     bonkalitKg: number;
 }
 
-// 📌 JSON verisini doğru tip ile tanımlıyoruz
 const randimanData: Record<string, { un_miktari: number; kepek: number; bonkalit: number }> = randimanOranlari;
 
 export class CostCalculator {
@@ -31,25 +30,25 @@ export class CostCalculator {
     private target_profit: number;
 
     constructor(
-        electricity_kwh: number,
-        electricity_price: number,
-        randiman: number,
-        wheat_price: number,
-        labor_cost: number,
-        bag_cost: number,
-        bran_price: number,
-        bonkalit_price: number,
-        target_profit: number
+        electricity_kwh: string,
+        electricity_price: string,
+        randiman: string,
+        wheat_price: string,
+        labor_cost: string,
+        bag_cost: string,
+        bran_price: string,
+        bonkalit_price: string,
+        target_profit: string
     ) {
-        this.electricity_kwh = electricity_kwh;
-        this.electricity_price = electricity_price;
-        this.randiman = randiman;
-        this.wheat_price = wheat_price;
-        this.labor_cost = labor_cost;
-        this.bag_cost = bag_cost;
-        this.bran_price = bran_price;
-        this.bonkalit_price = bonkalit_price;
-        this.target_profit = target_profit;
+        this.electricity_kwh = parseFloat(electricity_kwh) || 0;
+        this.electricity_price = parseFloat(electricity_price) || 0;
+        this.randiman = parseFloat(randiman) || 75;
+        this.wheat_price = parseFloat(wheat_price) || 0;
+        this.labor_cost = parseFloat(labor_cost) || 0;
+        this.bag_cost = parseFloat(bag_cost) || 0;
+        this.bran_price = parseFloat(bran_price) || 0;
+        this.bonkalit_price = parseFloat(bonkalit_price) || 0;
+        this.target_profit = parseFloat(target_profit) || 0;
     }
 
     private getClosestRandimanData(): { un_miktari: number; kepek: number; bonkalit: number } {
@@ -58,19 +57,17 @@ export class CostCalculator {
             Math.abs(curr - this.randiman) < Math.abs(prev - this.randiman) ? curr : prev
         );
 
-        console.warn(
-            `⚠️ Uyarı: Girilen randıman (${this.randiman}%) JSON'da bulunamadı! En yakın değer olarak ${closestRandiman}% kullanıldı.`
-        );
+        console.warn(`⚠️ Girilen randıman (${this.randiman}%) bulunamadı! En yakın değer: ${closestRandiman}%`);
 
-        return randimanData[String(closestRandiman)]; // 📌 **Tip hatası giderildi**
+        return randimanData[String(closestRandiman)] || { un_miktari: 75, kepek: 20, bonkalit: 5 };
     }
 
     public calculateCosts(): CalculationResult {
         const randimanValue = randimanData[String(this.randiman)] || this.getClosestRandimanData();
 
-        const wheatRequired = randimanValue.un_miktari * (50 / 100);
-        const branKg = randimanValue.kepek * (50 / 100);
-        const bonkalitKg = randimanValue.bonkalit * (50 / 100);
+        const wheatRequired = (randimanValue.un_miktari * 50) / 100;
+        const branKg = (randimanValue.kepek * 50) / 100;
+        const bonkalitKg = (randimanValue.bonkalit * 50) / 100;
 
         const electricityCost = this.electricity_kwh * this.electricity_price;
         const wheatCost = wheatRequired * this.wheat_price;
@@ -84,19 +81,19 @@ export class CostCalculator {
         const finalPrice = totalCost + this.target_profit;
 
         return {
-            productCost: totalCost,
-            electricityCost,
-            wheatCost,
-            laborCost,
-            bagCost,
-            branRevenue,
-            bonkalitRevenue,
-            totalCost,
-            targetProfit: this.target_profit,
-            finalPrice,
-            wheatRequired,
-            branKg,
-            bonkalitKg,
+            productCost: totalCost || 0,
+            electricityCost: electricityCost || 0,
+            wheatCost: wheatCost || 0,
+            laborCost: laborCost || 0,
+            bagCost: bagCost || 0,
+            branRevenue: branRevenue || 0,
+            bonkalitRevenue: bonkalitRevenue || 0,
+            totalCost: totalCost || 0,
+            targetProfit: this.target_profit || 0,
+            finalPrice: isNaN(finalPrice) ? 0 : finalPrice, // 📌 `NaN` kontrolü eklendi
+            wheatRequired: wheatRequired || 0,
+            branKg: branKg || 0,
+            bonkalitKg: bonkalitKg || 0,
         };
     }
 }
