@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { CostCalculator } from "@/lib/CostCalculator";
+import { CostCalculator } from "@/lib/calculator";
 import { z } from "zod";
 
 // 📌 Form Şeması
