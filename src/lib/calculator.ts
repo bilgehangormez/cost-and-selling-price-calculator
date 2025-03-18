@@ -23,6 +23,7 @@ export class CostCalculator {
     private labor_cost: number;
     private bag_cost: number;
     private bran_price: number;
+    private bonkalit_price: number; // ✅ Bonkalit için ayrı fiyat
     private target_profit: number;
 
     constructor(
@@ -34,6 +35,7 @@ export class CostCalculator {
         labor_cost: number,
         bag_cost: number,
         bran_price: number,
+        bonkalit_price: number, // ✅ Bonkalit için fiyat parametresi
         target_profit: number
     ) {
         this.electricity_kwh = electricity_kwh;
@@ -44,6 +46,7 @@ export class CostCalculator {
         this.labor_cost = labor_cost;
         this.bag_cost = bag_cost;
         this.bran_price = bran_price;
+        this.bonkalit_price = bonkalit_price;
         this.target_profit = target_profit;
     }
 
@@ -66,7 +69,7 @@ export class CostCalculator {
 
         // ✅ Gelir hesaplamaları (kepek ve bonkalit)
         const branRevenue = branKg * this.bran_price;
-        const bonkalitRevenue = bonkalitKg * this.bran_price; // Bonkalit fiyatı şimdilik kepek fiyatı ile aynı alındı
+        const bonkalitRevenue = bonkalitKg * this.bonkalit_price; // ✅ Bonkalit için bağımsız fiyat
 
         // **Toplam Maliyet = Giderler - (Kepek Geliri + Bonkalit Geliri)**
         const totalCost = (electricityCost + wheatCost + laborCost + bagCost) - (branRevenue + bonkalitRevenue);
@@ -80,8 +83,8 @@ export class CostCalculator {
             wheatCost,
             laborCost,
             bagCost,
-            branRevenue, // Kepekten gelen gelir
-            bonkalitRevenue, // Bonkalitten gelen gelir
+            branRevenue, // ✅ Kepekten gelen gelir
+            bonkalitRevenue, // ✅ Bonkalitten gelen gelir
             totalCost,
             targetProfit: this.target_profit,
             finalPrice,
