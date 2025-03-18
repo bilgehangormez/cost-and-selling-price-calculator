@@ -1,4 +1,4 @@
-import randimanOranlari from "@/randiman_oranlari.json"; // 📌 JSON'u doğrudan içe aktarıyoruz
+import randimanOranlari from "@/public/randiman_oranlari.json";
 
 export interface CalculationResult {
     productCost: number;
@@ -65,43 +65,35 @@ export class CostCalculator {
     public calculateCosts(): CalculationResult {
         const randimanValue = randimanData[String(this.randiman)] || this.getClosestRandimanData();
 
-        // 📌 **50 kg un için gereken buğday miktarı**
-        const wheatRequired = (50 / randimanValue.un_miktari) * 100; // ✅ Doğru hesaplama
-
-        // 📌 **Yan ürün hesaplamaları**
+        const wheatRequired = 50 / (randimanValue.un_miktari / 100); // ✅ Doğru hesaplandı
         const branKg = (randimanValue.kepek * wheatRequired) / 100;
         const bonkalitKg = (randimanValue.bonkalit * wheatRequired) / 100;
 
-        // 📌 **Maliyet hesaplamaları**
         const electricityCost = this.electricity_kwh * this.electricity_price;
         const wheatCost = wheatRequired * this.wheat_price;
         const laborCost = this.labor_cost;
         const bagCost = this.bag_cost;
 
-        // 📌 **Yan ürünlerden elde edilen gelir**
         const branRevenue = branKg * this.bran_price;
         const bonkalitRevenue = bonkalitKg * this.bonkalit_price;
 
-        // 📌 **Toplam Maliyet**
         const totalCost = (electricityCost + wheatCost + laborCost + bagCost) - (branRevenue + bonkalitRevenue);
-
-        // 📌 **Son Satış Fiyatı**
         const finalPrice = totalCost + this.target_profit;
 
         return {
             productCost: totalCost || 0,
-            electricityCost: electricityCost || 0,
-            wheatCost: wheatCost || 0,
-            laborCost: laborCost || 0,
-            bagCost: bagCost || 0,
-            branRevenue: branRevenue || 0,
-            bonkalitRevenue: bonkalitRevenue || 0,
-            totalCost: totalCost || 0,
+            electricityCost,
+            wheatCost,
+            laborCost,
+            bagCost,
+            branRevenue,
+            bonkalitRevenue,
+            totalCost,
             targetProfit: this.target_profit || 0,
             finalPrice: isNaN(finalPrice) ? 0 : finalPrice,
-            wheatRequired: wheatRequired || 0, // ✅ **50 kg un için gerekli buğday doğru hesaplanıyor!**
-            branKg: branKg || 0,
-            bonkalitKg: bonkalitKg || 0,
+            wheatRequired,
+            branKg,
+            bonkalitKg,
         };
     }
 }
