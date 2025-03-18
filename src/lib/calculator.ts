@@ -1,12 +1,3 @@
-import fs from "fs";
-import path from "path";
-
-// 📌 JSON verisini içe aktarma (Next.js için uygun yöntem)
-const randimanOranlariPath = path.join(process.cwd(), "src/randiman_oranlari.json");
-const randimanOranlari: Record<number, { un_miktari: number; kepek: number; bonkalit: number }> = JSON.parse(
-    fs.readFileSync(randimanOranlariPath, "utf-8")
-);
-
 export interface CalculationResult {
     productCost: number;
     electricityCost: number;
@@ -23,6 +14,12 @@ export interface CalculationResult {
     bonkalitKg: number;
 }
 
+// ✅ `fs` modülü yerine `fetch` kullanılıyor!
+const fetchRandimanData = async (): Promise<Record<string, any>> => {
+    const response = await fetch("/randiman_oranlari.json");
+    return response.json();
+};
+
 export class CostCalculator {
     private electricity_kwh: number;
     private electricity_price: number;
@@ -33,6 +30,7 @@ export class CostCalculator {
     private bran_price: number;
     private bonkalit_price: number;
     private target_profit: number;
+    private randimanData: Record<string, any> = {};
 
     constructor(
         electricity_kwh: string,
@@ -54,39 +52,45 @@ export class CostCalculator {
         this.bran_price = parseFloat(bran_price) || 0;
         this.bonkalit_price = parseFloat(bonkalit_price) || 0;
         this.target_profit = parseFloat(target_profit) || 0;
+
+        // 📌 JSON dosyasını yükle
+        this.loadRandimanData();
     }
 
-    // ✅ **En Yakın Randımanı Bulma**
+    private async loadRandimanData() {
+        this.randimanData = await fetchRandimanData();
+    }
+
     private getClosestRandimanData(): { un_miktari: number; kepek: number; bonkalit: number } {
-        const randimanKeys = Object.keys(randimanOranlari).map(Number);
+        const randimanKeys = Object.keys(this.randimanData).map(Number);
         const closestRandiman = randimanKeys.reduce((prev, curr) =>
             Math.abs(curr - this.randiman) < Math.abs(prev - this.randiman) ? curr : prev
         );
 
         console.warn(`⚠️ Girilen randıman (${this.randiman}%) bulunamadı! En yakın değer: ${closestRandiman}%`);
 
-        return randimanOranlari[closestRandiman] || { un_miktari: 75, kepek: 20, bonkalit: 5 };
+        return this.randimanData[String(closestRandiman)] || { un_miktari: 75, kepek: 20, bonkalit: 5 };
     }
 
-    public calculateCosts(): CalculationResult {
-        const randimanValue = randimanOranlari[this.randiman] || this.getClosestRandimanData();
+    public async calculateCosts(): Promise<CalculationResult> {
+        if (Object.keys(this.randimanData).length === 0) {
+            await this.loadRandimanData();
+        }
 
-        // ✅ **Buğday, kepek ve bonkalit hesaplamaları**
+        const randimanValue = this.randimanData[String(this.randiman)] || this.getClosestRandimanData();
+
         const wheatRequired = (randimanValue.un_miktari * 50) / 100;
         const branKg = (randimanValue.kepek * 50) / 100;
         const bonkalitKg = (randimanValue.bonkalit * 50) / 100;
 
-        // ✅ **Maliyet hesaplamaları**
         const electricityCost = this.electricity_kwh * this.electricity_price;
         const wheatCost = wheatRequired * this.wheat_price;
         const laborCost = this.labor_cost;
         const bagCost = this.bag_cost;
 
-        // ✅ **Kepek ve bonkalit gelir hesaplamaları**
         const branRevenue = branKg * this.bran_price;
         const bonkalitRevenue = bonkalitKg * this.bonkalit_price;
 
-        // ✅ **Toplam maliyet ve satış fiyatı hesaplamaları**
         const totalCost = (electricityCost + wheatCost + laborCost + bagCost) - (branRevenue + bonkalitRevenue);
         const finalPrice = totalCost + this.target_profit;
 
@@ -100,7 +104,7 @@ export class CostCalculator {
             bonkalitRevenue: bonkalitRevenue || 0,
             totalCost: totalCost || 0,
             targetProfit: this.target_profit || 0,
-            finalPrice: isNaN(finalPrice) ? 0 : finalPrice, // 📌 `NaN` kontrolü eklendi
+            finalPrice: isNaN(finalPrice) ? 0 : finalPrice,
             wheatRequired: wheatRequired || 0,
             branKg: branKg || 0,
             bonkalitKg: bonkalitKg || 0,
