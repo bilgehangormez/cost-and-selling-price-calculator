@@ -11,16 +11,16 @@ import { z } from "zod";
 
 // 📌 Form Şeması
 const costSchema = z.object({
-    electricity_kwh: z.string().min(1, "Gerekli kW miktarı zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir değer girin"),
-    electricity_price: z.string().min(1, "Güncel kW fiyatı zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir değer girin"),
-    randiman: z.string().min(1, "Randıman yüzdesi zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir yüzde girin"),
-    bonkalit_percentage: z.string().min(1, "Bonkalit yüzdesi zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir yüzde girin"),
-    wheat_price: z.string().min(1, "Buğday fiyatı zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir değer girin"),
-    bran_price: z.string().min(1, "Kepek fiyatı zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir değer girin"),
-    bonkalit_price: z.string().min(1, "Bonkalit fiyatı zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir değer girin"),
-    labor_cost: z.string().min(1, "İşçilik maliyeti zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir değer girin"),
-    bag_cost: z.string().min(1, "1 Adet 50 kg PP Çuval Fiyatı zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir değer girin"),
-    target_profit: z.string().min(1, "Hedeflenen kâr zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir değer girin"),
+    electricity_kwh: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Geçerli bir değer girin"),
+    electricity_price: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Geçerli bir değer girin"),
+    randiman: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0 && parseFloat(val) <= 100, "Geçerli bir yüzde girin"),
+    bonkalit_percentage: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0 && parseFloat(val) <= 100, "Geçerli bir yüzde girin"),
+    wheat_price: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Geçerli bir değer girin"),
+    bran_price: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "Geçerli bir değer girin"),
+    bonkalit_price: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "Geçerli bir değer girin"),
+    labor_cost: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "Geçerli bir değer girin"),
+    bag_cost: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "Geçerli bir değer girin"),
+    target_profit: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "Geçerli bir değer girin"),
 });
 
 type FormData = z.infer<typeof costSchema>;
@@ -38,8 +38,8 @@ export function PriceCalculator() {
         defaultValues: {
             electricity_kwh: "0",
             electricity_price: "0",
-            randiman: "75",
-            bonkalit_percentage: "10",
+            randiman: "75", // %75 randıman varsayılan
+            bonkalit_percentage: "10", // %10 bonkalit varsayılan
             wheat_price: "0",
             bran_price: "0",
             bonkalit_price: "0",
@@ -49,7 +49,7 @@ export function PriceCalculator() {
         }
     });
 
-    // 🔹 Otomatik hesaplamalar
+    // **Otomatik Hesaplamalar**
     const randimanValue = parseFloat(watch("randiman"));
     const bonkalitValue = parseFloat(watch("bonkalit_percentage"));
     const wheatPrice = parseFloat(watch("wheat_price"));
@@ -58,9 +58,14 @@ export function PriceCalculator() {
 
     useEffect(() => {
         if (!isNaN(randimanValue) && randimanValue > 0) {
-            const calculatedWheat = 50 / (randimanValue / 100);
+            // 🔹 100 kg buğdaydan çıkan un miktarı
+            const flourOutput = (randimanValue / 100) * 100;
+            
+            // 🔹 50 kg un için gereken buğday miktarı
+            const calculatedWheat = 50 * (100 / randimanValue);
             setWheatRequired(calculatedWheat);
 
+            // 🔹 Yan ürün hesaplamaları (100 kg üzerinden ölçeklenerek)
             const totalByproduct = calculatedWheat - 50;
             const calculatedBonkalit = totalByproduct * (bonkalitValue / 100);
             const calculatedBran = totalByproduct - calculatedBonkalit;
@@ -93,39 +98,36 @@ export function PriceCalculator() {
                 <CardContent>
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         
-                        {/* Otomatik Hesaplanan Değerler */}
+                        {/* Otomatik Hesaplanan Veriler */}
                         <Label>🔹 **Otomatik Hesaplanan Değerler**</Label>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <Label>Gerekli Buğday (kg)</Label>
-                                <Input type="number" value={wheatRequired.toFixed(2)} disabled />
+                                <Input type="number" value={wheatRequired.toFixed(2)} disabled className="bg-gray-200 px-4" />
                             </div>
                             <div>
                                 <Label>Çıkan Kepek (kg)</Label>
-                                <Input type="number" value={branKg.toFixed(2)} disabled />
+                                <Input type="number" value={branKg.toFixed(2)} disabled className="bg-gray-200 px-4" />
                             </div>
                             <div>
                                 <Label>Çıkan Bonkalit (kg)</Label>
-                                <Input type="number" value={bonkalitKg.toFixed(2)} disabled />
+                                <Input type="number" value={bonkalitKg.toFixed(2)} disabled className="bg-gray-200 px-4" />
                             </div>
                         </div>
 
-                        {/* Maliyet Girdileri */}
+                        {/* Manuel Giriş Alanları */}
                         <Label>📌 **Maliyet Girdileri**</Label>
                         <Input placeholder="Elektrik kW" {...register("electricity_kwh")} />
-                        {errors.electricity_kwh && <p className="text-red-500">{errors.electricity_kwh.message}</p>}
-
                         <Input placeholder="Elektrik Fiyatı (₺)" {...register("electricity_price")} />
-                        {errors.electricity_price && <p className="text-red-500">{errors.electricity_price.message}</p>}
+                        <Input placeholder="Randıman (%)" {...register("randiman")} />
+                        <Input placeholder="Bonkalit (%)" {...register("bonkalit_percentage")} />
+                        <Input placeholder="Hedeflenen Kâr (₺)" {...register("target_profit")} />
 
-                        <Input placeholder="İşçilik Maliyeti (₺)" {...register("labor_cost")} />
-                        {errors.labor_cost && <p className="text-red-500">{errors.labor_cost.message}</p>}
-
-                        <Button type="submit">Hesapla</Button>
+                        <Button type="submit" className="w-full h-12 text-base rounded-xl">Hesapla</Button>
                     </form>
 
                     {finalPrice > 0 && (
-                        <div className="mt-4">
+                        <div className="mt-4 p-2 border rounded-lg bg-gray-50">
                             <h3 className="text-lg font-bold">Satış Fiyatı: {finalPrice.toFixed(2)} ₺</h3>
                         </div>
                     )}
