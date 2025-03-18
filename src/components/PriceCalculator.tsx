@@ -14,6 +14,8 @@ const costSchema = z.object({
     electricity_kwh: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Geçerli bir değer girin"),
     electricity_price: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Geçerli bir değer girin"),
     randiman: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0 && parseFloat(val) <= 100, "Geçerli bir yüzde girin"),
+    labor_cost: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "Geçerli bir değer girin"),
+    bag_cost: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "Geçerli bir değer girin"),
     target_profit: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "Geçerli bir değer girin"),
 });
 
@@ -31,6 +33,8 @@ export function PriceCalculator() {
             electricity_kwh: "",
             electricity_price: "",
             randiman: "75", // %75 randıman varsayılan
+            labor_cost: "",
+            bag_cost: "",
             target_profit: "",
         }
     });
@@ -54,7 +58,9 @@ export function PriceCalculator() {
 
     const onSubmit = (data: FormData) => {
         const electricityCost = parseFloat(data.electricity_kwh) * parseFloat(data.electricity_price);
-        const totalCost = electricityCost;
+        const laborCost = parseFloat(data.labor_cost);
+        const bagCost = parseFloat(data.bag_cost);
+        const totalCost = electricityCost + laborCost + bagCost;
         const calculatedFinalPrice = totalCost + parseFloat(data.target_profit);
 
         setFinalPrice(calculatedFinalPrice);
@@ -71,7 +77,7 @@ export function PriceCalculator() {
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         
                         {/* Otomatik Hesaplanan Veriler */}
-                        <Label>🔹 **Otomatik Hesaplanan Değerler**</Label>
+                        <h2 className="text-lg font-semibold">🔹 Otomatik Hesaplanan Değerler</h2>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <Label>Gerekli Buğday (kg)</Label>
@@ -88,7 +94,7 @@ export function PriceCalculator() {
                         </div>
 
                         {/* Manuel Giriş Alanları */}
-                        <Label>📌 **Maliyet Girdileri**</Label>
+                        <h2 className="text-lg font-semibold mt-6">📌 Maliyet Girdileri</h2>
                         <div>
                             <Label>Elektrik kW</Label>
                             <Input {...register("electricity_kwh")} />
@@ -100,6 +106,14 @@ export function PriceCalculator() {
                         <div>
                             <Label>Randıman (%)</Label>
                             <Input {...register("randiman")} />
+                        </div>
+                        <div>
+                            <Label>İşçilik Maliyeti (₺)</Label>
+                            <Input {...register("labor_cost")} />
+                        </div>
+                        <div>
+                            <Label>Çuval Maliyeti (₺)</Label>
+                            <Input {...register("bag_cost")} />
                         </div>
                         <div>
                             <Label>Hedeflenen Kâr (₺)</Label>
