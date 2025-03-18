@@ -33,7 +33,7 @@ export function PriceCalculator() {
     const [branKg, setBranKg] = useState<number>(0);
     const [bonkalitKg, setBonkalitKg] = useState<number>(0);
 
-    const { handleSubmit, watch } = useForm<FormData>({
+    const { register, handleSubmit, formState: { errors }, watch } = useForm<FormData>({
         resolver: zodResolver(costSchema),
         defaultValues: {
             electricity_kwh: "0",
@@ -92,23 +92,36 @@ export function PriceCalculator() {
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                        <Label>Otomatik Hesaplanan Değerler</Label>
+                        
+                        {/* Otomatik Hesaplanan Veriler */}
+                        <Label>🔹 **Otomatik Hesaplanan Değerler**</Label>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <Label>Gerekli Buğday (kg)</Label>
                                 <Input type="number" value={wheatRequired.toFixed(2)} disabled className="bg-gray-200 px-4" />
                             </div>
-
                             <div>
                                 <Label>Çıkan Kepek (kg)</Label>
                                 <Input type="number" value={branKg.toFixed(2)} disabled className="bg-gray-200 px-4" />
                             </div>
-
                             <div>
                                 <Label>Çıkan Bonkalit (kg)</Label>
                                 <Input type="number" value={bonkalitKg.toFixed(2)} disabled className="bg-gray-200 px-4" />
                             </div>
                         </div>
+
+                        {/* Manuel Giriş Alanları */}
+                        <Label>📌 **Maliyet Girdileri**</Label>
+                        <Input placeholder="Elektrik kW" {...register("electricity_kwh")} />
+                        <Input placeholder="Elektrik Fiyatı (₺)" {...register("electricity_price")} />
+                        <Input placeholder="Randıman (%)" {...register("randiman")} />
+                        <Input placeholder="Bonkalit (%)" {...register("bonkalit_percentage")} />
+                        <Input placeholder="Buğday kg Fiyatı (₺)" {...register("wheat_price")} />
+                        <Input placeholder="Kepek kg Fiyatı (₺)" {...register("bran_price")} />
+                        <Input placeholder="Bonkalit kg Fiyatı (₺)" {...register("bonkalit_price")} />
+                        <Input placeholder="İşçilik Maliyeti (₺)" {...register("labor_cost")} />
+                        <Input placeholder="1 Adet 50 kg PP Çuval Fiyatı (₺)" {...register("bag_cost")} />
+                        <Input placeholder="Hedeflenen Kâr (₺)" {...register("target_profit")} />
 
                         <Button type="submit" className="w-full h-12 text-base rounded-xl">Hesapla</Button>
                     </form>
