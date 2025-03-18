@@ -11,16 +11,16 @@ import { z } from "zod";
 
 // 📌 Form Şeması
 const costSchema = z.object({
-    electricity_kwh: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Geçerli bir değer girin"),
-    electricity_price: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Geçerli bir değer girin"),
-    randiman: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0 && parseFloat(val) <= 100, "Geçerli bir yüzde girin"),
-    bonkalit_percentage: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0 && parseFloat(val) <= 100, "Geçerli bir yüzde girin"),
-    wheat_price: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Geçerli bir değer girin"),
-    bran_price: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "Geçerli bir değer girin"),
-    bonkalit_price: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "Geçerli bir değer girin"),
-    labor_cost: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "Geçerli bir değer girin"),
-    bag_cost: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "Geçerli bir değer girin"),
-    target_profit: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "Geçerli bir değer girin"),
+    electricity_kwh: z.string().min(1, "Gerekli kW miktarı zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir değer girin"),
+    electricity_price: z.string().min(1, "Güncel kW fiyatı zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir değer girin"),
+    randiman: z.string().min(1, "Randıman yüzdesi zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir yüzde girin"),
+    bonkalit_percentage: z.string().min(1, "Bonkalit yüzdesi zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir yüzde girin"),
+    wheat_price: z.string().min(1, "Buğday fiyatı zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir değer girin"),
+    bran_price: z.string().min(1, "Kepek fiyatı zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir değer girin"),
+    bonkalit_price: z.string().min(1, "Bonkalit fiyatı zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir değer girin"),
+    labor_cost: z.string().min(1, "İşçilik maliyeti zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir değer girin"),
+    bag_cost: z.string().min(1, "1 Adet 50 kg PP Çuval Fiyatı zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir değer girin"),
+    target_profit: z.string().min(1, "Hedeflenen kâr zorunludur").refine((val) => !isNaN(parseFloat(val)), "Geçerli bir değer girin"),
 });
 
 type FormData = z.infer<typeof costSchema>;
@@ -49,7 +49,7 @@ export function PriceCalculator() {
         }
     });
 
-    // Otomatik hesaplamalar için watch() kullanıldı
+    // 🔹 Otomatik hesaplamalar
     const randimanValue = parseFloat(watch("randiman"));
     const bonkalitValue = parseFloat(watch("bonkalit_percentage"));
     const wheatPrice = parseFloat(watch("wheat_price"));
@@ -93,29 +93,25 @@ export function PriceCalculator() {
                 <CardContent>
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         
-                        {/* Otomatik Hesaplanan Veriler */}
                         <Label>🔹 **Otomatik Hesaplanan Değerler**</Label>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <Label>Gerekli Buğday (kg)</Label>
-                                <Input type="number" value={wheatRequired.toFixed(2)} disabled className="bg-gray-200 px-4" />
+                                <Input type="number" value={wheatRequired.toFixed(2)} disabled />
                             </div>
                             <div>
                                 <Label>Çıkan Kepek (kg)</Label>
-                                <Input type="number" value={branKg.toFixed(2)} disabled className="bg-gray-200 px-4" />
+                                <Input type="number" value={branKg.toFixed(2)} disabled />
                             </div>
                             <div>
                                 <Label>Çıkan Bonkalit (kg)</Label>
-                                <Input type="number" value={bonkalitKg.toFixed(2)} disabled className="bg-gray-200 px-4" />
+                                <Input type="number" value={bonkalitKg.toFixed(2)} disabled />
                             </div>
                         </div>
 
-                        {/* Manuel Giriş Alanları */}
                         <Label>📌 **Maliyet Girdileri**</Label>
                         <Input placeholder="Elektrik kW" {...register("electricity_kwh")} />
                         <Input placeholder="Elektrik Fiyatı (₺)" {...register("electricity_price")} />
-                        <Input placeholder="Randıman (%)" {...register("randiman")} />
-                        <Input placeholder="Bonkalit (%)" {...register("bonkalit_percentage")} />
                         <Input placeholder="Buğday kg Fiyatı (₺)" {...register("wheat_price")} />
                         <Input placeholder="Kepek kg Fiyatı (₺)" {...register("bran_price")} />
                         <Input placeholder="Bonkalit kg Fiyatı (₺)" {...register("bonkalit_price")} />
@@ -123,11 +119,11 @@ export function PriceCalculator() {
                         <Input placeholder="1 Adet 50 kg PP Çuval Fiyatı (₺)" {...register("bag_cost")} />
                         <Input placeholder="Hedeflenen Kâr (₺)" {...register("target_profit")} />
 
-                        <Button type="submit" className="w-full h-12 text-base rounded-xl">Hesapla</Button>
+                        <Button type="submit">Hesapla</Button>
                     </form>
 
                     {finalPrice > 0 && (
-                        <div className="mt-4 p-2 border rounded-lg bg-gray-50">
+                        <div className="mt-4">
                             <h3 className="text-lg font-bold">Satış Fiyatı: {finalPrice.toFixed(2)} ₺</h3>
                         </div>
                     )}
