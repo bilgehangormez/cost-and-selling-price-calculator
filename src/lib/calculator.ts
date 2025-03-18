@@ -52,20 +52,27 @@ export class CostCalculator {
         const randimanData = await response.json();
         const randimanValue = randimanData[String(this.randiman)] || randimanData["75"]; 
 
-        // ✅ **Doğru hesaplama**
-        const wheatRequired = 50 / (randimanValue.un_miktari / 100);
+        // ✅ **Yeni Formül: 50 kg un için gerekli buğday miktarı**
+        const wheatRequired = 5000 / this.randiman;
+
+        // ✅ **Yan ürün hesaplamaları**
         const branKg = (randimanValue.kepek * wheatRequired) / 100;
         const bonkalitKg = (randimanValue.bonkalit * wheatRequired) / 100;
 
+        // ✅ **Maliyet hesaplamaları**
         const electricityCost = this.electricity_kwh * this.electricity_price;
         const wheatCost = wheatRequired * this.wheat_price;
         const laborCost = this.labor_cost;
         const bagCost = this.bag_cost;
 
+        // ✅ **Yan ürünlerden elde edilen gelir**
         const branRevenue = branKg * this.bran_price;
         const bonkalitRevenue = bonkalitKg * this.bonkalit_price;
 
+        // ✅ **Toplam Maliyet**
         const totalCost = (electricityCost + wheatCost + laborCost + bagCost) - (branRevenue + bonkalitRevenue);
+
+        // ✅ **Son Satış Fiyatı**
         const finalPrice = totalCost + this.target_profit;
 
         return {
