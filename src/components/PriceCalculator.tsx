@@ -93,6 +93,7 @@ export function PriceCalculator() {
                 <CardContent>
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         
+                        {/* Otomatik Hesaplanan Değerler */}
                         <Label>🔹 **Otomatik Hesaplanan Değerler**</Label>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
@@ -109,15 +110,16 @@ export function PriceCalculator() {
                             </div>
                         </div>
 
+                        {/* Maliyet Girdileri */}
                         <Label>📌 **Maliyet Girdileri**</Label>
                         <Input placeholder="Elektrik kW" {...register("electricity_kwh")} />
+                        {errors.electricity_kwh && <p className="text-red-500">{errors.electricity_kwh.message}</p>}
+
                         <Input placeholder="Elektrik Fiyatı (₺)" {...register("electricity_price")} />
-                        <Input placeholder="Buğday kg Fiyatı (₺)" {...register("wheat_price")} />
-                        <Input placeholder="Kepek kg Fiyatı (₺)" {...register("bran_price")} />
-                        <Input placeholder="Bonkalit kg Fiyatı (₺)" {...register("bonkalit_price")} />
+                        {errors.electricity_price && <p className="text-red-500">{errors.electricity_price.message}</p>}
+
                         <Input placeholder="İşçilik Maliyeti (₺)" {...register("labor_cost")} />
-                        <Input placeholder="1 Adet 50 kg PP Çuval Fiyatı (₺)" {...register("bag_cost")} />
-                        <Input placeholder="Hedeflenen Kâr (₺)" {...register("target_profit")} />
+                        {errors.labor_cost && <p className="text-red-500">{errors.labor_cost.message}</p>}
 
                         <Button type="submit">Hesapla</Button>
                     </form>
