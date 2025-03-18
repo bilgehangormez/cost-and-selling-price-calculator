@@ -26,32 +26,6 @@ const costSchema = z.object({
 
 type FormData = z.infer<typeof costSchema>;
 
-// Form Field Component
-interface FormFieldProps {
-    label: string;
-    id: string;
-    type?: string;
-    step?: string;
-    register: UseFormRegisterReturn;
-    error?: { message?: string };
-}
-
-const FormField = ({ label, id, type = "text", step, register, error }: FormFieldProps) => (
-    <div>
-        <Label htmlFor={id} className="text-sm font-medium text-muted-foreground">
-            {label}
-        </Label>
-        <Input
-            id={id}
-            type={type}
-            step={step}
-            {...register}
-            className={cn("mt-1.5 h-12 rounded-xl bg-muted/50 px-4", error && "border-red-500 focus-visible:ring-red-500")}
-        />
-        {error?.message && <p className="text-sm text-red-500 mt-1">{error.message}</p>}
-    </div>
-);
-
 export function PriceCalculator() {
     const [finalPrice, setFinalPrice] = useState<number | null>(null);
     const [branRevenue, setBranRevenue] = useState<number | null>(null);
@@ -115,6 +89,18 @@ export function PriceCalculator() {
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                        <Label>Otomatik Hesaplanan Değerler</Label>
+                        <div className="grid grid-cols-2 gap-4">
+                            <Input type="number" value={wheatRequired.toFixed(2)} disabled className="bg-gray-200 px-4" />
+                            <Label>Gerekli Buğday (kg)</Label>
+
+                            <Input type="number" value={branKg.toFixed(2)} disabled className="bg-gray-200 px-4" />
+                            <Label>Çıkan Kepek (kg)</Label>
+
+                            <Input type="number" value={bonkalitKg.toFixed(2)} disabled className="bg-gray-200 px-4" />
+                            <Label>Çıkan Bonkalit (kg)</Label>
+                        </div>
+
                         <FormField label="50 kg çuval başına gereken kW" id="electricity_kwh" type="number" register={register("electricity_kwh")} error={errors.electricity_kwh} />
                         <FormField label="Güncel kW fiyatı (₺)" id="electricity_price" type="number" register={register("electricity_price")} error={errors.electricity_price} />
                         <FormField label="Randıman (%)" id="randiman" type="number" step="0.1" register={register("randiman")} error={errors.randiman} />
@@ -135,3 +121,12 @@ export function PriceCalculator() {
         </div>
     );
 }
+
+// FormField bileşeni
+const FormField = ({ label, id, type = "text", step, register, error }: any) => (
+    <div>
+        <Label>{label}</Label>
+        <Input type={type} step={step} {...register} className={cn("mt-1.5 h-12 rounded-xl bg-muted/50 px-4")} />
+        {error?.message && <p className="text-red-500">{error.message}</p>}
+    </div>
+);
