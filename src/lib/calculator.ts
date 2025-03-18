@@ -17,7 +17,7 @@ export interface CalculationResult {
 export class CostCalculator {
     private electricity_kwh: number;
     private electricity_price: number;
-    private randiman: number; // ✅ Randıman yüzdesi
+    private randiman: number; // ✅ Randıman yüzdesi (100 kg üzerinden)
     private bonkalit_percentage: number; // ✅ Bonkalit yüzdesi
     private wheat_price: number;
     private labor_cost: number;
@@ -29,7 +29,7 @@ export class CostCalculator {
     constructor(
         electricity_kwh: number,
         electricity_price: number,
-        randiman: number, // ✅ Randıman yüzdesi
+        randiman: number, // ✅ Randıman yüzdesi (100 kg üzerinden)
         bonkalit_percentage: number, // ✅ Bonkalit yüzdesi
         wheat_price: number,
         labor_cost: number,
@@ -51,25 +51,26 @@ export class CostCalculator {
     }
 
     public calculateCosts(): CalculationResult {
-        // ✅ 50 kg un için gerekli buğday miktarı hesaplanıyor
-        const wheatRequired = 50 / (this.randiman / 100);
+        // ✅ 100 kg buğday üzerinden hesaplama yapılıyor
+        const wheatRequired = 100 / (this.randiman / 100); // 100 KG BUĞDAYDAN ELDE EDİLEN UN
+        const wheatNeededFor50kgFlour = (wheatRequired / 2); // 50 KG UN İÇİN GEREKEN BUĞDAY
 
         // ✅ Toplam yan ürün miktarı (kepek + bonkalit)
-        const totalByproduct = wheatRequired - 50;
+        const totalByproduct = wheatRequired - 100;
 
         // ✅ Bonkalit ve kepek miktarları otomatik hesaplanıyor
-        const bonkalitKg = totalByproduct * (this.bonkalit_percentage / 100);
-        const branKg = totalByproduct - bonkalitKg;
+        const bonkalitKg = (totalByproduct * (this.bonkalit_percentage / 100)) / 2; // 50 kg için ölçeklendirildi
+        const branKg = (totalByproduct - bonkalitKg) / 2; // 50 kg için ölçeklendirildi
 
         // ✅ Maliyet hesaplamaları
         const electricityCost = this.electricity_kwh * this.electricity_price;
-        const wheatCost = wheatRequired * this.wheat_price;
+        const wheatCost = wheatNeededFor50kgFlour * this.wheat_price;
         const laborCost = this.labor_cost;
         const bagCost = this.bag_cost;
 
         // ✅ Gelir hesaplamaları (kepek ve bonkalit)
         const branRevenue = branKg * this.bran_price;
-        const bonkalitRevenue = bonkalitKg * this.bonkalit_price; // ✅ Bonkalit için bağımsız fiyat
+        const bonkalitRevenue = bonkalitKg * this.bonkalit_price;
 
         // **Toplam Maliyet = Giderler - (Kepek Geliri + Bonkalit Geliri)**
         const totalCost = (electricityCost + wheatCost + laborCost + bagCost) - (branRevenue + bonkalitRevenue);
@@ -88,7 +89,7 @@ export class CostCalculator {
             totalCost,
             targetProfit: this.target_profit,
             finalPrice,
-            wheatRequired, // ✅ Hesaplanan gerekli buğday miktarı
+            wheatRequired: wheatNeededFor50kgFlour, // ✅ Hesaplanan gerekli buğday miktarı (50 kg un için)
             branKg, // ✅ Hesaplanan kepek miktarı
             bonkalitKg, // ✅ Hesaplanan bonkalit miktarı
         };
