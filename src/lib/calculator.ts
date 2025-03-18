@@ -59,11 +59,12 @@ export class CostCalculator {
             `⚠️ Uyarı: Girilen randıman (${this.randiman}%) JSON'da bulunamadı! En yakın değer olarak ${closestRandiman}% kullanıldı.`
         );
 
-        return randimanOranlari[String(closestRandiman)]; // 📌 **Hata düzeltildi**
+        return (randimanOranlari as any)[String(closestRandiman)]; // 📌 **Hata düzeltildi**
     }
 
     public calculateCosts(): CalculationResult {
-        const randimanData = randimanOranlari[String(this.randiman)] || this.getClosestRandimanData();
+        const randimanData = (randimanOranlari as Record<string, { un_miktari: number; kepek: number; bonkalit: number }>) 
+            [String(this.randiman)] || this.getClosestRandimanData();
 
         const wheatRequired = randimanData.un_miktari * (50 / 100);
         const branKg = randimanData.kepek * (50 / 100);
