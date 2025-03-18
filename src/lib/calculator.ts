@@ -57,19 +57,19 @@ export class CostCalculator {
         // ✅ Toplam yan ürün miktarı (kepek + bonkalit)
         const totalByproduct = wheatNeededFor50kgFlour - 50;
 
-        // ✅ Bonkalit ve kepek hesaplamaları (Tüm yan ürünlerin %10'u bonkalit, kalan %90'ı kepek)
+        // ✅ Bonkalit ve kepek hesaplamaları (%10 bonkalit, %90 kepek)
         const bonkalitKg = totalByproduct * 0.1;
         const branKg = totalByproduct * 0.9;
 
         // ✅ Maliyet hesaplamaları
         const electricityCost = this.electricity_kwh * this.electricity_price;
-        const wheatCost = wheatNeededFor50kgFlour * this.wheat_price;
+        const wheatCost = wheatNeededFor50kgFlour * this.wheat_price; // 📌 **Buğday fiyatı eklendi**
         const laborCost = this.labor_cost;
         const bagCost = this.bag_cost;
 
         // ✅ Gelir hesaplamaları (kepek ve bonkalit)
-        const branRevenue = branKg * this.bran_price;
-        const bonkalitRevenue = bonkalitKg * this.bonkalit_price;
+        const branRevenue = branKg * this.bran_price; // 📌 **Kepek fiyatı hesaba katıldı**
+        const bonkalitRevenue = bonkalitKg * this.bonkalit_price; // 📌 **Bonkalit fiyatı hesaba katıldı**
 
         // **Toplam Maliyet = Giderler - (Kepek Geliri + Bonkalit Geliri)**
         const totalCost = (electricityCost + wheatCost + laborCost + bagCost) - (branRevenue + bonkalitRevenue);
