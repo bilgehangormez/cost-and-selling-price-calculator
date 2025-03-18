@@ -9,7 +9,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-// Form Şeması
+// 📌 Form Şeması
 const costSchema = z.object({
     electricity_kwh: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Geçerli bir değer girin"),
     electricity_price: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Geçerli bir değer girin"),
@@ -33,6 +33,7 @@ export function PriceCalculator() {
     const [branKg, setBranKg] = useState<number>(0);
     const [bonkalitKg, setBonkalitKg] = useState<number>(0);
 
+    // 📌 `register` ve `errors` değişkenleri gerçekten kullanılıyor mu kontrol ettim ve dahil ettim
     const { register, handleSubmit, formState: { errors }, watch } = useForm<FormData>({
         resolver: zodResolver(costSchema),
         defaultValues: {
@@ -58,18 +59,18 @@ export function PriceCalculator() {
 
     useEffect(() => {
         if (!isNaN(randimanValue) && randimanValue > 0) {
-            const calculatedWheat = 100 / (randimanValue / 100); // 100 KG ÜZERİNDEN HESAPLANDI
-            setWheatRequired(calculatedWheat / 2); // 50 kg un için gerekli buğday miktarı
+            const calculatedWheat = 50 / (randimanValue / 100);
+            setWheatRequired(calculatedWheat);
 
-            const totalByproduct = calculatedWheat - 100;
+            const totalByproduct = calculatedWheat - 50;
             const calculatedBonkalit = totalByproduct * (bonkalitValue / 100);
             const calculatedBran = totalByproduct - calculatedBonkalit;
 
-            setBonkalitKg(calculatedBonkalit / 2);
-            setBranKg(calculatedBran / 2);
+            setBonkalitKg(calculatedBonkalit);
+            setBranKg(calculatedBran);
 
-            setBonkalitRevenue((calculatedBonkalit / 2) * bonkalitPrice);
-            setBranRevenue((calculatedBran / 2) * branPrice);
+            setBonkalitRevenue(calculatedBonkalit * bonkalitPrice);
+            setBranRevenue(calculatedBran * branPrice);
         }
     }, [randimanValue, bonkalitValue, branPrice, bonkalitPrice]);
 
@@ -95,7 +96,7 @@ export function PriceCalculator() {
                         <Label>Otomatik Hesaplanan Değerler</Label>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <Label>50 kg Un İçin Gerekli Buğday (kg)</Label>
+                                <Label>Gerekli Buğday (kg)</Label>
                                 <Input type="number" value={wheatRequired.toFixed(2)} disabled className="bg-gray-200 px-4" />
                             </div>
 
