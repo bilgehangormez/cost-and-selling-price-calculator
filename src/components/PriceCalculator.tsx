@@ -33,7 +33,7 @@ export function PriceCalculator() {
     const [branKg, setBranKg] = useState<number>(0);
     const [bonkalitKg, setBonkalitKg] = useState<number>(0);
 
-    const { register, handleSubmit, formState: { errors }, watch } = useForm<FormData>({
+    const { register, handleSubmit, watch } = useForm<FormData>({
         resolver: zodResolver(costSchema),
         defaultValues: {
             electricity_kwh: "0",
@@ -58,14 +58,11 @@ export function PriceCalculator() {
 
     useEffect(() => {
         if (!isNaN(randimanValue) && randimanValue > 0) {
-            // 🔹 100 kg buğdaydan çıkan un miktarı
-            const flourOutput = (randimanValue / 100) * 100;
-            
-            // 🔹 50 kg un için gereken buğday miktarı
+            // 🔹 50 kg un için gereken buğday miktarı (100 kg üzerinden hesaplanan randıman ile)
             const calculatedWheat = 50 * (100 / randimanValue);
             setWheatRequired(calculatedWheat);
 
-            // 🔹 Yan ürün hesaplamaları (100 kg üzerinden ölçeklenerek)
+            // 🔹 Yan ürün hesaplamaları
             const totalByproduct = calculatedWheat - 50;
             const calculatedBonkalit = totalByproduct * (bonkalitValue / 100);
             const calculatedBran = totalByproduct - calculatedBonkalit;
