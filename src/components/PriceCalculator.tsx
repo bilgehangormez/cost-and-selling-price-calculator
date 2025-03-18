@@ -7,16 +7,20 @@ import { Label } from "@/components/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { CostCalculator } from "@/lib/CostCalculator";
 import { z } from "zod";
 
 // 📌 Form Şeması
 const costSchema = z.object({
-    electricity_kwh: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Geçerli bir değer girin"),
-    electricity_price: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Geçerli bir değer girin"),
-    randiman: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0 && parseFloat(val) <= 100, "Geçerli bir yüzde girin"),
-    labor_cost: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "Geçerli bir değer girin"),
-    bag_cost: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "Geçerli bir değer girin"),
-    target_profit: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "Geçerli bir değer girin"),
+    electricity_kwh: z.string(),
+    electricity_price: z.string(),
+    randiman: z.string(),
+    wheat_price: z.string(),
+    bran_price: z.string(),
+    bonkalit_price: z.string(),
+    labor_cost: z.string(),
+    bag_cost: z.string(),
+    target_profit: z.string(),
 });
 
 type FormData = z.infer<typeof costSchema>;
@@ -32,14 +36,16 @@ export function PriceCalculator() {
         defaultValues: {
             electricity_kwh: "",
             electricity_price: "",
-            randiman: "75", // %75 randıman varsayılan
+            randiman: "75",
+            wheat_price: "",
+            bran_price: "",
+            bonkalit_price: "",
             labor_cost: "",
             bag_cost: "",
             target_profit: "",
         }
     });
 
-    // **Otomatik Hesaplamalar**
     const randimanValue = parseFloat(watch("randiman"));
 
     useEffect(() => {
@@ -48,7 +54,7 @@ export function PriceCalculator() {
             setWheatRequired(calculatedWheat);
 
             const totalByproduct = calculatedWheat - 50;
-            const calculatedBonkalit = totalByproduct * 0.1; // **Bonkalit %10 olarak varsayılmış**
+            const calculatedBonkalit = totalByproduct * 0.1;
             const calculatedBran = totalByproduct - calculatedBonkalit;
 
             setBonkalitKg(calculatedBonkalit);
@@ -57,13 +63,20 @@ export function PriceCalculator() {
     }, [randimanValue]);
 
     const onSubmit = (data: FormData) => {
-        const electricityCost = parseFloat(data.electricity_kwh) * parseFloat(data.electricity_price);
-        const laborCost = parseFloat(data.labor_cost);
-        const bagCost = parseFloat(data.bag_cost);
-        const totalCost = electricityCost + laborCost + bagCost;
-        const calculatedFinalPrice = totalCost + parseFloat(data.target_profit);
+        const calculator = new CostCalculator(
+            parseFloat(data.electricity_kwh),
+            parseFloat(data.electricity_price),
+            parseFloat(data.randiman),
+            parseFloat(data.wheat_price),
+            parseFloat(data.labor_cost),
+            parseFloat(data.bag_cost),
+            parseFloat(data.bran_price),
+            parseFloat(data.bonkalit_price),
+            parseFloat(data.target_profit)
+        );
 
-        setFinalPrice(calculatedFinalPrice);
+        const result = calculator.calculateCosts();
+        setFinalPrice(result.finalPrice);
     };
 
     return (
@@ -96,11 +109,11 @@ export function PriceCalculator() {
                         {/* Manuel Giriş Alanları */}
                         <h2 className="text-lg font-semibold mt-6">📌 Maliyet Girdileri</h2>
                         <div>
-                            <Label>Elektrik kW</Label>
+                            <Label>50 kg un için gerekli elektrik (kW)</Label>
                             <Input {...register("electricity_kwh")} />
                         </div>
                         <div>
-                            <Label>Elektrik Fiyatı (₺)</Label>
+                            <Label>1 kW elektrik (₺)</Label>
                             <Input {...register("electricity_price")} />
                         </div>
                         <div>
@@ -108,11 +121,23 @@ export function PriceCalculator() {
                             <Input {...register("randiman")} />
                         </div>
                         <div>
+                            <Label>Buğday kg Fiyatı (₺)</Label>
+                            <Input {...register("wheat_price")} />
+                        </div>
+                        <div>
+                            <Label>Kepek kg Fiyatı (₺)</Label>
+                            <Input {...register("bran_price")} />
+                        </div>
+                        <div>
+                            <Label>Bonkalit kg Fiyatı (₺)</Label>
+                            <Input {...register("bonkalit_price")} />
+                        </div>
+                        <div>
                             <Label>İşçilik Maliyeti (₺)</Label>
                             <Input {...register("labor_cost")} />
                         </div>
                         <div>
-                            <Label>Çuval Maliyeti (₺)</Label>
+                            <Label>1 Adet 50 kg PP Çuval (₺)</Label>
                             <Input {...register("bag_cost")} />
                         </div>
                         <div>
