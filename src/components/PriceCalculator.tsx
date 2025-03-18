@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { CostCalculator } from "@/lib/calculator";
+import randimanOranlari from "@/randiman_oranlari.json"; // 📌 JSON doğrudan içe aktarılıyor
 
 export function PriceCalculator() {
     const [finalPrice, setFinalPrice] = useState<number | null>(null);
@@ -30,21 +31,21 @@ export function PriceCalculator() {
 
     const randimanValue = watch("randiman");
 
-    useEffect(() => {
-        if (randimanValue) {
-            fetch("/randiman_oranlari.json")
-                .then((res) => res.json())
-                .then((data) => {
-                    const randimanKey = String(randimanValue);
-                    if (data[randimanKey]) {
-                        setWheatRequired(data[randimanKey].un_miktari * (50 / 100));
-                        setBranKg(data[randimanKey].kepek * (50 / 100));
-                        setBonkalitKg(data[randimanKey].bonkalit * (50 / 100));
-                    }
-                })
-                .catch((err) => console.error("Randıman verisi yüklenemedi!", err));
+    // 📌 Kullanıcının girdiği randıman değerine göre un, kepek ve bonkalit hesaplaması
+    const updateCalculatedValues = (randimanKey: string) => {
+        const data = randimanOranlari[randimanKey];
+        if (data) {
+            const calculatedWheat = (50 / data.un_miktari) * 100; // ✅ Doğru hesaplama
+            setWheatRequired(calculatedWheat);
+            setBranKg((data.kepek * calculatedWheat) / 100);
+            setBonkalitKg((data.bonkalit * calculatedWheat) / 100);
         }
-    }, [randimanValue]);
+    };
+
+    // Randıman değeri değiştiğinde hesaplamaları yap
+    if (randimanValue) {
+        updateCalculatedValues(randimanValue);
+    }
 
     const onSubmit = async (data: Record<string, string>) => {
         const calculator = new CostCalculator(
@@ -64,17 +65,64 @@ export function PriceCalculator() {
     };
 
     return (
-        <div className="flex w-full max-w-4xl mx-auto p-4">
-            <Card className="w-2/3 shadow-lg rounded-xl border">
-                <CardHeader>
-                    <CardTitle className="text-lg">Un Üretimi Maliyet Hesaplayıcı</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <div className="flex flex-col w-full max-w-4xl mx-auto p-4">
+            <div className="grid grid-cols-3 gap-4">
+                {/* Sol Kısım: Maliyet Girdileri */}
+                <Card className="shadow-lg rounded-xl border">
+                    <CardHeader>
+                        <CardTitle className="text-lg">📌 Maliyet Girdileri</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                            <div>
+                                <Label>50 kg un için gerekli elektrik (kW)</Label>
+                                <Input {...register("electricity_kwh")} />
+                            </div>
+                            <div>
+                                <Label>1 kW elektrik (₺)</Label>
+                                <Input {...register("electricity_price")} />
+                            </div>
+                            <div>
+                                <Label>Randıman (%)</Label>
+                                <Input {...register("randiman")} />
+                            </div>
+                            <div>
+                                <Label>Buğday kg Fiyatı (₺)</Label>
+                                <Input {...register("wheat_price")} />
+                            </div>
+                            <div>
+                                <Label>Kepek kg Fiyatı (₺)</Label>
+                                <Input {...register("bran_price")} />
+                            </div>
+                            <div>
+                                <Label>Bonkalit kg Fiyatı (₺)</Label>
+                                <Input {...register("bonkalit_price")} />
+                            </div>
+                            <div>
+                                <Label>İşçilik Maliyeti (₺)</Label>
+                                <Input {...register("labor_cost")} />
+                            </div>
+                            <div>
+                                <Label>1 Adet 50 kg PP Çuval (₺)</Label>
+                                <Input {...register("bag_cost")} />
+                            </div>
+                            <div>
+                                <Label>Hedeflenen Kâr (₺)</Label>
+                                <Input {...register("target_profit")} />
+                            </div>
 
-                        {/* Otomatik Hesaplanan Veriler */}
-                        <h2 className="text-lg font-semibold">🔹 Otomatik Hesaplanan Değerler</h2>
-                        <div className="grid grid-cols-2 gap-4">
+                            <Button type="submit" className="w-full h-12 text-base rounded-xl">Hesapla</Button>
+                        </form>
+                    </CardContent>
+                </Card>
+
+                {/* Orta Kısım: Otomatik Hesaplanan Değerler */}
+                <Card className="shadow-lg rounded-xl border">
+                    <CardHeader>
+                        <CardTitle className="text-lg">🔹 Otomatik Hesaplanan Değerler</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid grid-cols-1 gap-4">
                             <div>
                                 <Label>Gerekli Buğday (kg)</Label>
                                 <Input type="number" value={wheatRequired.toFixed(2)} disabled className="bg-gray-200 px-4" />
@@ -88,53 +136,10 @@ export function PriceCalculator() {
                                 <Input type="number" value={bonkalitKg.toFixed(2)} disabled className="bg-gray-200 px-4" />
                             </div>
                         </div>
+                    </CardContent>
+                </Card>
 
-                        {/* Manuel Giriş Alanları */}
-                        <h2 className="text-lg font-semibold mt-6">📌 Maliyet Girdileri</h2>
-                        <div>
-                            <Label>50 kg un için gerekli elektrik (kW)</Label>
-                            <Input {...register("electricity_kwh")} />
-                        </div>
-                        <div>
-                            <Label>1 kW elektrik (₺)</Label>
-                            <Input {...register("electricity_price")} />
-                        </div>
-                        <div>
-                            <Label>Randıman (%)</Label>
-                            <Input {...register("randiman")} />
-                        </div>
-                        <div>
-                            <Label>Buğday kg Fiyatı (₺)</Label>
-                            <Input {...register("wheat_price")} />
-                        </div>
-                        <div>
-                            <Label>Kepek kg Fiyatı (₺)</Label>
-                            <Input {...register("bran_price")} />
-                        </div>
-                        <div>
-                            <Label>Bonkalit kg Fiyatı (₺)</Label>
-                            <Input {...register("bonkalit_price")} />
-                        </div>
-                        <div>
-                            <Label>İşçilik Maliyeti (₺)</Label>
-                            <Input {...register("labor_cost")} />
-                        </div>
-                        <div>
-                            <Label>1 Adet 50 kg PP Çuval (₺)</Label>
-                            <Input {...register("bag_cost")} />
-                        </div>
-                        <div>
-                            <Label>Hedeflenen Kâr (₺)</Label>
-                            <Input {...register("target_profit")} />
-                        </div>
-
-                        <Button type="submit" className="w-full h-12 text-base rounded-xl">Hesapla</Button>
-                    </form>
-                </CardContent>
-            </Card>
-
-            {/* Sağ Kısım: Hesaplanan Satış Fiyatı */}
-            <div className="w-1/3 ml-4">
+                {/* Sağ Kısım: Hesaplanan Satış Fiyatı */}
                 <Card className="shadow-lg rounded-xl border">
                     <CardHeader>
                         <CardTitle className="text-lg">Satış Fiyatı</CardTitle>
