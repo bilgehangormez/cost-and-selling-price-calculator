@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -25,6 +24,32 @@ const costSchema = z.object({
 });
 
 type FormData = z.infer<typeof costSchema>;
+
+// FormField Bileşeni
+interface FormFieldProps {
+    label: string;
+    id: string;
+    type?: string;
+    step?: string;
+    register: any;
+    error?: { message?: string };
+}
+
+const FormField = ({ label, id, type = "text", step, register, error }: FormFieldProps) => (
+    <div>
+        <Label htmlFor={id} className="text-sm font-medium text-muted-foreground">
+            {label}
+        </Label>
+        <Input
+            id={id}
+            type={type}
+            step={step}
+            {...register}
+            className="mt-1.5 h-12 rounded-xl bg-muted/50 px-4"
+        />
+        {error?.message && <p className="text-sm text-red-500 mt-1">{error.message}</p>}
+    </div>
+);
 
 export function PriceCalculator() {
     const [finalPrice, setFinalPrice] = useState<number | null>(null);
@@ -108,14 +133,6 @@ export function PriceCalculator() {
 
                         <Button type="submit" className="w-full h-12 text-base rounded-xl">Hesapla</Button>
                     </form>
-
-                    {finalPrice !== null && (
-                        <div className="mt-4 p-2 border rounded-lg bg-gray-50">
-                            <h3 className="text-lg font-bold">Satış Fiyatı: {finalPrice.toFixed(2)} ₺</h3>
-                            <p className="text-sm text-muted-foreground">Kepek Geliri: {branRevenue?.toFixed(2)} ₺</p>
-                            <p className="text-sm text-muted-foreground">Bonkalit Geliri: {bonkalitRevenue?.toFixed(2)} ₺</p>
-                        </div>
-                    )}
                 </CardContent>
             </Card>
         </div>
