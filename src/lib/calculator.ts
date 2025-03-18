@@ -50,7 +50,28 @@ export class CostCalculator {
     public async calculateCosts(): Promise<CalculationResult> {
         const response = await fetch("/randiman_oranlari.json");
         const randimanData = await response.json();
-        const randimanValue = randimanData[String(this.randiman)] || randimanData["75"]; 
+
+        // ✅ **Küsuratlı randımanları desteklemek için interpolasyon yapılacak**
+        const randimanKeys = Object.keys(randimanData).map(Number);
+        const lowerRandiman = Math.floor(this.randiman);
+        const upperRandiman = Math.ceil(this.randiman);
+
+        let randimanValue;
+        if (lowerRandiman === upperRandiman || !randimanData[lowerRandiman] || !randimanData[upperRandiman]) {
+            // Eğer tam olarak eşleşen veya sınır değerlerdeyse direkt al
+            randimanValue = randimanData[String(lowerRandiman)] || randimanData["75"];
+        } else {
+            // **İnterpolasyon ile ara değer hesaplama**
+            const lowerData = randimanData[String(lowerRandiman)];
+            const upperData = randimanData[String(upperRandiman)];
+            const ratio = this.randiman - lowerRandiman;
+
+            randimanValue = {
+                un_miktari: lowerData.un_miktari + ratio * (upperData.un_miktari - lowerData.un_miktari),
+                kepek: lowerData.kepek + ratio * (upperData.kepek - lowerData.kepek),
+                bonkalit: lowerData.bonkalit + ratio * (upperData.bonkalit - lowerData.bonkalit),
+            };
+        }
 
         // ✅ **Yeni Formül: 50 kg un için gerekli buğday miktarı**
         const wheatRequired = 5000 / this.randiman;
