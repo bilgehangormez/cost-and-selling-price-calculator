@@ -15,11 +15,11 @@ const costSchema = z.object({
     electricity_kwh: z.string().min(1, "Gerekli kW miktarı zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) > 0),
     electricity_price: z.string().min(1, "Güncel kW fiyatı zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) > 0),
     randiman: z.string().min(1, "Randıman yüzdesi zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) > 0 && Number(val) <= 100),
+    bonkalit_percentage: z.string().min(1, "Bonkalit yüzdesi zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) >= 0 && Number(val) <= 100),
     wheat_price: z.string().min(1, "Buğday kg fiyatı zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) > 0),
-    bran_kg: z.string().min(1, "Çıkan kepek miktarı zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) >= 0),
     bran_price: z.string().min(1, "Kepek kg fiyatı zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) >= 0),
     labor_cost: z.string().min(1, "İşçilik maliyeti zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) >= 0),
-    bag_cost: z.string().min(1, "Çuval maliyeti zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) >= 0),
+    bag_cost: z.string().min(1, "1 Adet 50 kg PP Çuval Fiyatı zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) >= 0),
     target_profit: z.string().min(1, "50 kg çuvalda hedeflenen kâr zorunludur").refine((val) => !isNaN(Number(val)) && Number(val) >= 0),
 });
 
@@ -55,15 +55,25 @@ export function PriceCalculator() {
     const [finalPrice, setFinalPrice] = useState<number | null>(null);
     const [branRevenue, setBranRevenue] = useState<number | null>(null);
     const [calculatedWheat, setCalculatedWheat] = useState<number | null>(null);
+    const [calculatedBran, setCalculatedBran] = useState<number | null>(null);
+    const [calculatedBonkalit, setCalculatedBonkalit] = useState<number | null>(null);
 
     const { register, handleSubmit, formState: { errors }, watch } = useForm<FormData>({
         resolver: zodResolver(costSchema),
     });
 
-    // Randıman üzerinden gerekli buğday miktarını hesapla
+    // Randıman ve bonkalit üzerinden gerekli hesaplamalar
     const randimanValue = watch("randiman");
+    const bonkalitValue = watch("bonkalit_percentage");
+
     const wheatRequired = randimanValue ? (50 / (Number(randimanValue) / 100)) : 0;
+    const totalByproduct = wheatRequired - 50;
+    const bonkalitAmount = totalByproduct * (Number(bonkalitValue) / 100);
+    const branAmount = totalByproduct - bonkalitAmount;
+
     setCalculatedWheat(wheatRequired);
+    setCalculatedBran(branAmount);
+    setCalculatedBonkalit(bonkalitAmount);
 
     const onSubmit = (data: FormData) => {
         console.log("🟢 Hesaplama başladı...");
@@ -72,7 +82,7 @@ export function PriceCalculator() {
         const wheatCost = wheatRequired * Number(data.wheat_price);
         const laborCost = Number(data.labor_cost);
         const bagCost = Number(data.bag_cost);
-        const branRevenue = Number(data.bran_kg) * Number(data.bran_price);
+        const branRevenue = branAmount * Number(data.bran_price);
         const totalCost = (electricityCost + wheatCost + laborCost + bagCost) - branRevenue;
         const finalPrice = totalCost + Number(data.target_profit);
 
@@ -96,28 +106,25 @@ export function PriceCalculator() {
                         <FormField label="50 kg çuval başına gereken kW" id="electricity_kwh" type="number" register={register("electricity_kwh")} error={errors.electricity_kwh} />
                         <FormField label="Güncel kW fiyatı (₺)" id="electricity_price" type="number" register={register("electricity_price")} error={errors.electricity_price} />
                         <FormField label="Randıman (%)" id="randiman" type="number" step="0.1" register={register("randiman")} error={errors.randiman} />
-                        
+                        <FormField label="Bonkalit (%)" id="bonkalit_percentage" type="number" step="0.1" register={register("bonkalit_percentage")} error={errors.bonkalit_percentage} />
+
                         <div>
-                            <Label className="text-sm font-medium text-muted-foreground">Otomatik Hesaplanan Buğday Miktarı (kg)</Label>
+                            <Label>Otomatik Hesaplanan Buğday Miktarı (kg)</Label>
                             <Input type="number" value={calculatedWheat?.toFixed(2)} disabled className="mt-1.5 h-12 rounded-xl bg-gray-200 px-4" />
                         </div>
 
-                        <FormField label="Buğdayın kg fiyatı (₺)" id="wheat_price" type="number" register={register("wheat_price")} error={errors.wheat_price} />
-                        <FormField label="Çıkan Kepek Miktarı (kg)" id="bran_kg" type="number" register={register("bran_kg")} error={errors.bran_kg} />
-                        <FormField label="Kepek Kg Fiyatı (₺)" id="bran_price" type="number" register={register("bran_price")} error={errors.bran_price} />
-                        <FormField label="İşçilik Maliyeti (₺)" id="labor_cost" type="number" register={register("labor_cost")} error={errors.labor_cost} />
-                        <FormField label="Çuval Maliyeti (₺)" id="bag_cost" type="number" register={register("bag_cost")} error={errors.bag_cost} />
-                        <FormField label="50 kg çuvalda hedeflenen kâr (₺)" id="target_profit" type="number" register={register("target_profit")} error={errors.target_profit} />
-                        
+                        <div>
+                            <Label>Otomatik Hesaplanan Kepek (kg)</Label>
+                            <Input type="number" value={calculatedBran?.toFixed(2)} disabled className="mt-1.5 h-12 rounded-xl bg-gray-200 px-4" />
+                        </div>
+
+                        <div>
+                            <Label>Otomatik Hesaplanan Bonkalit (kg)</Label>
+                            <Input type="number" value={calculatedBonkalit?.toFixed(2)} disabled className="mt-1.5 h-12 rounded-xl bg-gray-200 px-4" />
+                        </div>
+
                         <Button type="submit" className="w-full h-12 text-base rounded-xl">Hesapla</Button>
                     </form>
-
-                    {finalPrice !== null && (
-                        <div className="mt-4 p-2 border rounded-lg bg-gray-50">
-                            <h3 className="text-lg font-bold">Satış Fiyatı: {finalPrice.toFixed(2)} ₺</h3>
-                            <p className="text-sm text-muted-foreground">Kepek Geliri: {branRevenue?.toFixed(2)} ₺</p>
-                        </div>
-                    )}
                 </CardContent>
             </Card>
         </div>
