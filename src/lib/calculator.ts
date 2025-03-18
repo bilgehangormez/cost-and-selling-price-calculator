@@ -51,8 +51,7 @@ export class CostCalculator {
         const response = await fetch("/randiman_oranlari.json");
         const randimanData = await response.json();
 
-        // ✅ **Küsuratlı randımanları desteklemek için interpolasyon yapılacak**
-        const randimanKeys = Object.keys(randimanData).map(Number);
+        // ✅ **Tam sayı ve ondalıklı randımanlar için hesaplama**
         const lowerRandiman = Math.floor(this.randiman);
         const upperRandiman = Math.ceil(this.randiman);
 
