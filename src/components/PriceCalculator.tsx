@@ -13,6 +13,8 @@ export function PriceCalculator() {
     const [wheatRequired, setWheatRequired] = useState<number>(0);
     const [branKg, setBranKg] = useState<number>(0);
     const [bonkalitKg, setBonkalitKg] = useState<number>(0);
+    const [branRevenue, setBranRevenue] = useState<number>(0);
+    const [bonkalitRevenue, setBonkalitRevenue] = useState<number>(0);
 
     const { register, handleSubmit, watch } = useForm({
         defaultValues: {
@@ -29,8 +31,9 @@ export function PriceCalculator() {
     });
 
     const randimanValue = watch("randiman");
+    const branPrice = parseFloat(watch("bran_price")) || 0;
+    const bonkalitPrice = parseFloat(watch("bonkalit_price")) || 0;
 
-    // 📌 Kullanıcının girdiği randıman değerine göre un, kepek ve bonkalit hesaplaması
     useEffect(() => {
         if (randimanValue) {
             fetch("/randiman_oranlari.json")
@@ -39,14 +42,19 @@ export function PriceCalculator() {
                     const randimanKey = String(randimanValue);
                     if (data[randimanKey]) {
                         const wheatRequired = 50 / (data[randimanKey].un_miktari / 100);
+                        const branKg = (data[randimanKey].kepek * wheatRequired) / 100;
+                        const bonkalitKg = (data[randimanKey].bonkalit * wheatRequired) / 100;
+
                         setWheatRequired(wheatRequired);
-                        setBranKg((data[randimanKey].kepek * wheatRequired) / 100);
-                        setBonkalitKg((data[randimanKey].bonkalit * wheatRequired) / 100);
+                        setBranKg(branKg);
+                        setBonkalitKg(bonkalitKg);
+                        setBranRevenue(branKg * branPrice);
+                        setBonkalitRevenue(bonkalitKg * bonkalitPrice);
                     }
                 })
                 .catch((err) => console.error("Randıman verisi yüklenemedi!", err));
         }
-    }, [randimanValue]);
+    }, [randimanValue, branPrice, bonkalitPrice]);
 
     const onSubmit = async (data: Record<string, string>) => {
         const calculator = new CostCalculator(
@@ -63,6 +71,8 @@ export function PriceCalculator() {
 
         const result = await calculator.calculateCosts();
         setFinalPrice(result.finalPrice);
+        setBranRevenue(result.branRevenue);
+        setBonkalitRevenue(result.bonkalitRevenue);
     };
 
     return (
@@ -126,15 +136,15 @@ export function PriceCalculator() {
                     <div className="grid grid-cols-1 gap-4">
                         <div>
                             <Label>Gerekli Buğday (kg)</Label>
-                            <Input type="number" value={wheatRequired.toFixed(2)} disabled className="bg-gray-200 px-4" />
+                            <Input type="text" value={wheatRequired.toFixed(2)} disabled className="bg-gray-200 px-6 appearance-none" />
                         </div>
                         <div>
                             <Label>Çıkan Kepek (kg)</Label>
-                            <Input type="number" value={branKg.toFixed(2)} disabled className="bg-gray-200 px-4" />
+                            <Input type="text" value={branKg.toFixed(2)} disabled className="bg-gray-200 px-6 appearance-none" />
                         </div>
                         <div>
                             <Label>Çıkan Bonkalit (kg)</Label>
-                            <Input type="number" value={bonkalitKg.toFixed(2)} disabled className="bg-gray-200 px-4" />
+                            <Input type="text" value={bonkalitKg.toFixed(2)} disabled className="bg-gray-200 px-6 appearance-none" />
                         </div>
                     </div>
                 </CardContent>
@@ -146,15 +156,13 @@ export function PriceCalculator() {
                     <CardTitle className="text-lg">Satış Fiyatı</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    {finalPrice !== null ? (
-                        <div className="p-4 text-center text-2xl font-bold bg-gray-50 rounded-lg">
-                            {finalPrice.toFixed(2)} ₺
-                        </div>
-                    ) : (
-                        <div className="p-4 text-center text-lg text-gray-500">
-                            Henüz hesaplanmadı
-                        </div>
-                    )}
+                    <div className="p-4 text-center text-2xl font-bold bg-gray-50 rounded-lg">
+                        {finalPrice !== null ? `${finalPrice.toFixed(2)} ₺` : "Henüz hesaplanmadı"}
+                    </div>
+                    <div className="mt-4 text-center text-lg">
+                        <p><strong>Kepek Geliri:</strong> {branRevenue.toFixed(2)} ₺</p>
+                        <p><strong>Bonkalit Geliri:</strong> {bonkalitRevenue.toFixed(2)} ₺</p>
+                    </div>
                 </CardContent>
             </Card>
         </div>
