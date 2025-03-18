@@ -25,7 +25,7 @@ const costSchema = z.object({
 type FormData = z.infer<typeof costSchema>;
 
 export function PriceCalculator() {
-    const [finalPrice, setFinalPrice] = useState<number>(0);
+    const [finalPrice, setFinalPrice] = useState<number | null>(null);
     const [branRevenue, setBranRevenue] = useState<number>(0);
     const [bonkalitRevenue, setBonkalitRevenue] = useState<number>(0);
     const [wheatRequired, setWheatRequired] = useState<number>(0);
@@ -61,7 +61,7 @@ export function PriceCalculator() {
 
             // 🔹 Yan ürün hesaplamaları
             const totalByproduct = calculatedWheat - 50;
-            const calculatedBonkalit = totalByproduct * 0.1; // Bonkalit sabit yüzde ile hesaplanıyor
+            const calculatedBonkalit = totalByproduct * 0.1; // **Bonkalit %10 olarak varsayılmış**
             const calculatedBran = totalByproduct - calculatedBonkalit;
 
             setBonkalitKg(calculatedBonkalit);
@@ -92,8 +92,8 @@ export function PriceCalculator() {
                 <CardContent>
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         
-                        {/* 🔹 Otomatik Hesaplanan Değerler */}
-                        <Label className="text-lg font-semibold">🔹 Otomatik Hesaplanan Değerler</Label>
+                        {/* Otomatik Hesaplanan Veriler */}
+                        <Label>🔹 **Otomatik Hesaplanan Değerler**</Label>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <Label>Gerekli Buğday (kg)</Label>
@@ -109,20 +109,22 @@ export function PriceCalculator() {
                             </div>
                         </div>
 
-                        {/* 📌 Maliyet Girdileri */}
-                        <Label className="text-lg font-semibold">📌 Maliyet Girdileri</Label>
+                        {/* Manuel Giriş Alanları */}
+                        <Label>📌 **Maliyet Girdileri**</Label>
                         <Input placeholder="Elektrik kW" {...register("electricity_kwh")} />
                         <Input placeholder="Elektrik Fiyatı (₺)" {...register("electricity_price")} />
                         <Input placeholder="Randıman (%)" {...register("randiman")} />
                         <Input placeholder="Hedeflenen Kâr (₺)" {...register("target_profit")} />
-                        <Input placeholder="Buğday kg Fiyatı (₺)" {...register("wheat_price")} />
-                        <Input placeholder="Kepek kg Fiyatı (₺)" {...register("bran_price")} />
-                        <Input placeholder="Bonkalit kg Fiyatı (₺)" {...register("bonkalit_price")} />
-                        <Input placeholder="İşçilik Maliyeti (₺)" {...register("labor_cost")} />
-                        <Input placeholder="1 Adet 50 kg PP Çuval Fiyatı (₺)" {...register("bag_cost")} />
 
                         <Button type="submit" className="w-full h-12 text-base rounded-xl">Hesapla</Button>
                     </form>
+
+                    {/* 📌 Hesaplanan Satış Fiyatı Kullanıcıya Gösteriliyor */}
+                    {finalPrice !== null && (
+                        <div className="mt-4 p-2 border rounded-lg bg-gray-50">
+                            <h3 className="text-lg font-bold">Satış Fiyatı: {finalPrice.toFixed(2)} ₺</h3>
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         </div>
