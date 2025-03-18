@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { useForm, UseFormRegisterReturn } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 // Form Şeması
@@ -121,12 +121,3 @@ export function PriceCalculator() {
         </div>
     );
 }
-
-// FormField bileşeni
-const FormField = ({ label, id, type = "text", step, register, error }: any) => (
-    <div>
-        <Label>{label}</Label>
-        <Input type={type} step={step} {...register} className={cn("mt-1.5 h-12 rounded-xl bg-muted/50 px-4")} />
-        {error?.message && <p className="text-red-500">{error.message}</p>}
-    </div>
-);
