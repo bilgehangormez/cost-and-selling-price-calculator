@@ -16,6 +16,9 @@ export interface CalculationResult {
     bonkalitKg: number;
 }
 
+// 📌 JSON verisini doğru tip ile tanımlıyoruz
+const randimanData: Record<string, { un_miktari: number; kepek: number; bonkalit: number }> = randimanOranlari;
+
 export class CostCalculator {
     private electricity_kwh: number;
     private electricity_price: number;
@@ -50,7 +53,7 @@ export class CostCalculator {
     }
 
     private getClosestRandimanData(): { un_miktari: number; kepek: number; bonkalit: number } {
-        const randimanKeys = Object.keys(randimanOranlari).map(Number);
+        const randimanKeys = Object.keys(randimanData).map(Number);
         const closestRandiman = randimanKeys.reduce((prev, curr) =>
             Math.abs(curr - this.randiman) < Math.abs(prev - this.randiman) ? curr : prev
         );
@@ -59,16 +62,15 @@ export class CostCalculator {
             `⚠️ Uyarı: Girilen randıman (${this.randiman}%) JSON'da bulunamadı! En yakın değer olarak ${closestRandiman}% kullanıldı.`
         );
 
-        return (randimanOranlari as any)[String(closestRandiman)]; // 📌 **Hata düzeltildi**
+        return randimanData[String(closestRandiman)]; // 📌 **Tip hatası giderildi**
     }
 
     public calculateCosts(): CalculationResult {
-        const randimanData = (randimanOranlari as Record<string, { un_miktari: number; kepek: number; bonkalit: number }>) 
-            [String(this.randiman)] || this.getClosestRandimanData();
+        const randimanValue = randimanData[String(this.randiman)] || this.getClosestRandimanData();
 
-        const wheatRequired = randimanData.un_miktari * (50 / 100);
-        const branKg = randimanData.kepek * (50 / 100);
-        const bonkalitKg = randimanData.bonkalit * (50 / 100);
+        const wheatRequired = randimanValue.un_miktari * (50 / 100);
+        const branKg = randimanValue.kepek * (50 / 100);
+        const bonkalitKg = randimanValue.bonkalit * (50 / 100);
 
         const electricityCost = this.electricity_kwh * this.electricity_price;
         const wheatCost = wheatRequired * this.wheat_price;
