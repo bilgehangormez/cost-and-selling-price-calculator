@@ -5,20 +5,23 @@ export interface CalculationResult {
     laborCost: number;
     bagCost: number;
     branRevenue: number; // Kepek Geliri
+    bonkalitRevenue: number; // Bonkalit Geliri
     totalCost: number;
     targetProfit: number;
     finalPrice: number;
     wheatRequired: number; // Hesaplanan gerekli buğday miktarı
+    branKg: number; // Otomatik hesaplanan kepek miktarı
+    bonkalitKg: number; // Otomatik hesaplanan bonkalit miktarı
 }
 
 export class CostCalculator {
     private electricity_kwh: number;
     private electricity_price: number;
-    private randiman: number; // ✅ Randıman yüzdesi eklendi
+    private randiman: number; // ✅ Randıman yüzdesi
+    private bonkalit_percentage: number; // ✅ Bonkalit yüzdesi
     private wheat_price: number;
     private labor_cost: number;
     private bag_cost: number;
-    private bran_kg: number;
     private bran_price: number;
     private target_profit: number;
 
@@ -26,20 +29,20 @@ export class CostCalculator {
         electricity_kwh: number,
         electricity_price: number,
         randiman: number, // ✅ Randıman yüzdesi
+        bonkalit_percentage: number, // ✅ Bonkalit yüzdesi
         wheat_price: number,
         labor_cost: number,
         bag_cost: number,
-        bran_kg: number,
         bran_price: number,
         target_profit: number
     ) {
         this.electricity_kwh = electricity_kwh;
         this.electricity_price = electricity_price;
-        this.randiman = randiman; // ✅ Kullanıcıdan randıman yüzdesi alınıyor
+        this.randiman = randiman;
+        this.bonkalit_percentage = bonkalit_percentage;
         this.wheat_price = wheat_price;
         this.labor_cost = labor_cost;
         this.bag_cost = bag_cost;
-        this.bran_kg = bran_kg;
         this.bran_price = bran_price;
         this.target_profit = target_profit;
     }
@@ -48,16 +51,25 @@ export class CostCalculator {
         // ✅ 50 kg un için gerekli buğday miktarı hesaplanıyor
         const wheatRequired = 50 / (this.randiman / 100);
 
+        // ✅ Toplam yan ürün miktarı (kepek + bonkalit)
+        const totalByproduct = wheatRequired - 50;
+
+        // ✅ Bonkalit ve kepek miktarları otomatik hesaplanıyor
+        const bonkalitKg = totalByproduct * (this.bonkalit_percentage / 100);
+        const branKg = totalByproduct - bonkalitKg;
+
+        // ✅ Maliyet hesaplamaları
         const electricityCost = this.electricity_kwh * this.electricity_price;
         const wheatCost = wheatRequired * this.wheat_price;
         const laborCost = this.labor_cost;
         const bagCost = this.bag_cost;
 
-        // **Kepek Geliri Hesaplama**
-        const branRevenue = this.bran_kg * this.bran_price;
+        // ✅ Gelir hesaplamaları (kepek ve bonkalit)
+        const branRevenue = branKg * this.bran_price;
+        const bonkalitRevenue = bonkalitKg * this.bran_price; // Bonkalit fiyatı şimdilik kepek fiyatı ile aynı alındı
 
-        // **Toplam Maliyet = Giderler - Kepek Geliri**
-        const totalCost = (electricityCost + wheatCost + laborCost + bagCost) - branRevenue;
+        // **Toplam Maliyet = Giderler - (Kepek Geliri + Bonkalit Geliri)**
+        const totalCost = (electricityCost + wheatCost + laborCost + bagCost) - (branRevenue + bonkalitRevenue);
 
         // **Son Satış Fiyatı**
         const finalPrice = totalCost + this.target_profit;
@@ -69,10 +81,13 @@ export class CostCalculator {
             laborCost,
             bagCost,
             branRevenue, // Kepekten gelen gelir
+            bonkalitRevenue, // Bonkalitten gelen gelir
             totalCost,
             targetProfit: this.target_profit,
             finalPrice,
-            wheatRequired, // ✅ Randıman ile hesaplanan gerekli buğday miktarı
+            wheatRequired, // ✅ Hesaplanan gerekli buğday miktarı
+            branKg, // ✅ Hesaplanan kepek miktarı
+            bonkalitKg, // ✅ Hesaplanan bonkalit miktarı
         };
     }
 }
