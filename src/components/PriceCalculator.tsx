@@ -33,8 +33,7 @@ export function PriceCalculator() {
     const [branKg, setBranKg] = useState<number>(0);
     const [bonkalitKg, setBonkalitKg] = useState<number>(0);
 
-    // 📌 `register` ve `errors` değişkenleri gerçekten kullanılıyor mu kontrol ettim ve dahil ettim
-    const { register, handleSubmit, formState: { errors }, watch } = useForm<FormData>({
+    const { handleSubmit, watch } = useForm<FormData>({
         resolver: zodResolver(costSchema),
         defaultValues: {
             electricity_kwh: "0",
