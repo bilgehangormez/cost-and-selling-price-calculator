@@ -1,4 +1,4 @@
-import randimanOranlari from "@/src/randiman_oranlari.json"; // 📌 Randıman verisini JSON'dan al
+import randimanOranlari from "@/randiman_oranlari.json"; // 📌 Randıman verisini JSON'dan al
 
 export interface CalculationResult {
     productCost: number;
@@ -49,9 +49,21 @@ export class CostCalculator {
         this.target_profit = target_profit;
     }
 
+    private getClosestRandimanData(): { un_miktari: number; kepek: number; bonkalit: number } {
+        const randimanKeys = Object.keys(randimanOranlari).map(Number);
+        const closestRandiman = randimanKeys.reduce((prev, curr) =>
+            Math.abs(curr - this.randiman) < Math.abs(prev - this.randiman) ? curr : prev
+        );
+
+        console.warn(
+            `⚠️ Uyarı: Girilen randıman (${this.randiman}%) JSON'da bulunamadı! En yakın değer olarak ${closestRandiman}% kullanıldı.`
+        );
+
+        return randimanOranlari[closestRandiman];
+    }
+
     public calculateCosts(): CalculationResult {
-        const randimanData = randimanOranlari.find((r) => r.randiman === this.randiman);
-        if (!randimanData) throw new Error("Geçersiz randıman oranı!");
+        const randimanData = randimanOranlari[this.randiman] || this.getClosestRandimanData();
 
         const wheatRequired = randimanData.un_miktari * (50 / 100);
         const branKg = randimanData.kepek * (50 / 100);
