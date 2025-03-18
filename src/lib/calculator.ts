@@ -1,3 +1,5 @@
+import randimanOranlari from "@/randiman_oranlari.json"; // 📌 JSON'u doğrudan içe aktarıyoruz
+
 export interface CalculationResult {
     productCost: number;
     electricityCost: number;
@@ -14,10 +16,7 @@ export interface CalculationResult {
     bonkalitKg: number;
 }
 
-const fetchRandimanData = async (): Promise<Record<string, { un_miktari: number; kepek: number; bonkalit: number }>> => {
-    const response = await fetch("/randiman_oranlari.json");
-    return response.json();
-};
+const randimanData: Record<string, { un_miktari: number; kepek: number; bonkalit: number }> = randimanOranlari;
 
 export class CostCalculator {
     private electricity_kwh: number;
@@ -29,7 +28,6 @@ export class CostCalculator {
     private bran_price: number;
     private bonkalit_price: number;
     private target_profit: number;
-    private randimanData: Record<string, { un_miktari: number; kepek: number; bonkalit: number }> = {};
 
     constructor(
         electricity_kwh: string,
@@ -51,46 +49,43 @@ export class CostCalculator {
         this.bran_price = parseFloat(bran_price) || 0;
         this.bonkalit_price = parseFloat(bonkalit_price) || 0;
         this.target_profit = parseFloat(target_profit) || 0;
-
-        // 📌 JSON dosyasını yükle
-        this.loadRandimanData();
-    }
-
-    private async loadRandimanData() {
-        this.randimanData = await fetchRandimanData();
     }
 
     private getClosestRandimanData(): { un_miktari: number; kepek: number; bonkalit: number } {
-        const randimanKeys = Object.keys(this.randimanData).map(Number);
+        const randimanKeys = Object.keys(randimanData).map(Number);
         const closestRandiman = randimanKeys.reduce((prev, curr) =>
             Math.abs(curr - this.randiman) < Math.abs(prev - this.randiman) ? curr : prev
         );
 
         console.warn(`⚠️ Girilen randıman (${this.randiman}%) bulunamadı! En yakın değer: ${closestRandiman}%`);
 
-        return this.randimanData[String(closestRandiman)] || { un_miktari: 75, kepek: 20, bonkalit: 5 };
+        return randimanData[String(closestRandiman)] || { un_miktari: 75, kepek: 20, bonkalit: 5 };
     }
 
-    public async calculateCosts(): Promise<CalculationResult> {
-        if (Object.keys(this.randimanData).length === 0) {
-            await this.loadRandimanData();
-        }
+    public calculateCosts(): CalculationResult {
+        const randimanValue = randimanData[String(this.randiman)] || this.getClosestRandimanData();
 
-        const randimanValue = this.randimanData[String(this.randiman)] || this.getClosestRandimanData();
+        // 📌 **50 kg un için gereken buğday miktarı**
+        const wheatRequired = (50 / randimanValue.un_miktari) * 100; // ✅ Doğru hesaplama
 
-        const wheatRequired = (randimanValue.un_miktari * 50) / 100;
-        const branKg = (randimanValue.kepek * 50) / 100;
-        const bonkalitKg = (randimanValue.bonkalit * 50) / 100;
+        // 📌 **Yan ürün hesaplamaları**
+        const branKg = (randimanValue.kepek * wheatRequired) / 100;
+        const bonkalitKg = (randimanValue.bonkalit * wheatRequired) / 100;
 
+        // 📌 **Maliyet hesaplamaları**
         const electricityCost = this.electricity_kwh * this.electricity_price;
         const wheatCost = wheatRequired * this.wheat_price;
         const laborCost = this.labor_cost;
         const bagCost = this.bag_cost;
 
+        // 📌 **Yan ürünlerden elde edilen gelir**
         const branRevenue = branKg * this.bran_price;
         const bonkalitRevenue = bonkalitKg * this.bonkalit_price;
 
+        // 📌 **Toplam Maliyet**
         const totalCost = (electricityCost + wheatCost + laborCost + bagCost) - (branRevenue + bonkalitRevenue);
+
+        // 📌 **Son Satış Fiyatı**
         const finalPrice = totalCost + this.target_profit;
 
         return {
@@ -104,7 +99,7 @@ export class CostCalculator {
             totalCost: totalCost || 0,
             targetProfit: this.target_profit || 0,
             finalPrice: isNaN(finalPrice) ? 0 : finalPrice,
-            wheatRequired: wheatRequired || 0,
+            wheatRequired: wheatRequired || 0, // ✅ **50 kg un için gerekli buğday doğru hesaplanıyor!**
             branKg: branKg || 0,
             bonkalitKg: bonkalitKg || 0,
         };
