@@ -8,8 +8,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { CostCalculator } from "@/lib/calculator";
-import randimanOranlari from "@/randiman_oranlari.json"; // 📌 JSON dosyasını içe aktar
 import { z } from "zod";
+
+// 📌 JSON dosyasını dinamik olarak yükle
+const fetchRandimanData = async () => {
+    const response = await fetch("/randiman_oranlari.json");
+    return response.json();
+};
 
 // 📌 Form Şeması
 const costSchema = z.object({
@@ -27,7 +32,7 @@ const costSchema = z.object({
 type FormData = z.infer<typeof costSchema>;
 
 // ✅ **En Yakın Randıman Değerini Bulma Fonksiyonu**
-const getClosestRandimanData = (randiman: number) => {
+const getClosestRandimanData = (randiman: number, randimanOranlari: Record<string, any>) => {
     const randimanKeys = Object.keys(randimanOranlari).map(Number);
     return randimanKeys.reduce((prev, curr) =>
         Math.abs(curr - randiman) < Math.abs(prev - randiman) ? curr : prev
@@ -39,6 +44,12 @@ export function PriceCalculator() {
     const [wheatRequired, setWheatRequired] = useState<number>(0);
     const [branKg, setBranKg] = useState<number>(0);
     const [bonkalitKg, setBonkalitKg] = useState<number>(0);
+    const [randimanOranlari, setRandimanOranlari] = useState<Record<string, any>>({});
+
+    // 📌 JSON dosyasını yükle
+    useEffect(() => {
+        fetchRandimanData().then(setRandimanOranlari);
+    }, []);
 
     const { register, handleSubmit, watch } = useForm<FormData>({
         resolver: zodResolver(costSchema),
@@ -59,8 +70,8 @@ export function PriceCalculator() {
     const randimanValue = parseFloat(watch("randiman") || "0");
 
     useEffect(() => {
-        if (!isNaN(randimanValue) && randimanValue > 0) {
-            const closestRandiman = getClosestRandimanData(randimanValue);
+        if (!isNaN(randimanValue) && randimanValue > 0 && Object.keys(randimanOranlari).length > 0) {
+            const closestRandiman = getClosestRandimanData(randimanValue, randimanOranlari);
             const randimanData = randimanOranlari[String(closestRandiman)];
 
             if (randimanData) {
@@ -69,7 +80,7 @@ export function PriceCalculator() {
                 setBonkalitKg(randimanData.bonkalit * 0.5);
             }
         }
-    }, [randimanValue]);
+    }, [randimanValue, randimanOranlari]);
 
     const onSubmit = (data: FormData) => {
         const calculator = new CostCalculator(
