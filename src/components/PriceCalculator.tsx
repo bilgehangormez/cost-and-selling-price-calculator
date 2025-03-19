@@ -32,8 +32,6 @@ export function PriceCalculator() {
     const formatNumber = (value: string) => parseFloat(value.replace(",", ".") || "0");
 
     const randimanValue = formatNumber(watch("randiman"));
-    const branPrice = formatNumber(watch("bran_price"));
-    const bonkalitPrice = formatNumber(watch("bonkalit_price"));
 
     useEffect(() => {
         if (randimanValue > 0) {
@@ -42,6 +40,9 @@ export function PriceCalculator() {
     }, [randimanValue]);
 
     const onSubmit = async (data: Record<string, string>) => {
+        const branPrice = formatNumber(data.bran_price);
+        const bonkalitPrice = formatNumber(data.bonkalit_price);
+
         const calculator = new CostCalculator(
             data.electricity_kwh.replace(",", "."),
             data.electricity_price.replace(",", "."),
@@ -58,8 +59,8 @@ export function PriceCalculator() {
         setFinalPrice(result.finalPrice);
         setBranKg(result.branKg);
         setBonkalitKg(result.bonkalitKg);
-        setBranRevenue(result.branRevenue);
-        setBonkalitRevenue(result.bonkalitRevenue);
+        setBranRevenue(result.branKg * branPrice);
+        setBonkalitRevenue(result.bonkalitKg * bonkalitPrice);
     };
 
     return (
