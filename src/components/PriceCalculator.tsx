@@ -78,7 +78,17 @@ export function PriceCalculator() {
             data.bag_cost.replace(",", "."),
             data.bran_price.replace(",", "."),
             data.bonkalit_price.replace(",", "."),
-            data.target_profit.replace(",", ".")
+            data.target_profit.replace(",", "."),
+            data.kitchen_expense.replace(",", "."),
+            data.maintenance_expense.replace(",", "."),
+            data.sack_thread_kg.replace(",", "."),
+            data.sack_thread_price.replace(",", "."),
+            data.diesel_liters.replace(",", "."),
+            data.diesel_price.replace(",", "."),
+            data.gasoline_liters.replace(",", "."),
+            data.gasoline_price.replace(",", "."),
+            data.vehicle_maintenance.replace(",", "."),
+            data.monthly_wheat.replace(",", ".")
         );
 
         const result = await calculator.calculateCosts();
@@ -109,7 +119,25 @@ export function PriceCalculator() {
                         <div><Label>50 kg Un İçin İşçilik Maliyeti (₺)</Label><Input {...register("labor_cost")} /></div>
                         <div><Label>1 Adet 50 kg PP Çuval (₺)</Label><Input {...register("bag_cost")} /></div>
                         <div><Label>50 kg Unda Hedeflenen Kâr (₺)</Label><Input {...register("target_profit")} /></div>
+
+                        <button type="submit" className="w-full h-12 text-base rounded-xl bg-blue-500 text-white">
+                            Hesapla
+                        </button>
                     </form>
+                </CardContent>
+            </Card>
+
+            {/* 📌 Orta Kısım: Otomatik Hesaplanan Değerler */}
+            <Card className="shadow-lg rounded-xl border p-4">
+                <CardHeader>
+                    <CardTitle className="text-lg">🔹 Otomatik Hesaplanan Değerler</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex flex-col gap-4">
+                        <div><Label>Gerekli Buğday (kg)</Label><Input type="text" value={wheatRequired.toFixed(3)} disabled /></div>
+                        <div><Label>Çıkan Kepek (kg)</Label><Input type="text" value={branKg.toFixed(3)} disabled /></div>
+                        <div><Label>Çıkan Bonkalit (kg)</Label><Input type="text" value={bonkalitKg.toFixed(3)} disabled /></div>
+                    </div>
                 </CardContent>
             </Card>
 
@@ -123,13 +151,6 @@ export function PriceCalculator() {
                         {finalPrice !== null ? `${finalPrice.toFixed(2)} ₺` : "Henüz hesaplanmadı"}
                     </div>
                     <p className="mt-2 text-center text-sm text-gray-500">İdari Maliyet Eklenmiş: {administrativeCost.toFixed(2)} ₺</p>
-                    <div className="mt-4 text-center text-lg">
-                        <p><strong>Gerekli Buğday (kg):</strong> {wheatRequired.toFixed(3)}</p>
-                        <p><strong>Çıkan Kepek (kg):</strong> {branKg.toFixed(3)}</p>
-                        <p><strong>Çıkan Bonkalit (kg):</strong> {bonkalitKg.toFixed(3)}</p>
-                        <p><strong>Kepek Geliri:</strong> {branRevenue.toFixed(2)} ₺</p>
-                        <p><strong>Bonkalit Geliri:</strong> {bonkalitRevenue.toFixed(2)} ₺</p>
-                    </div>
                 </CardContent>
             </Card>
         </div>
