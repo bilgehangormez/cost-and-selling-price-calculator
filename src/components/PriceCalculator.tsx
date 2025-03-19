@@ -14,6 +14,7 @@ export function PriceCalculator() {
     const [branKg, setBranKg] = useState<number>(0);
     const [bonkalitKg, setBonkalitKg] = useState<number>(0);
     const [administrativeCost, setAdministrativeCost] = useState<number>(0);
+    const [costDetails, setCostDetails] = useState<Record<string, number | null>>({});
 
     const { register, handleSubmit, watch } = useForm({
         defaultValues: {
@@ -91,6 +92,19 @@ export function PriceCalculator() {
         setFinalPrice(result.finalPrice + adminCostPer50Kg);
         setBranKg(result.branKg);
         setBonkalitKg(result.bonkalitKg);
+        
+        setCostDetails({
+            "Elektrik Maliyeti": result.electricityCost,
+            "Buğday Maliyeti": result.wheatCost,
+            "İşçilik Maliyeti": result.laborCost,
+            "Çuval Maliyeti": result.bagCost,
+            "İdari Giderler": adminCostPer50Kg,
+            "Kepek Geliri": result.branRevenue,
+            "Bonkalit Geliri": result.bonkalitRevenue,
+            "Toplam Maliyet": result.totalCost,
+            "Hedeflenen Kar": result.targetProfit,
+            "Satış Fiyatı": result.finalPrice
+        });
     };
 
     return (
@@ -116,18 +130,22 @@ export function PriceCalculator() {
                 </CardContent>
             </Card>
 
-            {/* 📌 Orta Kısım: Otomatik Hesaplanan Değerler */}
+            {/* 📌 Orta Kısım: Hesaplanan Değerler Tablosu */}
             <Card className="shadow-lg rounded-xl border p-4">
                 <CardHeader>
-                    <CardTitle className="text-lg">🔹 Otomatik Hesaplanan Değerler</CardTitle>
+                    <CardTitle className="text-lg">🔹 Hesaplanan Değerler</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="flex flex-col gap-4">
-                        <div><Label>Gerekli Buğday (kg)</Label><Input type="text" value={wheatRequired.toFixed(3)} disabled /></div>
-                        <div><Label>Çıkan Kepek (kg)</Label><Input type="text" value={branKg.toFixed(3)} disabled /></div>
-                        <div><Label>Çıkan Bonkalit (kg)</Label><Input type="text" value={bonkalitKg.toFixed(3)} disabled /></div>
-                        <div><Label>İdari Giderler (₺)</Label><Input type="text" value={administrativeCost.toFixed(2)} disabled /></div>
-                    </div>
+                    <table className="w-full text-sm text-left border">
+                        <tbody>
+                            {Object.entries(costDetails).map(([key, value]) => (
+                                <tr key={key} className="border-b">
+                                    <td className="p-2 font-semibold">{key}</td>
+                                    <td className="p-2">{value !== null ? `${value.toFixed(2)} ₺` : "-"}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </CardContent>
             </Card>
 
