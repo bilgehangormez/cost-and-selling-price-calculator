@@ -119,20 +119,23 @@ export function PriceCalculator() {
                         <div><Label>50 kg Un İçin İşçilik Maliyeti (₺)</Label><Input {...register("labor_cost")} /></div>
                         <div><Label>1 Adet 50 kg PP Çuval (₺)</Label><Input {...register("bag_cost")} /></div>
                         <div><Label>50 kg Unda Hedeflenen Kâr (₺)</Label><Input {...register("target_profit")} /></div>
-
-                        <CardHeader><CardTitle>📌 İdari Maliyetler</CardTitle></CardHeader>
-                        <div><Label>Aylık Mutfak Gideri (₺)</Label><Input {...register("kitchen_expense")} /></div>
-                        <div><Label>Tamir-Tadilat-Değirmen Gideri (₺)</Label><Input {...register("maintenance_expense")} /></div>
-                        <div><Label>Çuval İpi Gider Miktarı (kg)</Label><Input {...register("sack_thread_kg")} /></div>
-                        <div><Label>Çuval İpi Kg Fiyatı (₺)</Label><Input {...register("sack_thread_price")} /></div>
-                        <div><Label>Aylık Mazot Gideri (Lt)</Label><Input {...register("diesel_liters")} /></div>
-                        <div><Label>Mazot Lt Fiyatı (₺)</Label><Input {...register("diesel_price")} /></div>
-                        <div><Label>Aylık Benzin Gideri (Lt)</Label><Input {...register("gasoline_liters")} /></div>
-                        <div><Label>Benzin Lt Fiyatı (₺)</Label><Input {...register("gasoline_price")} /></div>
-                        <div><Label>Araç Bakımı Gideri (₺)</Label><Input {...register("vehicle_maintenance")} /></div>
-
-                        <button type="submit" className="w-full h-12 text-base rounded-xl bg-blue-500 text-white">Hesapla</button>
                     </form>
+                </CardContent>
+            </Card>
+
+            {/* 📌 Orta Kısım: Otomatik Hesaplanan Değerler */}
+            <Card className="shadow-lg rounded-xl border p-4">
+                <CardHeader>
+                    <CardTitle className="text-lg">🔹 Otomatik Hesaplanan Değerler</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex flex-col gap-4">
+                        <div><Label>Gerekli Buğday (kg)</Label><Input type="text" value={wheatRequired.toFixed(3)} disabled /></div>
+                        <div><Label>Çıkan Kepek (kg)</Label><Input type="text" value={branKg.toFixed(3)} disabled /></div>
+                        <div><Label>Çıkan Bonkalit (kg)</Label><Input type="text" value={bonkalitKg.toFixed(3)} disabled /></div>
+                        <div><Label>Kepek Geliri (₺)</Label><Input type="text" value={branRevenue.toFixed(2)} disabled /></div>
+                        <div><Label>Bonkalit Geliri (₺)</Label><Input type="text" value={bonkalitRevenue.toFixed(2)} disabled /></div>
+                    </div>
                 </CardContent>
             </Card>
 
