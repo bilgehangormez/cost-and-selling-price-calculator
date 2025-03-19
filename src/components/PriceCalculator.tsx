@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { CostCalculator } from "@/lib/calculator";
 
@@ -12,7 +12,7 @@ export function PriceCalculator() {
     const [finalPrice, setFinalPrice] = useState<number | null>(null);
     const [costDetails, setCostDetails] = useState<Record<string, number | null>>({});
     
-    const { register, handleSubmit, watch } = useForm({
+    const { register, handleSubmit } = useForm({
         defaultValues: {
             electricity_kwh: "",
             electricity_price: "",
@@ -37,7 +37,6 @@ export function PriceCalculator() {
     });
 
     const formatNumber = (value: string) => parseFloat(value.replace(",", ".") || "0");
-    const randimanValue = formatNumber(watch("randiman"));
 
     const onSubmit = async (data: Record<string, string>) => {
         const calculator = new CostCalculator(
