@@ -92,38 +92,38 @@ export function PriceCalculator() {
                     <CardTitle className="text-lg text-center font-semibold">Maliyet Girdileri</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
                         <Label>Aylık Kırılan Buğday (kg)</Label>
-                        <Input {...register("monthly_wheat")} />
+                        <Input {...register("monthly_wheat")} className="input-lg"/>
 
                         <Label>Randıman (%)</Label>
-                        <Input {...register("randiman")} />
+                        <Input {...register("randiman")} className="input-lg"/>
 
                         <Label>50 kg Un İçin Gerekli Elektrik (kW)</Label>
-                        <Input {...register("electricity_kwh")} />
+                        <Input {...register("electricity_kwh")} className="input-lg"/>
 
                         <Label>1 kW Elektrik (₺)</Label>
-                        <Input {...register("electricity_price")} />
+                        <Input {...register("electricity_price")} className="input-lg"/>
 
                         <Label>Buğday kg Fiyatı (₺)</Label>
-                        <Input {...register("wheat_price")} />
+                        <Input {...register("wheat_price")} className="input-lg"/>
 
                         <Label>Kepek kg Fiyatı (₺)</Label>
-                        <Input {...register("bran_price")} />
+                        <Input {...register("bran_price")} className="input-lg"/>
 
                         <Label>Bonkalit kg Fiyatı (₺)</Label>
-                        <Input {...register("bonkalit_price")} />
+                        <Input {...register("bonkalit_price")} className="input-lg"/>
 
                         <Label>1 adet 50 kg PP Çuval Fiyatı (₺)</Label>
-                        <Input {...register("bag_cost")} />
+                        <Input {...register("bag_cost")} className="input-lg"/>
 
                         <Label>1 Çuval 50 kg İçin İşçilik Maliyeti (₺)</Label>
-                        <Input {...register("labor_cost_per_bag")} />
+                        <Input {...register("labor_cost_per_bag")} className="input-lg"/>
 
                         <Label>1 Çuval 50 kg Unda Hedeflenen Kar (₺)</Label>
-                        <Input {...register("target_profit_per_bag")} />
+                        <Input {...register("target_profit_per_bag")} className="input-lg"/>
 
-                        <Button type="submit" className="mt-4 w-full bg-blue-500 text-white">
+                        <Button type="submit" className="button-primary">
                             Hesapla
                         </Button>
                     </form>
@@ -135,33 +135,33 @@ export function PriceCalculator() {
                 <CardHeader>
                     <CardTitle className="text-lg text-center font-semibold">İdari Giderler</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
+                <CardContent className="space-y-2">
                     <Label>Mutfak Gideri (₺)</Label>
-                    <Input {...register("kitchen_expense")} />
+                    <Input {...register("kitchen_expense")} className="input-lg"/>
 
                     <Label>Bakım Gideri (₺)</Label>
-                    <Input {...register("maintenance_expense")} />
+                    <Input {...register("maintenance_expense")} className="input-lg"/>
 
                     <Label>Çuval İpi (kg)</Label>
-                    <Input {...register("sack_thread_kg")} />
+                    <Input {...register("sack_thread_kg")} className="input-lg"/>
 
                     <Label>Çuval İpi kg Fiyatı (₺)</Label>
-                    <Input {...register("sack_thread_price")} />
+                    <Input {...register("sack_thread_price")} className="input-lg"/>
 
                     <Label>Dizel Yakıt (Litre)</Label>
-                    <Input {...register("diesel_liters")} />
+                    <Input {...register("diesel_liters")} className="input-lg"/>
 
                     <Label>Dizel Litre Fiyatı (₺)</Label>
-                    <Input {...register("diesel_price")} />
+                    <Input {...register("diesel_price")} className="input-lg"/>
 
                     <Label>Benzin (Litre)</Label>
-                    <Input {...register("gasoline_liters")} />
+                    <Input {...register("gasoline_liters")} className="input-lg"/>
 
                     <Label>Benzin Litre Fiyatı (₺)</Label>
-                    <Input {...register("gasoline_price")} />
+                    <Input {...register("gasoline_price")} className="input-lg"/>
 
                     <Label>Araç Bakım Gideri (₺)</Label>
-                    <Input {...register("vehicle_maintenance")} />
+                    <Input {...register("vehicle_maintenance")} className="input-lg"/>
                 </CardContent>
             </Card>
 
@@ -171,7 +171,7 @@ export function PriceCalculator() {
                     <CardTitle className="text-lg text-center font-semibold">Otomatik Hesaplanan Değerler</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <table className="w-full border-collapse border border-gray-300">
+                    <table className="table-auto w-full">
                         <tbody>
                             <tr><td>Gerekli Buğday (kg)</td><td>{wheatRequired.toFixed(3)}</td></tr>
                             <tr><td>Çıkan Kepek (kg)</td><td>{branKg.toFixed(3)}</td></tr>
