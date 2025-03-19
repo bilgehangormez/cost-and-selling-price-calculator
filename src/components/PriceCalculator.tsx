@@ -11,6 +11,7 @@ import { CostCalculator } from "@/lib/calculator";
 export function PriceCalculator() {
     const [finalPrice, setFinalPrice] = useState<number | null>(null);
     const [costDetails, setCostDetails] = useState<Record<string, number | null>>({});
+    const [adminCosts, setAdminCosts] = useState<Record<string, number | null>>({});
 
     const { register, handleSubmit } = useForm({
         defaultValues: {
@@ -67,16 +68,18 @@ export function PriceCalculator() {
             "Gerekli Buğday (kg)": result.wheatRequired,
             "Çıkan Kepek (kg)": result.branKg,
             "Çıkan Bonkalit (kg)": result.bonkalitKg,
+            "Kepek Geliri": result.branRevenue,
+            "Bonkalit Geliri": result.bonkalitRevenue
+        });
+
+        setAdminCosts({
             "Elektrik Maliyeti": result.electricityCost,
             "Buğday Maliyeti": result.wheatCost,
             "İşçilik Maliyeti": result.laborCost,
             "Çuval Maliyeti": result.bagCost,
             "İdari Giderler": result.administrativeCost,
-            "Kepek Geliri": result.branRevenue,
-            "Bonkalit Geliri": result.bonkalitRevenue,
             "Toplam Maliyet": result.totalCost,
-            "Hedeflenen Kar": result.targetProfit,
-            "Satış Fiyatı": result.finalPrice
+            "Hedeflenen Kar": result.targetProfit
         });
     };
 
@@ -105,15 +108,15 @@ export function PriceCalculator() {
                 </CardContent>
             </Card>
 
-            {/* 📌 Orta Kısım: Hesaplanan Değerler Tablosu */}
+            {/* 📌 Orta Kısım: İdari Maliyetler Tablosu */}
             <Card className="shadow-lg rounded-xl border p-4">
                 <CardHeader>
-                    <CardTitle className="text-lg">🔹 Hesaplanan Değerler</CardTitle>
+                    <CardTitle className="text-lg text-center">🔹 İdari Maliyetler</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <table className="w-full text-sm text-left border">
                         <tbody>
-                            {Object.entries(costDetails).map(([key, value]) => (
+                            {Object.entries(adminCosts).map(([key, value]) => (
                                 <tr key={key} className="border-b">
                                     <td className="p-2 font-semibold">{key}</td>
                                     <td className="p-2">{value !== null ? `${value.toFixed(2)} ₺` : "-"}</td>
@@ -124,17 +127,39 @@ export function PriceCalculator() {
                 </CardContent>
             </Card>
 
-            {/* 📌 Sağ Kısım: Hesaplanan Satış Fiyatı */}
-            <Card className="shadow-lg rounded-xl border p-4">
-                <CardHeader>
-                    <CardTitle className="text-lg">Satış Fiyatı</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="p-4 text-center text-2xl font-bold bg-gray-50 rounded-lg">
-                        {finalPrice !== null ? `${finalPrice.toFixed(2)} ₺` : "Henüz hesaplanmadı"}
-                    </div>
-                </CardContent>
-            </Card>
+            {/* 📌 Sağ Kısım: Satış Fiyatı ve Otomatik Hesaplanan Değerler */}
+            <div className="flex flex-col gap-4">
+                {/* Otomatik Hesaplanan Değerler */}
+                <Card className="shadow-lg rounded-xl border p-4">
+                    <CardHeader>
+                        <CardTitle className="text-lg">📌 Otomatik Hesaplanan Değerler</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <table className="w-full text-sm text-left border">
+                            <tbody>
+                                {Object.entries(costDetails).map(([key, value]) => (
+                                    <tr key={key} className="border-b">
+                                        <td className="p-2 font-semibold">{key}</td>
+                                        <td className="p-2">{value !== null ? `${value.toFixed(2)} ₺` : "-"}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </CardContent>
+                </Card>
+
+                {/* Satış Fiyatı */}
+                <Card className="shadow-lg rounded-xl border p-4">
+                    <CardHeader>
+                        <CardTitle className="text-lg">📌 Satış Fiyatı</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="p-4 text-center text-2xl font-bold bg-gray-50 rounded-lg">
+                            {finalPrice !== null ? `${finalPrice.toFixed(2)} ₺` : "Henüz hesaplanmadı"}
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
         </div>
     );
 }
