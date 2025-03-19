@@ -16,6 +16,7 @@ export function PriceCalculator() {
     const [branRevenue, setBranRevenue] = useState<number>(0);
     const [bonkalitRevenue, setBonkalitRevenue] = useState<number>(0);
     const [administrativeCost, setAdministrativeCost] = useState<number>(0);
+    const [bagCost, setBagCost] = useState<number>(0); // 50 kg PP çuval fiyatı
 
     const { register, handleSubmit } = useForm({
         defaultValues: {
@@ -27,7 +28,7 @@ export function PriceCalculator() {
             bran_price: "",
             bonkalit_price: "",
             labor_cost: "",
-            bag_cost: "", // **Çuval fiyatı manuel girilecek**
+            bag_cost: "",
             target_profit: "",
             kitchen_expense: "",
             maintenance_expense: "",
@@ -46,12 +47,15 @@ export function PriceCalculator() {
     const onSubmit = async (data: Record<string, string>) => {
         const branPrice = formatNumber(data.bran_price);
         const bonkalitPrice = formatNumber(data.bonkalit_price);
-        const bagCost = formatNumber(data.bag_cost); // **Kullanıcı tarafından girilen çuval maliyeti**
 
         // ✅ **Buğday gereksinimini hesapla**
         const randimanValue = formatNumber(data.randiman);
         const wheatRequiredCalc = 5000 / randimanValue;
         setWheatRequired(wheatRequiredCalc);
+
+        // ✅ **Çuval maliyetini güncelle**
+        const bagCostValue = formatNumber(data.bag_cost);
+        setBagCost(bagCostValue);
 
         // ✅ **İdari maliyet hesaplaması**
         const sackThreadCost = formatNumber(data.sack_thread_kg) * formatNumber(data.sack_thread_price);
@@ -72,7 +76,7 @@ export function PriceCalculator() {
             data.randiman,
             data.wheat_price,
             data.labor_cost,
-            bagCost, // **Çuval maliyeti hesaplamalara eklendi**
+            bagCostValue.toString(), // **Çuval maliyeti string olarak gönderildi**
             data.bran_price,
             data.bonkalit_price,
             data.target_profit,
@@ -127,7 +131,7 @@ export function PriceCalculator() {
                         <Label>Bonkalit kg Fiyatı (₺)</Label>
                         <Input {...register("bonkalit_price")} />
 
-                        <Label>1 Adet 50 kg PP Çuval (₺)</Label> {/* **Kullanıcı tarafından girilecek** */}
+                        <Label>📦 1 adet 50 kg PP Çuval Fiyatı (₺)</Label>
                         <Input {...register("bag_cost")} />
 
                         <Button type="submit" className="mt-4 w-full bg-blue-500 text-white">
