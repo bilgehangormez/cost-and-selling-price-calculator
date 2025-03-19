@@ -51,7 +51,7 @@ export class CostCalculator {
         const response = await fetch("/randiman_oranlari.json");
         const randimanData = await response.json();
 
-        // ✅ **Tam sayı ve ondalıklı randımanlar için hesaplama**
+        // **Net olmayan randıman değerleri için interpolasyon**
         const lowerRandiman = Math.floor(this.randiman);
         const upperRandiman = Math.ceil(this.randiman);
 
@@ -60,39 +60,39 @@ export class CostCalculator {
             // Eğer tam olarak eşleşen veya sınır değerlerdeyse direkt al
             randimanValue = randimanData[String(lowerRandiman)] || randimanData["75"];
         } else {
-            // **İnterpolasyon ile ara değer hesaplama**
+            // **Ağırlıklı interpolasyon hesaplaması**
             const lowerData = randimanData[String(lowerRandiman)];
             const upperData = randimanData[String(upperRandiman)];
-            const ratio = this.randiman - lowerRandiman;
+            const weight = this.randiman - lowerRandiman; // 0 ile 1 arasında bir değer
 
             randimanValue = {
-                un_miktari: lowerData.un_miktari + ratio * (upperData.un_miktari - lowerData.un_miktari),
-                kepek: lowerData.kepek + ratio * (upperData.kepek - lowerData.kepek),
-                bonkalit: lowerData.bonkalit + ratio * (upperData.bonkalit - lowerData.bonkalit),
+                un_miktari: lowerData.un_miktari + weight * (upperData.un_miktari - lowerData.un_miktari),
+                kepek: lowerData.kepek + weight * (upperData.kepek - lowerData.kepek),
+                bonkalit: lowerData.bonkalit + weight * (upperData.bonkalit - lowerData.bonkalit),
             };
         }
 
-        // ✅ **Yeni Formül: 50 kg un için gerekli buğday miktarı**
+        // **50 kg un için gerekli buğday miktarı formülü (doğru hesaplama)**
         const wheatRequired = 5000 / this.randiman;
 
-        // ✅ **Yan ürün hesaplamaları**
+        // **Yan ürün hesaplamaları**
         const branKg = (randimanValue.kepek * wheatRequired) / 100;
         const bonkalitKg = (randimanValue.bonkalit * wheatRequired) / 100;
 
-        // ✅ **Maliyet hesaplamaları**
+        // **Maliyet hesaplamaları**
         const electricityCost = this.electricity_kwh * this.electricity_price;
         const wheatCost = wheatRequired * this.wheat_price;
         const laborCost = this.labor_cost;
         const bagCost = this.bag_cost;
 
-        // ✅ **Yan ürünlerden elde edilen gelir**
+        // **Yan ürünlerden elde edilen gelir**
         const branRevenue = branKg * this.bran_price;
         const bonkalitRevenue = bonkalitKg * this.bonkalit_price;
 
-        // ✅ **Toplam Maliyet**
+        // **Toplam Maliyet**
         const totalCost = (electricityCost + wheatCost + laborCost + bagCost) - (branRevenue + bonkalitRevenue);
 
-        // ✅ **Son Satış Fiyatı**
+        // **Son Satış Fiyatı**
         const finalPrice = totalCost + this.target_profit;
 
         return {
