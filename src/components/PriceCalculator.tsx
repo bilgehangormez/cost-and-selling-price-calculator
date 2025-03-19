@@ -40,7 +40,7 @@ export function PriceCalculator() {
 
     const formatNumber = (value: string) => parseFloat(value.replace(",", ".") || "0");
 
-    // **Randıman değiştiğinde otomatik hesaplama (sonsuz döngü engellendi)**
+    // **Randıman değiştiğinde otomatik hesaplama**
     const randimanValue = watch("randiman");
 
     useEffect(() => {
@@ -89,32 +89,38 @@ export function PriceCalculator() {
             {/* 📌 Sol Kısım: Maliyet Girdileri */}
             <Card className="shadow-lg rounded-xl border p-4">
                 <CardHeader>
-                    <CardTitle className="text-lg">📌 Maliyet Girdileri</CardTitle>
+                    <CardTitle className="text-lg">Maliyet Girdileri</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                        <Label>📅 Aylık Kırılan Buğday (kg)</Label>
+                        <Label>Aylık Kırılan Buğday (kg)</Label>
                         <Input {...register("monthly_wheat")} />
 
-                        <Label>🎯 Randıman (%)</Label>
+                        <Label>Randıman (%)</Label>
                         <Input {...register("randiman")} />
 
-                        <Label>⚡ 50 kg Un İçin Gerekli Elektrik (kW)</Label>
+                        <Label>50 kg Un İçin Gerekli Elektrik (kW)</Label>
                         <Input {...register("electricity_kwh")} />
 
-                        <Label>⚡ 1 kW Elektrik (₺)</Label>
+                        <Label>1 kW Elektrik (₺)</Label>
                         <Input {...register("electricity_price")} />
 
-                        <Label>🌾 Buğday kg Fiyatı (₺)</Label>
+                        <Label>Buğday kg Fiyatı (₺)</Label>
                         <Input {...register("wheat_price")} />
 
-                        <Label>📦 1 adet 50 kg PP Çuval Fiyatı (₺)</Label>
+                        <Label>Kepek kg Fiyatı (₺)</Label>
+                        <Input {...register("bran_price")} />
+
+                        <Label>Bonkalit kg Fiyatı (₺)</Label>
+                        <Input {...register("bonkalit_price")} />
+
+                        <Label>1 adet 50 kg PP Çuval Fiyatı (₺)</Label>
                         <Input {...register("bag_cost")} />
 
-                        <Label>👷‍♂️ 1 Çuval 50 kg İçin İşçilik Maliyeti (₺)</Label>
+                        <Label>1 Çuval 50 kg İçin İşçilik Maliyeti (₺)</Label>
                         <Input {...register("labor_cost_per_bag")} />
 
-                        <Label>💰 1 Çuval 50 kg Unda Hedeflenen Kar (₺)</Label>
+                        <Label>1 Çuval 50 kg Unda Hedeflenen Kar (₺)</Label>
                         <Input {...register("target_profit_per_bag")} />
 
                         <Button type="submit" className="mt-4 w-full bg-blue-500 text-white">
@@ -124,22 +130,61 @@ export function PriceCalculator() {
                 </CardContent>
             </Card>
 
-            {/* 📌 Sağ Kısım: Satış Fiyatı ve Hesaplanan Değerler */}
+            {/* 📌 Orta Kısım: İdari Giderler */}
             <Card className="shadow-lg rounded-xl border p-4">
                 <CardHeader>
-                    <CardTitle className="text-lg">📊 Otomatik Hesaplanan Değerler</CardTitle>
+                    <CardTitle className="text-lg">İdari Giderler</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <Label>Mutfak Gideri (₺)</Label>
+                    <Input {...register("kitchen_expense")} />
+
+                    <Label>Bakım Gideri (₺)</Label>
+                    <Input {...register("maintenance_expense")} />
+
+                    <Label>Çuval İpi (kg)</Label>
+                    <Input {...register("sack_thread_kg")} />
+
+                    <Label>Çuval İpi kg Fiyatı (₺)</Label>
+                    <Input {...register("sack_thread_price")} />
+
+                    <Label>Dizel Yakıt (Litre)</Label>
+                    <Input {...register("diesel_liters")} />
+
+                    <Label>Dizel Litre Fiyatı (₺)</Label>
+                    <Input {...register("diesel_price")} />
+
+                    <Label>Benzin (Litre)</Label>
+                    <Input {...register("gasoline_liters")} />
+
+                    <Label>Benzin Litre Fiyatı (₺)</Label>
+                    <Input {...register("gasoline_price")} />
+
+                    <Label>Araç Bakım Gideri (₺)</Label>
+                    <Input {...register("vehicle_maintenance")} />
+                </CardContent>
+            </Card>
+
+            {/* 📌 Sağ Kısım: Otomatik Hesaplanan Değerler */}
+            <Card className="shadow-lg rounded-xl border p-4">
+                <CardHeader>
+                    <CardTitle className="text-lg">Otomatik Hesaplanan Değerler</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <p>📌 Gerekli Buğday (kg): {wheatRequired.toFixed(3)}</p>
-                    <p>📌 Çıkan Kepek (kg): {branKg.toFixed(3)}</p>
-                    <p>📌 Çıkan Bonkalit (kg): {bonkalitKg.toFixed(3)}</p>
+                    <table className="w-full border-collapse border border-gray-300">
+                        <tbody>
+                            <tr><td>Gerekli Buğday (kg)</td><td>{wheatRequired.toFixed(3)}</td></tr>
+                            <tr><td>Çıkan Kepek (kg)</td><td>{branKg.toFixed(3)}</td></tr>
+                            <tr><td>Çıkan Bonkalit (kg)</td><td>{bonkalitKg.toFixed(3)}</td></tr>
+                        </tbody>
+                    </table>
                 </CardContent>
             </Card>
 
             {/* 📌 Satış Fiyatı */}
             <Card className="shadow-lg rounded-xl border p-4">
                 <CardHeader>
-                    <CardTitle className="text-lg">💰 Satış Fiyatı</CardTitle>
+                    <CardTitle className="text-lg">Satış Fiyatı</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="p-4 text-center text-2xl font-bold bg-gray-50 rounded-lg">
