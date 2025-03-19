@@ -124,15 +124,15 @@ export function PriceCalculator() {
                     <div className="flex flex-col gap-4">
                         <div>
                             <Label>Gerekli Buğday (kg)</Label>
-                            <input type="text" value={wheatRequired.toFixed(2)} disabled className="input-lg" />
+                            <input type="text" value={wheatRequired.toFixed(5)} disabled className="input-lg" />
                         </div>
                         <div>
                             <Label>Çıkan Kepek (kg)</Label>
-                            <input type="text" value={branKg.toFixed(2)} disabled className="input-lg" />
+                            <input type="text" value={branKg.toFixed(5)} disabled className="input-lg" />
                         </div>
                         <div>
                             <Label>Çıkan Bonkalit (kg)</Label>
-                            <input type="text" value={bonkalitKg.toFixed(2)} disabled className="input-lg" />
+                            <input type="text" value={bonkalitKg.toFixed(5)} disabled className="input-lg" />
                         </div>
                     </div>
                 </CardContent>
@@ -148,8 +148,8 @@ export function PriceCalculator() {
                         {finalPrice !== null ? `${finalPrice.toFixed(2)} ₺` : "Henüz hesaplanmadı"}
                     </div>
                     <div className="mt-4 text-center text-lg">
-                        <p><strong>Kepek Geliri:</strong> {branRevenue.toFixed(2)} ₺</p>
-                        <p><strong>Bonkalit Geliri:</strong> {bonkalitRevenue.toFixed(2)} ₺</p>
+                        <p><strong>Kepek Geliri:</strong> {branRevenue.toFixed(5)} ₺</p>
+                        <p><strong>Bonkalit Geliri:</strong> {bonkalitRevenue.toFixed(5)} ₺</p>
                     </div>
                 </CardContent>
             </Card>
