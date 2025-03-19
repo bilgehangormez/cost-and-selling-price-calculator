@@ -176,16 +176,11 @@ export function PriceCalculator() {
                     </table>
                 </CardContent>
 
-                <CardHeader>
-                    <CardTitle className="text-lg text-center font-extrabold">Satış Fiyatı</CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 text-center text-2xl font-bold bg-gray-50 rounded-lg">
-                    {finalPrice !== null ? `${finalPrice.toFixed(2)} ₺` : "Henüz hesaplanmadı"}
+                <CardContent>
+                    <Button type="submit" className="w-full py-3 bg-[#2C2F33] text-white font-bold rounded-lg hover:bg-gray-800 transition-all">
+                        Hesapla
+                    </Button>
                 </CardContent>
-
-                <Button type="submit" className="button-primary mt-4 w-full">
-                    Hesapla
-                </Button>
             </Card>
         </div>
     );
