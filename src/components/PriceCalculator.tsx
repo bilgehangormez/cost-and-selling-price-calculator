@@ -126,7 +126,7 @@ export function PriceCalculator() {
                 </CardContent>
             </Card>
 
-            {/* 📌 Orta Kısım: İdari Giderler */}
+            {/* 📌 Orta Kısım: İdari Giderler (Eksik olan bölümü ekledim!) */}
             <Card className="shadow-lg rounded-xl border p-4">
                 <CardHeader>
                     <CardTitle className="text-lg text-center font-extrabold">İdari Giderler</CardTitle>
@@ -176,7 +176,7 @@ export function PriceCalculator() {
                     </table>
                 </CardContent>
 
-                <Button type="submit" className="bg-gray-800 text-white w-full mt-4">
+                <Button type="submit" className="bg-gray-800 text-white w-full mt-4" onClick={handleSubmit(onSubmit)}>
                     Hesapla
                 </Button>
             </Card>
