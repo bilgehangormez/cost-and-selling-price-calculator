@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { CostCalculator } from "@/lib/calculator";
@@ -110,6 +111,7 @@ export function PriceCalculator() {
                         <div><Label>50 kg Un İçin İşçilik Maliyeti (₺)</Label><Input {...register("labor_cost")} /></div>
                         <div><Label>1 Adet 50 kg PP Çuval (₺)</Label><Input {...register("bag_cost")} /></div>
                         <div><Label>50 kg Unda Hedeflenen Kâr (₺)</Label><Input {...register("target_profit")} /></div>
+                        <Button type="submit" className="mt-4 w-full bg-blue-600 text-white py-2 rounded">Hesapla</Button>
                     </form>
                 </CardContent>
             </Card>
