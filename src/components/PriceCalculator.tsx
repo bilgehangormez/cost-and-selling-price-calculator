@@ -3,10 +3,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button"; // Hesapla butonu için
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { CostCalculator } from "@/lib/calculator";
-import { Button } from "@/components/ui/button";
 
 export function PriceCalculator() {
     const [finalPrice, setFinalPrice] = useState<number | null>(null);
@@ -19,9 +19,10 @@ export function PriceCalculator() {
 
     const { register, handleSubmit } = useForm({
         defaultValues: {
+            monthly_wheat: "",
+            randiman: "75",
             electricity_kwh: "",
             electricity_price: "",
-            randiman: "75",
             wheat_price: "",
             bran_price: "",
             bonkalit_price: "",
@@ -36,20 +37,33 @@ export function PriceCalculator() {
             diesel_price: "",
             gasoline_liters: "",
             gasoline_price: "",
-            vehicle_maintenance: "",
-            monthly_wheat: ""
+            vehicle_maintenance: ""
         }
     });
 
     const formatNumber = (value: string) => parseFloat(value.replace(",", ".") || "0");
 
     const onSubmit = async (data: Record<string, string>) => {
-        const randimanValue = formatNumber(data.randiman);
-        const wheatNeeded = 5000 / randimanValue;
-        setWheatRequired(wheatNeeded);
-
         const branPrice = formatNumber(data.bran_price);
         const bonkalitPrice = formatNumber(data.bonkalit_price);
+
+        // ✅ **Buğday gereksinimini hesapla**
+        const randimanValue = formatNumber(data.randiman);
+        const wheatRequiredCalc = 5000 / randimanValue;
+        setWheatRequired(wheatRequiredCalc);
+
+        // ✅ **İdari maliyet hesaplaması**
+        const sackThreadCost = formatNumber(data.sack_thread_kg) * formatNumber(data.sack_thread_price);
+        const dieselCost = formatNumber(data.diesel_liters) * formatNumber(data.diesel_price);
+        const gasolineCost = formatNumber(data.gasoline_liters) * formatNumber(data.gasoline_price);
+        const totalAdministrativeCost =
+            formatNumber(data.kitchen_expense) +
+            formatNumber(data.maintenance_expense) +
+            sackThreadCost +
+            dieselCost +
+            gasolineCost +
+            formatNumber(data.vehicle_maintenance);
+        setAdministrativeCost(totalAdministrativeCost);
 
         const calculator = new CostCalculator(
             data.electricity_kwh.replace(",", "."),
@@ -79,13 +93,12 @@ export function PriceCalculator() {
         setBonkalitKg(result.bonkalitKg);
         setBranRevenue(result.branKg * branPrice);
         setBonkalitRevenue(result.bonkalitKg * bonkalitPrice);
-        setAdministrativeCost(result.administrativeCost);
     };
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mx-auto p-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mx-auto p-4">
             
-            {/* 📌 Maliyet Girdileri */}
+            {/* 📌 Sol Kısım: Maliyet Girdileri */}
             <Card className="shadow-lg rounded-xl border p-4">
                 <CardHeader>
                     <CardTitle className="text-lg">📌 Maliyet Girdileri</CardTitle>
@@ -113,63 +126,41 @@ export function PriceCalculator() {
                         <Label>Bonkalit kg Fiyatı (₺)</Label>
                         <Input {...register("bonkalit_price")} />
 
-                        <Label>50 kg Un İçin İşçilik Maliyeti (₺)</Label>
+                        <Label>İşçilik Maliyeti (₺)</Label>
                         <Input {...register("labor_cost")} />
 
-                        <Label>1 Adet 50 kg PP Çuval (₺)</Label>
+                        <Label>Çuval Maliyeti (₺)</Label>
                         <Input {...register("bag_cost")} />
 
-                        <Label>50 kg Unda Hedeflenen Kâr (₺)</Label>
+                        <Label>Hedeflenen Kâr (₺)</Label>
                         <Input {...register("target_profit")} />
 
-                        <Button type="submit" className="w-full bg-blue-600 text-white">Hesapla</Button>
+                        <Button type="submit" className="mt-4 w-full bg-blue-500 text-white">
+                            Hesapla
+                        </Button>
                     </form>
                 </CardContent>
             </Card>
 
-            {/* 📌 İdari Maliyetler (ORTADA) */}
-            <Card className="shadow-lg rounded-xl border p-4 col-span-1">
+            {/* 📌 Orta Kısım: İdarî Maliyetler */}
+            <Card className="shadow-lg rounded-xl border p-4 mx-auto">
                 <CardHeader>
-                    <CardTitle className="text-lg text-center">📌 İdari Maliyetler</CardTitle>
+                    <CardTitle className="text-lg">💰 İdarî Maliyetler</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <Label>Mutfağa Gideri (₺)</Label>
-                    <Input {...register("kitchen_expense")} />
-
-                    <Label>Bakım Gideri (₺)</Label>
-                    <Input {...register("maintenance_expense")} />
-
-                    <Label>Çuval İpliği (kg)</Label>
-                    <Input {...register("sack_thread_kg")} />
-
-                    <Label>Çuval İpliği Fiyatı (₺)</Label>
-                    <Input {...register("sack_thread_price")} />
-
-                    <Label>Motorin (Litre)</Label>
-                    <Input {...register("diesel_liters")} />
-
-                    <Label>Motorin Fiyatı (₺)</Label>
-                    <Input {...register("diesel_price")} />
-
-                    <Label>Benzin (Litre)</Label>
-                    <Input {...register("gasoline_liters")} />
-
-                    <Label>Benzin Fiyatı (₺)</Label>
-                    <Input {...register("gasoline_price")} />
-
-                    <Label>Araç Bakım (₺)</Label>
-                    <Input {...register("vehicle_maintenance")} />
+                    <p className="text-center text-lg font-bold">{administrativeCost.toFixed(2)} ₺</p>
                 </CardContent>
             </Card>
 
-            {/* 📌 Satış Fiyatı ve Otomatik Hesaplanan Değerler */}
+            {/* 📌 Sağ Kısım: Satış Fiyatı ve Hesaplanan Değerler */}
             <Card className="shadow-lg rounded-xl border p-4">
                 <CardHeader>
-                    <CardTitle className="text-lg">📌 Satış Fiyatı</CardTitle>
+                    <CardTitle className="text-lg">📊 Otomatik Hesaplanan Değerler</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <p className="text-2xl font-bold text-center">{finalPrice !== null ? `${finalPrice.toFixed(2)} ₺` : "Henüz hesaplanmadı"}</p>
-                    <p className="text-sm text-gray-500 text-center">İdari Maliyet: {administrativeCost.toFixed(2)} ₺</p>
+                    <p>Gerekli Buğday (kg): {wheatRequired.toFixed(3)}</p>
+                    <p>Çıkan Kepek (kg): {branKg.toFixed(3)}</p>
+                    <p>Çıkan Bonkalit (kg): {bonkalitKg.toFixed(3)}</p>
                     <p>Kepek Geliri: {branRevenue.toFixed(2)} ₺</p>
                     <p>Bonkalit Geliri: {bonkalitRevenue.toFixed(2)} ₺</p>
                 </CardContent>
