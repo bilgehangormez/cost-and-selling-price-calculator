@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { CostCalculator } from "@/lib/calculator";
 
 export function PriceCalculator() {
@@ -13,11 +13,8 @@ export function PriceCalculator() {
     const [wheatRequired, setWheatRequired] = useState<number>(0);
     const [branKg, setBranKg] = useState<number>(0);
     const [bonkalitKg, setBonkalitKg] = useState<number>(0);
-    const [branRevenue, setBranRevenue] = useState<number>(0);
-    const [bonkalitRevenue, setBonkalitRevenue] = useState<number>(0);
-    const [administrativeCost, setAdministrativeCost] = useState<number>(0);
 
-    const { register, handleSubmit, control, watch } = useForm({
+    const { register, handleSubmit, watch } = useForm({
         defaultValues: {
             monthly_wheat: "",
             randiman: "75",
@@ -26,9 +23,9 @@ export function PriceCalculator() {
             wheat_price: "",
             bran_price: "",
             bonkalit_price: "",
-            labor_cost_per_bag: "", // **📌 1 Çuval 50 kg İçin İşçilik Maliyeti**
+            labor_cost_per_bag: "",
             bag_cost: "",
-            target_profit_per_bag: "", // **📌 1 Çuval 50 kg İçin Hedeflenen Kar**
+            target_profit_per_bag: "",
             kitchen_expense: "",
             maintenance_expense: "",
             sack_thread_kg: "",
@@ -43,35 +40,20 @@ export function PriceCalculator() {
 
     const formatNumber = (value: string) => parseFloat(value.replace(",", ".") || "0");
 
-    // **📌 Randıman değiştiğinde otomatik hesaplama**
+    // **Randıman değiştiğinde otomatik hesaplama**
     const randimanValue = watch("randiman");
     const wheatRequiredCalc = randimanValue ? 5000 / formatNumber(randimanValue) : 0;
     const branKgCalc = wheatRequiredCalc * 0.18;
     const bonkalitKgCalc = wheatRequiredCalc * 0.05;
-    
+
     setWheatRequired(wheatRequiredCalc);
     setBranKg(branKgCalc);
     setBonkalitKg(bonkalitKgCalc);
 
     const onSubmit = async (data: Record<string, string>) => {
-        const branPrice = formatNumber(data.bran_price);
-        const bonkalitPrice = formatNumber(data.bonkalit_price);
         const bagCostValue = formatNumber(data.bag_cost);
         const laborCostPerBag = formatNumber(data.labor_cost_per_bag);
         const targetProfitPerBag = formatNumber(data.target_profit_per_bag);
-
-        // ✅ **İdari maliyet hesaplaması**
-        const sackThreadCost = formatNumber(data.sack_thread_kg) * formatNumber(data.sack_thread_price);
-        const dieselCost = formatNumber(data.diesel_liters) * formatNumber(data.diesel_price);
-        const gasolineCost = formatNumber(data.gasoline_liters) * formatNumber(data.gasoline_price);
-        const totalAdministrativeCost =
-            formatNumber(data.kitchen_expense) +
-            formatNumber(data.maintenance_expense) +
-            sackThreadCost +
-            dieselCost +
-            gasolineCost +
-            formatNumber(data.vehicle_maintenance);
-        setAdministrativeCost(totalAdministrativeCost);
 
         const calculator = new CostCalculator(
             data.electricity_kwh,
@@ -96,9 +78,7 @@ export function PriceCalculator() {
         );
 
         const result = await calculator.calculateCosts();
-        setFinalPrice(result.finalPrice + totalAdministrativeCost + bagCostValue + laborCostPerBag);
-        setBranRevenue(result.branKg * branPrice);
-        setBonkalitRevenue(result.bonkalitKg * bonkalitPrice);
+        setFinalPrice(result.finalPrice + bagCostValue + laborCostPerBag);
     };
 
     return (
@@ -153,6 +133,10 @@ export function PriceCalculator() {
                         <Input {...register("kitchen_expense")} />
                         <Label>🔧 Bakım Gideri (₺)</Label>
                         <Input {...register("maintenance_expense")} />
+                        <Label>🧵 Çuval İpi Maliyeti (₺)</Label>
+                        <Input {...register("sack_thread_price")} />
+                        <Label>🚛 Araç Bakım Gideri (₺)</Label>
+                        <Input {...register("vehicle_maintenance")} />
                     </form>
                 </CardContent>
             </Card>
@@ -166,6 +150,18 @@ export function PriceCalculator() {
                     <p>📌 Gerekli Buğday (kg): {wheatRequired.toFixed(3)}</p>
                     <p>📌 Çıkan Kepek (kg): {branKg.toFixed(3)}</p>
                     <p>📌 Çıkan Bonkalit (kg): {bonkalitKg.toFixed(3)}</p>
+                </CardContent>
+            </Card>
+
+            {/* 📌 Satış Fiyatı */}
+            <Card className="shadow-lg rounded-xl border p-4">
+                <CardHeader>
+                    <CardTitle className="text-lg">💰 Satış Fiyatı</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="p-4 text-center text-2xl font-bold bg-gray-50 rounded-lg">
+                        {finalPrice !== null ? `${finalPrice.toFixed(2)} ₺` : "Henüz hesaplanmadı"}
+                    </div>
                 </CardContent>
             </Card>
         </div>
