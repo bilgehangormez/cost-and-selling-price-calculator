@@ -113,11 +113,20 @@ export function PriceCalculator() {
 
                         <Label>Bonkalit kg Fiyatı (₺)</Label>
                         <Input {...register("bonkalit_price")} className="input-lg"/>
+
+                        <Label>1 adet 50 kg PP Çuval Fiyatı (₺)</Label>
+                        <Input {...register("bag_cost")} className="input-lg"/>
+
+                        <Label>1 Çuval 50 kg İçin İşçilik Maliyeti (₺)</Label>
+                        <Input {...register("labor_cost_per_bag")} className="input-lg"/>
+
+                        <Label>1 Çuval 50 kg Unda Hedeflenen Kar (₺)</Label>
+                        <Input {...register("target_profit_per_bag")} className="input-lg"/>
                     </form>
                 </CardContent>
             </Card>
 
-            {/* 📌 Orta Kısım: İdari Giderler (EKLENDİ!) */}
+            {/* 📌 Orta Kısım: İdari Giderler */}
             <Card className="shadow-lg rounded-xl border p-4">
                 <CardHeader>
                     <CardTitle className="text-lg text-center font-extrabold">İdari Giderler</CardTitle>
@@ -155,13 +164,26 @@ export function PriceCalculator() {
             {/* 📌 Sağ Kısım: Otomatik Hesaplanan Değerler + Satış Fiyatı + Hesapla Butonu */}
             <Card className="shadow-lg rounded-xl border p-4">
                 <CardHeader>
+                    <CardTitle className="text-lg text-center font-extrabold">Otomatik Hesaplanan Değerler</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <table className="table-auto w-full">
+                        <tbody>
+                            <tr><td>Gerekli Buğday (kg)</td><td>{wheatRequired.toFixed(3)}</td></tr>
+                            <tr><td>Çıkan Kepek (kg)</td><td>{branKg.toFixed(3)}</td></tr>
+                            <tr><td>Çıkan Bonkalit (kg)</td><td>{bonkalitKg.toFixed(3)}</td></tr>
+                        </tbody>
+                    </table>
+                </CardContent>
+
+                <CardHeader>
                     <CardTitle className="text-lg text-center font-extrabold">Satış Fiyatı</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 text-center text-2xl font-bold bg-gray-50 rounded-lg">
                     {finalPrice !== null ? `${finalPrice.toFixed(2)} ₺` : "Henüz hesaplanmadı"}
                 </CardContent>
 
-                <Button type="submit" className="bg-gray-800 text-white mt-4 w-full">
+                <Button type="submit" className="button-primary mt-4 w-full">
                     Hesapla
                 </Button>
             </Card>
