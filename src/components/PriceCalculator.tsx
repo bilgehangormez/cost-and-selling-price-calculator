@@ -66,25 +66,25 @@ export function PriceCalculator() {
         setAdministrativeCost(totalAdministrativeCost);
 
         const calculator = new CostCalculator(
-            data.electricity_kwh.replace(",", "."),
-            data.electricity_price.replace(",", "."),
-            data.randiman.replace(",", "."),
-            data.wheat_price.replace(",", "."),
-            data.labor_cost.replace(",", "."),
-            data.bag_cost.replace(",", "."),
-            data.bran_price.replace(",", "."),
-            data.bonkalit_price.replace(",", "."),
-            data.target_profit.replace(",", "."),
-            data.kitchen_expense.replace(",", "."),
-            data.maintenance_expense.replace(",", "."),
-            data.sack_thread_kg.replace(",", "."),
-            data.sack_thread_price.replace(",", "."),
-            data.diesel_liters.replace(",", "."),
-            data.diesel_price.replace(",", "."),
-            data.gasoline_liters.replace(",", "."),
-            data.gasoline_price.replace(",", "."),
-            data.vehicle_maintenance.replace(",", "."),
-            data.monthly_wheat.replace(",", ".")
+            data.electricity_kwh,
+            data.electricity_price,
+            data.randiman,
+            data.wheat_price,
+            data.labor_cost,
+            data.bag_cost,
+            data.bran_price,
+            data.bonkalit_price,
+            data.target_profit,
+            data.kitchen_expense,
+            data.maintenance_expense,
+            data.sack_thread_kg,
+            data.sack_thread_price,
+            data.diesel_liters,
+            data.diesel_price,
+            data.gasoline_liters,
+            data.gasoline_price,
+            data.vehicle_maintenance,
+            data.monthly_wheat
         );
 
         const result = await calculator.calculateCosts();
@@ -107,7 +107,7 @@ export function PriceCalculator() {
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         <Label>Aylık Kırılan Buğday (kg)</Label>
                         <Input {...register("monthly_wheat")} />
-
+                        
                         <Label>Randıman (%)</Label>
                         <Input {...register("randiman")} />
 
