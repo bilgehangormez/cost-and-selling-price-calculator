@@ -89,10 +89,10 @@ export function PriceCalculator() {
             {/* 📌 Sol Kısım: Maliyet Girdileri */}
             <Card className="shadow-lg rounded-xl border p-4">
                 <CardHeader>
-                    <CardTitle className="text-lg text-center font-semibold">Maliyet Girdileri</CardTitle>
+                    <CardTitle className="text-lg text-center font-extrabold">Maliyet Girdileri</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-1">
                         <Label>Aylık Kırılan Buğday (kg)</Label>
                         <Input {...register("monthly_wheat")} className="input-lg"/>
 
@@ -122,10 +122,6 @@ export function PriceCalculator() {
 
                         <Label>1 Çuval 50 kg Unda Hedeflenen Kar (₺)</Label>
                         <Input {...register("target_profit_per_bag")} className="input-lg"/>
-
-                        <Button type="submit" className="button-primary">
-                            Hesapla
-                        </Button>
                     </form>
                 </CardContent>
             </Card>
@@ -133,9 +129,9 @@ export function PriceCalculator() {
             {/* 📌 Orta Kısım: İdari Giderler */}
             <Card className="shadow-lg rounded-xl border p-4">
                 <CardHeader>
-                    <CardTitle className="text-lg text-center font-semibold">İdari Giderler</CardTitle>
+                    <CardTitle className="text-lg text-center font-extrabold">İdari Giderler</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2">
+                <CardContent className="space-y-1">
                     <Label>Mutfak Gideri (₺)</Label>
                     <Input {...register("kitchen_expense")} className="input-lg"/>
 
@@ -165,10 +161,10 @@ export function PriceCalculator() {
                 </CardContent>
             </Card>
 
-            {/* 📌 Sağ Kısım: Otomatik Hesaplanan Değerler ve Satış Fiyatı */}
+            {/* 📌 Sağ Kısım: Otomatik Hesaplanan Değerler + Satış Fiyatı + Hesapla Butonu */}
             <Card className="shadow-lg rounded-xl border p-4">
                 <CardHeader>
-                    <CardTitle className="text-lg text-center font-semibold">Otomatik Hesaplanan Değerler</CardTitle>
+                    <CardTitle className="text-lg text-center font-extrabold">Otomatik Hesaplanan Değerler</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <table className="table-auto w-full">
@@ -179,15 +175,10 @@ export function PriceCalculator() {
                         </tbody>
                     </table>
                 </CardContent>
-            </Card>
 
-            <Card className="shadow-lg rounded-xl border p-4">
-                <CardHeader>
-                    <CardTitle className="text-lg text-center font-semibold">Satış Fiyatı</CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 text-center text-2xl font-bold bg-gray-50 rounded-lg">
-                    {finalPrice !== null ? `${finalPrice.toFixed(2)} ₺` : "Henüz hesaplanmadı"}
-                </CardContent>
+                <Button type="submit" className="button-primary mt-4 w-full">
+                    Hesapla
+                </Button>
             </Card>
         </div>
     );
