@@ -2,110 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 🌟 Genel Grid Yapısı */
 .grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 16px;
 }
 
-@media (min-width: 640px) {
-  .grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
   .grid {
     grid-template-columns: 1fr 1fr 1fr;
   }
 }
 
-/* 🌟 Kart Bileşeni Stili */
 .card {
   background-color: white;
   padding: 16px;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
-.card:hover {
-  transform: scale(1.02);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-/* 🌟 Giriş Kutusu (Input) Stili */
 .input-lg {
   width: 100%;
-  padding: 12px;
+  padding: 10px;
   font-size: 16px;
   text-align: left;
   background-color: #f9fafb;
   border: 1px solid #d1d5db;
   border-radius: 6px;
-  appearance: none;
-  transition: all 0.2s ease-in-out;
 }
 
-.input-lg:focus {
-  border-color: #3b82f6;
-  outline: none;
-  background-color: white;
-  box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
-}
-
-/* 🌟 Buton Stili */
 .button-primary {
   width: 100%;
-  padding: 12px;
+  padding: 10px;
   background-color: #3b82f6;
   color: white;
   border-radius: 6px;
   font-size: 16px;
   font-weight: bold;
-  transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
 }
 
-.button-primary:hover {
-  background-color: #2563eb;
-  transform: scale(1.03);
-}
-
-.button-primary:active {
-  background-color: #1e40af;
-  transform: scale(0.98);
-}
-
-/* 🌟 Tablo Stili */
 .table-auto {
   width: 100%;
   border-collapse: collapse;
   border: 1px solid #e5e7eb;
-  margin-top: 8px;
 }
 
-.table-auto td,
-.table-auto th {
+.table-auto td, .table-auto th {
   border: 1px solid #e5e7eb;
   padding: 10px;
   text-align: center;
-}
-
-.table-auto th {
-  background-color: #f3f4f6;
-  font-weight: bold;
-}
-
-/* 🌟 Sayfa Genel Tasarımı */
-body {
-  font-family: 'Inter', sans-serif;
-  background-color: #f3f4f6;
-  padding: 20px;
-}
-
-.container {
-  max-width: 1200px;
-  margin: auto;
-  padding: 20px;
 }
