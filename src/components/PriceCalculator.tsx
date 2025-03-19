@@ -96,7 +96,7 @@ export function PriceCalculator() {
                             <Input {...register("bonkalit_price")} />
                         </div>
                         <div>
-                            <Label>İşçilik Maliyeti (₺)</Label>
+                            <Label>50 kg Un İşçilik Maliyeti (₺)</Label>
                             <Input {...register("labor_cost")} />
                         </div>
                         <div>
@@ -104,7 +104,7 @@ export function PriceCalculator() {
                             <Input {...register("bag_cost")} />
                         </div>
                         <div>
-                            <Label>Hedeflenen Kâr (₺)</Label>
+                            <Label>50 kg Unda Hedeflenen Kâr (₺)</Label>
                             <Input {...register("target_profit")} />
                         </div>
 
