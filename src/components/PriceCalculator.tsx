@@ -12,9 +12,9 @@ export function PriceCalculator() {
     const [wheatRequired, setWheatRequired] = useState<number>(0);
     const [branKg, setBranKg] = useState<number>(0);
     const [bonkalitKg, setBonkalitKg] = useState<number>(0);
+    const [administrativeCost, setAdministrativeCost] = useState<number>(0);
     const [branRevenue, setBranRevenue] = useState<number>(0);
     const [bonkalitRevenue, setBonkalitRevenue] = useState<number>(0);
-    const [administrativeCost, setAdministrativeCost] = useState<number>(0);
 
     const { register, handleSubmit, watch } = useForm({
         defaultValues: {
@@ -151,6 +151,8 @@ export function PriceCalculator() {
                         {finalPrice !== null ? `${finalPrice.toFixed(2)} ₺` : "Henüz hesaplanmadı"}
                     </div>
                     <p className="mt-2 text-center text-sm text-gray-500">İdari Maliyet Eklenmiş: {administrativeCost.toFixed(2)} ₺</p>
+                    <p className="text-center text-sm">Kepek Geliri: {branRevenue.toFixed(2)} ₺</p>
+                    <p className="text-center text-sm">Bonkalit Geliri: {bonkalitRevenue.toFixed(2)} ₺</p>
                 </CardContent>
             </Card>
         </div>
