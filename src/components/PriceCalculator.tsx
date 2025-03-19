@@ -10,6 +10,8 @@ import { CostCalculator } from "@/lib/calculator";
 export function PriceCalculator() {
     const [finalPrice, setFinalPrice] = useState<number | null>(null);
     const [wheatRequired, setWheatRequired] = useState<number>(0);
+    const [branKg, setBranKg] = useState<number>(0);
+    const [bonkalitKg, setBonkalitKg] = useState<number>(0);
     const [branRevenue, setBranRevenue] = useState<number>(0);
     const [bonkalitRevenue, setBonkalitRevenue] = useState<number>(0);
 
@@ -27,29 +29,35 @@ export function PriceCalculator() {
         }
     });
 
-    const randimanValue = watch("randiman");
+    const formatNumber = (value: string) => parseFloat(value.replace(",", ".") || "0");
+
+    const randimanValue = formatNumber(watch("randiman"));
+    const branPrice = formatNumber(watch("bran_price"));
+    const bonkalitPrice = formatNumber(watch("bonkalit_price"));
 
     useEffect(() => {
-        if (randimanValue) {
-            setWheatRequired(5000 / parseFloat(randimanValue));
+        if (randimanValue > 0) {
+            setWheatRequired(5000 / randimanValue);
         }
     }, [randimanValue]);
 
     const onSubmit = async (data: Record<string, string>) => {
         const calculator = new CostCalculator(
-            data.electricity_kwh,
-            data.electricity_price,
-            data.randiman,
-            data.wheat_price,
-            data.labor_cost,
-            data.bag_cost,
-            data.bran_price,
-            data.bonkalit_price,
-            data.target_profit
+            data.electricity_kwh.replace(",", "."),
+            data.electricity_price.replace(",", "."),
+            data.randiman.replace(",", "."),
+            data.wheat_price.replace(",", "."),
+            data.labor_cost.replace(",", "."),
+            data.bag_cost.replace(",", "."),
+            data.bran_price.replace(",", "."),
+            data.bonkalit_price.replace(",", "."),
+            data.target_profit.replace(",", ".")
         );
 
         const result = await calculator.calculateCosts();
         setFinalPrice(result.finalPrice);
+        setBranKg(result.branKg);
+        setBonkalitKg(result.bonkalitKg);
         setBranRevenue(result.branRevenue);
         setBonkalitRevenue(result.bonkalitRevenue);
     };
@@ -117,6 +125,14 @@ export function PriceCalculator() {
                         <div>
                             <Label>Gerekli Buğday (kg)</Label>
                             <Input type="text" value={wheatRequired.toFixed(2)} disabled className="bg-gray-200 px-6 appearance-none" />
+                        </div>
+                        <div>
+                            <Label>Çıkan Kepek (kg)</Label>
+                            <Input type="text" value={branKg.toFixed(2)} disabled className="bg-gray-200 px-6 appearance-none" />
+                        </div>
+                        <div>
+                            <Label>Çıkan Bonkalit (kg)</Label>
+                            <Input type="text" value={bonkalitKg.toFixed(2)} disabled className="bg-gray-200 px-6 appearance-none" />
                         </div>
                     </div>
                 </CardContent>
