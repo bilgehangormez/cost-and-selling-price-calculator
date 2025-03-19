@@ -4,8 +4,14 @@
 
 .grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 20px;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
 }
 
 .card {
@@ -13,4 +19,15 @@
   padding: 20px;
   border-radius: 10px;
   text-align: center;
+}
+
+.input-lg {
+  width: 100%;
+  padding: 10px;
+  font-size: 18px;
+  text-align: center;
+  background-color: #f3f4f6; /* Tailwind’in bg-gray-200 rengi */
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  appearance: none; /* Yukarı-aşağı okları kaldırır */
 }
