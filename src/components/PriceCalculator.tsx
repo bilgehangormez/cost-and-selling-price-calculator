@@ -27,7 +27,7 @@ export function PriceCalculator() {
             bran_price: "",
             bonkalit_price: "",
             labor_cost: "",
-            bag_cost: "",
+            bag_cost: "", // **Çuval fiyatı manuel girilecek**
             target_profit: "",
             kitchen_expense: "",
             maintenance_expense: "",
@@ -46,6 +46,7 @@ export function PriceCalculator() {
     const onSubmit = async (data: Record<string, string>) => {
         const branPrice = formatNumber(data.bran_price);
         const bonkalitPrice = formatNumber(data.bonkalit_price);
+        const bagCost = formatNumber(data.bag_cost); // **Kullanıcı tarafından girilen çuval maliyeti**
 
         // ✅ **Buğday gereksinimini hesapla**
         const randimanValue = formatNumber(data.randiman);
@@ -71,7 +72,7 @@ export function PriceCalculator() {
             data.randiman,
             data.wheat_price,
             data.labor_cost,
-            data.bag_cost,
+            bagCost, // **Çuval maliyeti hesaplamalara eklendi**
             data.bran_price,
             data.bonkalit_price,
             data.target_profit,
@@ -125,6 +126,9 @@ export function PriceCalculator() {
 
                         <Label>Bonkalit kg Fiyatı (₺)</Label>
                         <Input {...register("bonkalit_price")} />
+
+                        <Label>1 Adet 50 kg PP Çuval (₺)</Label> {/* **Kullanıcı tarafından girilecek** */}
+                        <Input {...register("bag_cost")} />
 
                         <Button type="submit" className="mt-4 w-full bg-blue-500 text-white">
                             Hesapla
