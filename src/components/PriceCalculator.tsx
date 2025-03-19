@@ -123,6 +123,21 @@ export function PriceCalculator() {
                 </CardContent>
             </Card>
 
+            {/* 📌 Orta Kısım: Otomatik Hesaplanan Değerler */}
+            <Card className="shadow-lg rounded-xl border p-4">
+                <CardHeader>
+                    <CardTitle className="text-lg">🔹 Otomatik Hesaplanan Değerler</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex flex-col gap-4">
+                        <div><Label>Gerekli Buğday (kg)</Label><Input type="text" value={wheatRequired.toFixed(3)} disabled /></div>
+                        <div><Label>Çıkan Kepek (kg)</Label><Input type="text" value={branKg.toFixed(3)} disabled /></div>
+                        <div><Label>Çıkan Bonkalit (kg)</Label><Input type="text" value={bonkalitKg.toFixed(3)} disabled /></div>
+                        <div><Label>İdari Giderler (₺)</Label><Input type="text" value={administrativeCost.toFixed(2)} disabled /></div>
+                    </div>
+                </CardContent>
+            </Card>
+
             {/* 📌 Sağ Kısım: Hesaplanan Satış Fiyatı */}
             <Card className="shadow-lg rounded-xl border p-4">
                 <CardHeader>
@@ -132,9 +147,6 @@ export function PriceCalculator() {
                     <div className="p-4 text-center text-2xl font-bold bg-gray-50 rounded-lg">
                         {finalPrice !== null ? `${finalPrice.toFixed(2)} ₺` : "Henüz hesaplanmadı"}
                     </div>
-                    <p className="mt-2 text-center text-sm text-gray-500">İdari Maliyet Eklenmiş: {administrativeCost.toFixed(2)} ₺</p>
-                    <p className="text-center text-sm">Kepek Geliri: {branRevenue.toFixed(2)} ₺</p>
-                    <p className="text-center text-sm">Bonkalit Geliri: {bonkalitRevenue.toFixed(2)} ₺</p>
                 </CardContent>
             </Card>
         </div>
