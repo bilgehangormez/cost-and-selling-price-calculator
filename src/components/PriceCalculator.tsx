@@ -88,7 +88,7 @@ export function PriceCalculator() {
         );
 
         const result = await calculator.calculateCosts();
-        setFinalPrice(result.finalPrice);
+        setFinalPrice(result.finalPrice + totalAdministrativeCost); // **İdarî maliyetleri ekledik**
         setBranKg(result.branKg);
         setBonkalitKg(result.bonkalitKg);
         setBranRevenue(result.branKg * branPrice);
@@ -126,15 +126,6 @@ export function PriceCalculator() {
                         <Label>Bonkalit kg Fiyatı (₺)</Label>
                         <Input {...register("bonkalit_price")} />
 
-                        <Label>İşçilik Maliyeti (₺)</Label>
-                        <Input {...register("labor_cost")} />
-
-                        <Label>Çuval Maliyeti (₺)</Label>
-                        <Input {...register("bag_cost")} />
-
-                        <Label>Hedeflenen Kâr (₺)</Label>
-                        <Input {...register("target_profit")} />
-
                         <Button type="submit" className="mt-4 w-full bg-blue-500 text-white">
                             Hesapla
                         </Button>
@@ -163,6 +154,18 @@ export function PriceCalculator() {
                     <p>Çıkan Bonkalit (kg): {bonkalitKg.toFixed(3)}</p>
                     <p>Kepek Geliri: {branRevenue.toFixed(2)} ₺</p>
                     <p>Bonkalit Geliri: {bonkalitRevenue.toFixed(2)} ₺</p>
+                </CardContent>
+            </Card>
+
+            {/* 📌 Satış Fiyatı */}
+            <Card className="shadow-lg rounded-xl border p-4">
+                <CardHeader>
+                    <CardTitle className="text-lg">📌 Satış Fiyatı</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="p-4 text-center text-2xl font-bold bg-gray-50 rounded-lg">
+                        {finalPrice !== null ? `${finalPrice.toFixed(2)} ₺` : "Henüz hesaplanmadı"}
+                    </div>
                 </CardContent>
             </Card>
         </div>
