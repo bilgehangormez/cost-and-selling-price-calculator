@@ -95,6 +95,8 @@ export function PriceCalculator() {
         
         setCostDetails({
             "Gerekli Buğday (kg)": result.wheatRequired,
+            "Çıkan Kepek (kg)": result.branKg,
+            "Çıkan Bonkalit (kg)": result.bonkalitKg,
             "Elektrik Maliyeti": result.electricityCost,
             "Buğday Maliyeti": result.wheatCost,
             "İşçilik Maliyeti": result.laborCost,
