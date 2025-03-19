@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { CostCalculator } from "@/lib/calculator";
 
@@ -40,15 +40,17 @@ export function PriceCalculator() {
 
     const formatNumber = (value: string) => parseFloat(value.replace(",", ".") || "0");
 
-    // **Randıman değiştiğinde otomatik hesaplama**
+    // **Randıman değiştiğinde otomatik hesaplama (sonsuz döngü engellendi)**
     const randimanValue = watch("randiman");
-    const wheatRequiredCalc = randimanValue ? 5000 / formatNumber(randimanValue) : 0;
-    const branKgCalc = wheatRequiredCalc * 0.18;
-    const bonkalitKgCalc = wheatRequiredCalc * 0.05;
 
-    setWheatRequired(wheatRequiredCalc);
-    setBranKg(branKgCalc);
-    setBonkalitKg(bonkalitKgCalc);
+    useEffect(() => {
+        if (randimanValue) {
+            const newWheatRequired = 5000 / formatNumber(randimanValue);
+            setWheatRequired(newWheatRequired);
+            setBranKg(newWheatRequired * 0.18);
+            setBonkalitKg(newWheatRequired * 0.05);
+        }
+    }, [randimanValue]);
 
     const onSubmit = async (data: Record<string, string>) => {
         const bagCostValue = formatNumber(data.bag_cost);
@@ -118,25 +120,6 @@ export function PriceCalculator() {
                         <Button type="submit" className="mt-4 w-full bg-blue-500 text-white">
                             Hesapla
                         </Button>
-                    </form>
-                </CardContent>
-            </Card>
-
-            {/* 📌 Orta Kısım: İdarî Maliyetler */}
-            <Card className="shadow-lg rounded-xl border p-4 mx-auto">
-                <CardHeader>
-                    <CardTitle className="text-lg">💰 İdarî Maliyetler</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <form className="space-y-3">
-                        <Label>🍽️ Mutfak Gideri (₺)</Label>
-                        <Input {...register("kitchen_expense")} />
-                        <Label>🔧 Bakım Gideri (₺)</Label>
-                        <Input {...register("maintenance_expense")} />
-                        <Label>🧵 Çuval İpi Maliyeti (₺)</Label>
-                        <Input {...register("sack_thread_price")} />
-                        <Label>🚛 Araç Bakım Gideri (₺)</Label>
-                        <Input {...register("vehicle_maintenance")} />
                     </form>
                 </CardContent>
             </Card>
