@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";  // ✅ Button tekrar eklendi!
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { CostCalculator } from "@/lib/calculator";
@@ -176,12 +176,9 @@ export function PriceCalculator() {
                     </table>
                 </CardContent>
 
-                <CardHeader>
-                    <CardTitle className="text-lg text-center font-extrabold">Satış Fiyatı</CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 text-center text-2xl font-bold bg-gray-50 rounded-lg">
-                    {finalPrice !== null ? `${finalPrice.toFixed(2)} ₺` : "Henüz hesaplanmadı"}
-                </CardContent>
+                <Button type="submit" className="bg-gray-800 text-white w-full mt-4">
+                    Hesapla
+                </Button>
             </Card>
         </div>
     );
