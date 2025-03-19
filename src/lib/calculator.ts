@@ -69,7 +69,7 @@ export class CostCalculator {
         this.bonkalit_price = parseFloat(bonkalit_price) || 0;
         this.target_profit = parseFloat(target_profit) || 0;
 
-        // ✅ **Idari maliyetleri atama**
+        // ✅ **İdari maliyetleri atama**
         this.kitchen_expense = parseFloat(kitchen_expense) || 0;
         this.maintenance_expense = parseFloat(maintenance_expense) || 0;
         this.sack_thread_kg = parseFloat(sack_thread_kg) || 0;
