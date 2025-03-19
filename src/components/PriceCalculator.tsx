@@ -15,9 +15,10 @@ export function PriceCalculator() {
 
     const { register, handleSubmit } = useForm({
         defaultValues: {
+            monthly_wheat: "",
+            randiman: "75",
             electricity_kwh: "",
             electricity_price: "",
-            randiman: "75",
             wheat_price: "",
             bran_price: "",
             bonkalit_price: "",
@@ -32,8 +33,7 @@ export function PriceCalculator() {
             diesel_price: "",
             gasoline_liters: "",
             gasoline_price: "",
-            vehicle_maintenance: "",
-            monthly_wheat: ""
+            vehicle_maintenance: ""
         }
     });
 
@@ -68,18 +68,23 @@ export function PriceCalculator() {
             "Gerekli Buğday (kg)": result.wheatRequired,
             "Çıkan Kepek (kg)": result.branKg,
             "Çıkan Bonkalit (kg)": result.bonkalitKg,
-            "Kepek Geliri": result.branRevenue,
-            "Bonkalit Geliri": result.bonkalitRevenue
+            "Kepek Geliri (₺)": result.branRevenue,
+            "Bonkalit Geliri (₺)": result.bonkalitRevenue
         });
 
         setAdminCosts({
-            "Elektrik Maliyeti": result.electricityCost,
-            "Buğday Maliyeti": result.wheatCost,
-            "İşçilik Maliyeti": result.laborCost,
-            "Çuval Maliyeti": result.bagCost,
-            "İdari Giderler": result.administrativeCost,
-            "Toplam Maliyet": result.totalCost,
-            "Hedeflenen Kar": result.targetProfit
+            "Elektrik Maliyeti (₺)": result.electricityCost,
+            "Buğday Maliyeti (₺)": result.wheatCost,
+            "İşçilik Maliyeti (₺)": result.laborCost,
+            "Çuval Maliyeti (₺)": result.bagCost,
+            "Mutfak Giderleri (₺)": result.administrativeCost,
+            "Bakım Giderleri (₺)": result.administrativeCost,
+            "Çuval İpliği Giderleri (₺)": result.administrativeCost,
+            "Mazot Giderleri (₺)": result.administrativeCost,
+            "Benzin Giderleri (₺)": result.administrativeCost,
+            "Araç Bakım Giderleri (₺)": result.administrativeCost,
+            "Toplam Maliyet (₺)": result.totalCost,
+            "Hedeflenen Kar (₺)": result.targetProfit
         });
     };
 
@@ -94,9 +99,9 @@ export function PriceCalculator() {
                 <CardContent>
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         <div><Label>Aylık Kırılan Buğday (kg)</Label><Input {...register("monthly_wheat")} /></div>
+                        <div><Label>Randıman (%)</Label><Input {...register("randiman")} /></div>
                         <div><Label>50 kg Un İçin Gerekli Elektrik (kW)</Label><Input {...register("electricity_kwh")} /></div>
                         <div><Label>1 kW Elektrik (₺)</Label><Input {...register("electricity_price")} /></div>
-                        <div><Label>Randıman (%)</Label><Input {...register("randiman")} /></div>
                         <div><Label>Buğday kg Fiyatı (₺)</Label><Input {...register("wheat_price")} /></div>
                         <div><Label>Kepek kg Fiyatı (₺)</Label><Input {...register("bran_price")} /></div>
                         <div><Label>Bonkalit kg Fiyatı (₺)</Label><Input {...register("bonkalit_price")} /></div>
