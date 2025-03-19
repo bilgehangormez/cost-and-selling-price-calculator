@@ -74,6 +74,7 @@ export function PriceCalculator() {
 
         const result = await calculator.calculateCosts();
         setFinalPrice(result.finalPrice);
+        setWheatRequired(result.wheatRequired); // Kullanım sağlandı
         setBranKg(result.branKg);
         setBonkalitKg(result.bonkalitKg);
         setBranRevenue(result.branRevenue);
@@ -126,6 +127,7 @@ export function PriceCalculator() {
                     </div>
                     <p className="mt-2 text-center text-sm text-gray-500">İdari Maliyet Eklenmiş: {administrativeCost.toFixed(2)} ₺</p>
                     <div className="mt-4 text-center text-lg">
+                        <p><strong>Gerekli Buğday (kg):</strong> {wheatRequired.toFixed(3)}</p>
                         <p><strong>Çıkan Kepek (kg):</strong> {branKg.toFixed(3)}</p>
                         <p><strong>Çıkan Bonkalit (kg):</strong> {bonkalitKg.toFixed(3)}</p>
                         <p><strong>Kepek Geliri:</strong> {branRevenue.toFixed(2)} ₺</p>
