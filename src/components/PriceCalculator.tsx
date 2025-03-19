@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { CostCalculator } from "@/lib/calculator";
 
 export function PriceCalculator() {
@@ -17,7 +17,7 @@ export function PriceCalculator() {
     const [bonkalitRevenue, setBonkalitRevenue] = useState<number>(0);
     const [administrativeCost, setAdministrativeCost] = useState<number>(0);
 
-    const { register, handleSubmit } = useForm({
+    const { register, handleSubmit, control, watch } = useForm({
         defaultValues: {
             monthly_wheat: "",
             randiman: "75",
@@ -26,9 +26,9 @@ export function PriceCalculator() {
             wheat_price: "",
             bran_price: "",
             bonkalit_price: "",
-            labor_cost_per_bag: "",  // 📌 **1 Çuval İçin İşçilik Maliyeti**
+            labor_cost_per_bag: "", // **📌 1 Çuval 50 kg İçin İşçilik Maliyeti**
             bag_cost: "",
-            target_profit: "",
+            target_profit_per_bag: "", // **📌 1 Çuval 50 kg İçin Hedeflenen Kar**
             kitchen_expense: "",
             maintenance_expense: "",
             sack_thread_kg: "",
@@ -43,18 +43,22 @@ export function PriceCalculator() {
 
     const formatNumber = (value: string) => parseFloat(value.replace(",", ".") || "0");
 
+    // **📌 Randıman değiştiğinde otomatik hesaplama**
+    const randimanValue = watch("randiman");
+    const wheatRequiredCalc = randimanValue ? 5000 / formatNumber(randimanValue) : 0;
+    const branKgCalc = wheatRequiredCalc * 0.18;
+    const bonkalitKgCalc = wheatRequiredCalc * 0.05;
+    
+    setWheatRequired(wheatRequiredCalc);
+    setBranKg(branKgCalc);
+    setBonkalitKg(bonkalitKgCalc);
+
     const onSubmit = async (data: Record<string, string>) => {
         const branPrice = formatNumber(data.bran_price);
         const bonkalitPrice = formatNumber(data.bonkalit_price);
-
-        // ✅ **Buğday gereksinimini hesapla**
-        const randimanValue = formatNumber(data.randiman);
-        const wheatRequiredCalc = 5000 / randimanValue;
-        setWheatRequired(wheatRequiredCalc);
-
-        // ✅ **Çuval maliyetini al ve hesaplamaya ekle**
         const bagCostValue = formatNumber(data.bag_cost);
         const laborCostPerBag = formatNumber(data.labor_cost_per_bag);
+        const targetProfitPerBag = formatNumber(data.target_profit_per_bag);
 
         // ✅ **İdari maliyet hesaplaması**
         const sackThreadCost = formatNumber(data.sack_thread_kg) * formatNumber(data.sack_thread_price);
@@ -74,11 +78,11 @@ export function PriceCalculator() {
             data.electricity_price,
             data.randiman,
             data.wheat_price,
-            laborCostPerBag.toString(), // ✅ **1 Çuval İçin İşçilik Maliyeti eklendi**
-            bagCostValue.toString(), 
+            laborCostPerBag.toString(),
+            bagCostValue.toString(),
             data.bran_price,
             data.bonkalit_price,
-            data.target_profit,
+            targetProfitPerBag.toString(),
             data.kitchen_expense,
             data.maintenance_expense,
             data.sack_thread_kg,
@@ -92,9 +96,7 @@ export function PriceCalculator() {
         );
 
         const result = await calculator.calculateCosts();
-        setFinalPrice(result.finalPrice + totalAdministrativeCost + bagCostValue + laborCostPerBag); // ✅ **İşçilik maliyeti eklendi**
-        setBranKg(result.branKg);
-        setBonkalitKg(result.bonkalitKg);
+        setFinalPrice(result.finalPrice + totalAdministrativeCost + bagCostValue + laborCostPerBag);
         setBranRevenue(result.branKg * branPrice);
         setBonkalitRevenue(result.bonkalitKg * bonkalitPrice);
     };
@@ -109,32 +111,29 @@ export function PriceCalculator() {
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                        <Label>Aylık Kırılan Buğday (kg)</Label>
+                        <Label>📅 Aylık Kırılan Buğday (kg)</Label>
                         <Input {...register("monthly_wheat")} />
 
-                        <Label>Randıman (%)</Label>
+                        <Label>🎯 Randıman (%)</Label>
                         <Input {...register("randiman")} />
 
-                        <Label>50 kg Un İçin Gerekli Elektrik (kW)</Label>
+                        <Label>⚡ 50 kg Un İçin Gerekli Elektrik (kW)</Label>
                         <Input {...register("electricity_kwh")} />
 
-                        <Label>1 kW Elektrik (₺)</Label>
+                        <Label>⚡ 1 kW Elektrik (₺)</Label>
                         <Input {...register("electricity_price")} />
 
-                        <Label>Buğday kg Fiyatı (₺)</Label>
+                        <Label>🌾 Buğday kg Fiyatı (₺)</Label>
                         <Input {...register("wheat_price")} />
-
-                        <Label>Kepek kg Fiyatı (₺)</Label>
-                        <Input {...register("bran_price")} />
-
-                        <Label>Bonkalit kg Fiyatı (₺)</Label>
-                        <Input {...register("bonkalit_price")} />
 
                         <Label>📦 1 adet 50 kg PP Çuval Fiyatı (₺)</Label>
                         <Input {...register("bag_cost")} />
 
                         <Label>👷‍♂️ 1 Çuval 50 kg İçin İşçilik Maliyeti (₺)</Label>
                         <Input {...register("labor_cost_per_bag")} />
+
+                        <Label>💰 1 Çuval 50 kg Unda Hedeflenen Kar (₺)</Label>
+                        <Input {...register("target_profit_per_bag")} />
 
                         <Button type="submit" className="mt-4 w-full bg-blue-500 text-white">
                             Hesapla
@@ -152,15 +151,8 @@ export function PriceCalculator() {
                     <form className="space-y-3">
                         <Label>🍽️ Mutfak Gideri (₺)</Label>
                         <Input {...register("kitchen_expense")} />
-
                         <Label>🔧 Bakım Gideri (₺)</Label>
                         <Input {...register("maintenance_expense")} />
-
-                        <Label>🧵 Çuval İpi Maliyeti (₺)</Label>
-                        <Input {...register("sack_thread_kg")} />
-
-                        <Label>🚛 Araç Bakım Gideri (₺)</Label>
-                        <Input {...register("vehicle_maintenance")} />
                     </form>
                 </CardContent>
             </Card>
@@ -171,23 +163,9 @@ export function PriceCalculator() {
                     <CardTitle className="text-lg">📊 Otomatik Hesaplanan Değerler</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <p>Gerekli Buğday (kg): {wheatRequired.toFixed(3)}</p>
-                    <p>Çıkan Kepek (kg): {branKg.toFixed(3)}</p>
-                    <p>Çıkan Bonkalit (kg): {bonkalitKg.toFixed(3)}</p>
-                    <p>Kepek Geliri: {branRevenue.toFixed(2)} ₺</p>
-                    <p>Bonkalit Geliri: {bonkalitRevenue.toFixed(2)} ₺</p>
-                </CardContent>
-            </Card>
-
-            {/* 📌 Satış Fiyatı */}
-            <Card className="shadow-lg rounded-xl border p-4">
-                <CardHeader>
-                    <CardTitle className="text-lg">📌 Satış Fiyatı</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="p-4 text-center text-2xl font-bold bg-gray-50 rounded-lg">
-                        {finalPrice !== null ? `${finalPrice.toFixed(2)} ₺` : "Henüz hesaplanmadı"}
-                    </div>
+                    <p>📌 Gerekli Buğday (kg): {wheatRequired.toFixed(3)}</p>
+                    <p>📌 Çıkan Kepek (kg): {branKg.toFixed(3)}</p>
+                    <p>📌 Çıkan Bonkalit (kg): {bonkalitKg.toFixed(3)}</p>
                 </CardContent>
             </Card>
         </div>
