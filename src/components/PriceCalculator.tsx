@@ -30,7 +30,6 @@ export function PriceCalculator() {
     });
 
     const formatNumber = (value: string) => parseFloat(value.replace(",", ".") || "0");
-
     const randimanValue = formatNumber(watch("randiman"));
 
     useEffect(() => {
@@ -64,7 +63,7 @@ export function PriceCalculator() {
     };
 
     return (
-        <div className="grid grid-cols-3 gap-4 mx-auto p-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mx-auto p-4">
             {/* 📌 Sol Kısım: Maliyet Girdileri */}
             <Card className="shadow-lg rounded-xl border p-4">
                 <CardHeader>
@@ -122,18 +121,18 @@ export function PriceCalculator() {
                     <CardTitle className="text-lg">🔹 Otomatik Hesaplanan Değerler</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="grid grid-cols-1 gap-4">
+                    <div className="flex flex-col gap-4">
                         <div>
                             <Label>Gerekli Buğday (kg)</Label>
-                            <Input type="text" value={wheatRequired.toFixed(2)} disabled className="bg-gray-200 px-6 appearance-none" />
+                            <Input type="text" value={wheatRequired.toFixed(2)} disabled className="w-full px-6 text-lg appearance-none bg-gray-200" />
                         </div>
                         <div>
                             <Label>Çıkan Kepek (kg)</Label>
-                            <Input type="text" value={branKg.toFixed(2)} disabled className="bg-gray-200 px-6 appearance-none" />
+                            <Input type="text" value={branKg.toFixed(2)} disabled className="w-full px-6 text-lg appearance-none bg-gray-200" />
                         </div>
                         <div>
                             <Label>Çıkan Bonkalit (kg)</Label>
-                            <Input type="text" value={bonkalitKg.toFixed(2)} disabled className="bg-gray-200 px-6 appearance-none" />
+                            <Input type="text" value={bonkalitKg.toFixed(2)} disabled className="w-full px-6 text-lg appearance-none bg-gray-200" />
                         </div>
                     </div>
                 </CardContent>
