@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button"; // Hesapla butonu için
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { CostCalculator } from "@/lib/calculator";
@@ -88,7 +88,7 @@ export function PriceCalculator() {
         );
 
         const result = await calculator.calculateCosts();
-        setFinalPrice(result.finalPrice + totalAdministrativeCost); // **İdarî maliyetleri ekledik**
+        setFinalPrice(result.finalPrice + totalAdministrativeCost);
         setBranKg(result.branKg);
         setBonkalitKg(result.bonkalitKg);
         setBranRevenue(result.branKg * branPrice);
@@ -107,7 +107,7 @@ export function PriceCalculator() {
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         <Label>Aylık Kırılan Buğday (kg)</Label>
                         <Input {...register("monthly_wheat")} />
-                        
+
                         <Label>Randıman (%)</Label>
                         <Input {...register("randiman")} />
 
