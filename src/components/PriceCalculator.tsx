@@ -26,7 +26,7 @@ export function PriceCalculator() {
             wheat_price: "",
             bran_price: "",
             bonkalit_price: "",
-            labor_cost: "",
+            labor_cost_per_bag: "",  // 📌 **1 Çuval İçin İşçilik Maliyeti**
             bag_cost: "",
             target_profit: "",
             kitchen_expense: "",
@@ -54,6 +54,7 @@ export function PriceCalculator() {
 
         // ✅ **Çuval maliyetini al ve hesaplamaya ekle**
         const bagCostValue = formatNumber(data.bag_cost);
+        const laborCostPerBag = formatNumber(data.labor_cost_per_bag);
 
         // ✅ **İdari maliyet hesaplaması**
         const sackThreadCost = formatNumber(data.sack_thread_kg) * formatNumber(data.sack_thread_price);
@@ -73,8 +74,8 @@ export function PriceCalculator() {
             data.electricity_price,
             data.randiman,
             data.wheat_price,
-            data.labor_cost,
-            bagCostValue.toString(), // ✅ **Çuval maliyeti hesaplamaya dahil edildi!**
+            laborCostPerBag.toString(), // ✅ **1 Çuval İçin İşçilik Maliyeti eklendi**
+            bagCostValue.toString(), 
             data.bran_price,
             data.bonkalit_price,
             data.target_profit,
@@ -91,7 +92,7 @@ export function PriceCalculator() {
         );
 
         const result = await calculator.calculateCosts();
-        setFinalPrice(result.finalPrice + totalAdministrativeCost + bagCostValue); // ✅ **Çuval maliyeti eklenerek hesaplama güncellendi**
+        setFinalPrice(result.finalPrice + totalAdministrativeCost + bagCostValue + laborCostPerBag); // ✅ **İşçilik maliyeti eklendi**
         setBranKg(result.branKg);
         setBonkalitKg(result.bonkalitKg);
         setBranRevenue(result.branKg * branPrice);
@@ -132,6 +133,9 @@ export function PriceCalculator() {
                         <Label>📦 1 adet 50 kg PP Çuval Fiyatı (₺)</Label>
                         <Input {...register("bag_cost")} />
 
+                        <Label>👷‍♂️ 1 Çuval 50 kg İçin İşçilik Maliyeti (₺)</Label>
+                        <Input {...register("labor_cost_per_bag")} />
+
                         <Button type="submit" className="mt-4 w-full bg-blue-500 text-white">
                             Hesapla
                         </Button>
@@ -145,11 +149,19 @@ export function PriceCalculator() {
                     <CardTitle className="text-lg">💰 İdarî Maliyetler</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <p className="text-center text-lg font-bold">{administrativeCost.toFixed(2)} ₺</p>
-                    <p>🍽️ Mutfak Gideri: {formatNumber(administrativeCost.toFixed(2))} ₺</p>
-                    <p>🔧 Bakım Gideri: {formatNumber(administrativeCost.toFixed(2))} ₺</p>
-                    <p>🧵 Çuval İpi Maliyeti: {formatNumber(administrativeCost.toFixed(2))} ₺</p>
-                    <p>🚛 Araç Bakım Gideri: {formatNumber(administrativeCost.toFixed(2))} ₺</p>
+                    <form className="space-y-3">
+                        <Label>🍽️ Mutfak Gideri (₺)</Label>
+                        <Input {...register("kitchen_expense")} />
+
+                        <Label>🔧 Bakım Gideri (₺)</Label>
+                        <Input {...register("maintenance_expense")} />
+
+                        <Label>🧵 Çuval İpi Maliyeti (₺)</Label>
+                        <Input {...register("sack_thread_kg")} />
+
+                        <Label>🚛 Araç Bakım Gideri (₺)</Label>
+                        <Input {...register("vehicle_maintenance")} />
+                    </form>
                 </CardContent>
             </Card>
 
