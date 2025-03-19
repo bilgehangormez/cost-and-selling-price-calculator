@@ -3,7 +3,7 @@ export interface CalculationResult {
     electricityCost: number;
     wheatCost: number;
     laborCost: number;
-    bagCost: number;
+    bagCost: number; // Kullanıcı girdisi olarak eklendi
     branRevenue: number;
     bonkalitRevenue: number;
     totalCost: number;
@@ -21,12 +21,10 @@ export class CostCalculator {
     private randiman: number;
     private wheat_price: number;
     private labor_cost: number;
-    private bag_cost: number;
+    private bag_cost: number; // Kullanıcı girdisi olarak alındı
     private bran_price: number;
     private bonkalit_price: number;
     private target_profit: number;
-
-    // ✅ **Yeni eklenen idari maliyetler**
     private kitchen_expense: number;
     private maintenance_expense: number;
     private sack_thread_kg: number;
@@ -44,7 +42,7 @@ export class CostCalculator {
         randiman: string,
         wheat_price: string,
         labor_cost: string,
-        bag_cost: string,
+        bag_cost: string, // Çuval maliyeti kullanıcıdan alınıyor
         bran_price: string,
         bonkalit_price: string,
         target_profit: string,
@@ -64,12 +62,10 @@ export class CostCalculator {
         this.randiman = parseFloat(randiman) || 75;
         this.wheat_price = parseFloat(wheat_price) || 0;
         this.labor_cost = parseFloat(labor_cost) || 0;
-        this.bag_cost = parseFloat(bag_cost) || 0;
+        this.bag_cost = parseFloat(bag_cost) || 0; // Kullanıcı girdisi olarak eklendi
         this.bran_price = parseFloat(bran_price) || 0;
         this.bonkalit_price = parseFloat(bonkalit_price) || 0;
         this.target_profit = parseFloat(target_profit) || 0;
-
-        // ✅ **İdari maliyetleri atama**
         this.kitchen_expense = parseFloat(kitchen_expense) || 0;
         this.maintenance_expense = parseFloat(maintenance_expense) || 0;
         this.sack_thread_kg = parseFloat(sack_thread_kg) || 0;
@@ -83,44 +79,23 @@ export class CostCalculator {
     }
 
     public async calculateCosts(): Promise<CalculationResult> {
-        const response = await fetch("/randiman_oranlari.json");
-        const randimanData = await response.json();
-
-        // ✅ **Randıman interpolasyonu**
-        const lowerRandiman = Math.floor(this.randiman);
-        const upperRandiman = Math.ceil(this.randiman);
-        let randimanValue;
-        if (lowerRandiman === upperRandiman || !randimanData[lowerRandiman] || !randimanData[upperRandiman]) {
-            randimanValue = randimanData[String(lowerRandiman)] || randimanData["75"];
-        } else {
-            const lowerData = randimanData[String(lowerRandiman)];
-            const upperData = randimanData[String(upperRandiman)];
-            const weight = this.randiman - lowerRandiman;
-            randimanValue = {
-                un_miktari: lowerData.un_miktari + weight * (upperData.un_miktari - lowerData.un_miktari),
-                kepek: lowerData.kepek + weight * (upperData.kepek - lowerData.kepek),
-                bonkalit: lowerData.bonkalit + weight * (upperData.bonkalit - lowerData.bonkalit),
-            };
-        }
-
-        // ✅ **50 kg un için gerekli buğday miktarı**
         const wheatRequired = 5000 / this.randiman;
 
-        // ✅ **Yan ürün hesaplamaları**
-        const branKg = (randimanValue.kepek * wheatRequired) / 100;
-        const bonkalitKg = (randimanValue.bonkalit * wheatRequired) / 100;
+        // Yan ürün hesaplamaları
+        const branKg = (18.8 * wheatRequired) / 100;
+        const bonkalitKg = (5.6 * wheatRequired) / 100;
 
-        // ✅ **Maliyet hesaplamaları**
+        // Maliyet hesaplamaları
         const electricityCost = this.electricity_kwh * this.electricity_price;
         const wheatCost = wheatRequired * this.wheat_price;
         const laborCost = this.labor_cost;
-        const bagCost = this.bag_cost;
+        const bagCost = this.bag_cost; // Kullanıcıdan alınan değer
 
-        // ✅ **Yan ürünlerden elde edilen gelir**
+        // Yan ürün gelirleri
         const branRevenue = branKg * this.bran_price;
         const bonkalitRevenue = bonkalitKg * this.bonkalit_price;
 
-        // ✅ **İdari maliyet hesaplaması**
+        // İdari maliyet hesaplamaları
         const sackThreadCost = this.sack_thread_kg * this.sack_thread_price;
         const dieselCost = this.diesel_liters * this.diesel_price;
         const gasolineCost = this.gasoline_liters * this.gasoline_price;
@@ -131,12 +106,13 @@ export class CostCalculator {
             dieselCost +
             gasolineCost +
             this.vehicle_maintenance;
+
         const adminCostPer50Kg = this.monthly_wheat > 0 ? (totalAdministrativeCost / this.monthly_wheat) * wheatRequired : 0;
 
-        // ✅ **Toplam Maliyet**
+        // Toplam Maliyet
         const totalCost = (electricityCost + wheatCost + laborCost + bagCost + adminCostPer50Kg) - (branRevenue + bonkalitRevenue);
 
-        // ✅ **Son Satış Fiyatı**
+        // Son Satış Fiyatı
         const finalPrice = totalCost + this.target_profit;
 
         return {
