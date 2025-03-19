@@ -12,6 +12,7 @@ export interface CalculationResult {
     wheatRequired: number;
     branKg: number;
     bonkalitKg: number;
+    adminCostPer50kg: number; // 50 kg una düşen idari maliyet
 }
 
 export class CostCalculator {
@@ -25,6 +26,18 @@ export class CostCalculator {
     private bonkalit_price: number;
     private target_profit: number;
 
+    // Yeni idari maliyetler
+    private kitchen_cost: number;
+    private repair_cost: number;
+    private sack_thread_kg: number;
+    private sack_thread_price: number;
+    private diesel_liters: number;
+    private diesel_price: number;
+    private gasoline_liters: number;
+    private gasoline_price: number;
+    private vehicle_maintenance: number;
+    private monthly_wheat_crushed: number; // Aylık kırılan buğday (kg)
+
     constructor(
         electricity_kwh: string,
         electricity_price: string,
@@ -34,7 +47,17 @@ export class CostCalculator {
         bag_cost: string,
         bran_price: string,
         bonkalit_price: string,
-        target_profit: string
+        target_profit: string,
+        kitchen_cost: string,
+        repair_cost: string,
+        sack_thread_kg: string,
+        sack_thread_price: string,
+        diesel_liters: string,
+        diesel_price: string,
+        gasoline_liters: string,
+        gasoline_price: string,
+        vehicle_maintenance: string,
+        monthly_wheat_crushed: string
     ) {
         this.electricity_kwh = parseFloat(electricity_kwh) || 0;
         this.electricity_price = parseFloat(electricity_price) || 0;
@@ -45,6 +68,18 @@ export class CostCalculator {
         this.bran_price = parseFloat(bran_price) || 0;
         this.bonkalit_price = parseFloat(bonkalit_price) || 0;
         this.target_profit = parseFloat(target_profit) || 0;
+
+        // Yeni idari maliyetleri al
+        this.kitchen_cost = parseFloat(kitchen_cost) || 0;
+        this.repair_cost = parseFloat(repair_cost) || 0;
+        this.sack_thread_kg = parseFloat(sack_thread_kg) || 0;
+        this.sack_thread_price = parseFloat(sack_thread_price) || 0;
+        this.diesel_liters = parseFloat(diesel_liters) || 0;
+        this.diesel_price = parseFloat(diesel_price) || 0;
+        this.gasoline_liters = parseFloat(gasoline_liters) || 0;
+        this.gasoline_price = parseFloat(gasoline_price) || 0;
+        this.vehicle_maintenance = parseFloat(vehicle_maintenance) || 0;
+        this.monthly_wheat_crushed = parseFloat(monthly_wheat_crushed) || 0;
     }
 
     public async calculateCosts(): Promise<CalculationResult> {
@@ -57,13 +92,11 @@ export class CostCalculator {
 
         let randimanValue;
         if (lowerRandiman === upperRandiman || !randimanData[lowerRandiman] || !randimanData[upperRandiman]) {
-            // Eğer tam olarak eşleşen veya sınır değerlerdeyse direkt al
             randimanValue = randimanData[String(lowerRandiman)] || randimanData["75"];
         } else {
-            // **Ağırlıklı interpolasyon hesaplaması**
             const lowerData = randimanData[String(lowerRandiman)];
             const upperData = randimanData[String(upperRandiman)];
-            const weight = this.randiman - lowerRandiman; // 0 ile 1 arasında bir değer
+            const weight = this.randiman - lowerRandiman;
 
             randimanValue = {
                 un_miktari: lowerData.un_miktari + weight * (upperData.un_miktari - lowerData.un_miktari),
@@ -72,7 +105,7 @@ export class CostCalculator {
             };
         }
 
-        // **50 kg un için gerekli buğday miktarı formülü (doğru hesaplama)**
+        // **50 kg un için gerekli buğday miktarı hesaplama**
         const wheatRequired = 5000 / this.randiman;
 
         // **Yan ürün hesaplamaları**
@@ -89,8 +122,28 @@ export class CostCalculator {
         const branRevenue = branKg * this.bran_price;
         const bonkalitRevenue = bonkalitKg * this.bonkalit_price;
 
+        // **İdari Maliyetleri Hesapla**
+        const sackThreadCost = this.sack_thread_kg * this.sack_thread_price;
+        const dieselCost = this.diesel_liters * this.diesel_price;
+        const gasolineCost = this.gasoline_liters * this.gasoline_price;
+
+        const totalAdminCost = 
+            this.kitchen_cost + 
+            this.repair_cost + 
+            sackThreadCost + 
+            dieselCost + 
+            gasolineCost + 
+            this.vehicle_maintenance;
+
+        // **50 kg un başına düşen idari maliyet hesaplaması**
+        let adminCostPer50kg = 0;
+        if (this.monthly_wheat_crushed > 0) {
+            const costPerKgWheat = totalAdminCost / this.monthly_wheat_crushed;
+            adminCostPer50kg = costPerKgWheat * wheatRequired;
+        }
+
         // **Toplam Maliyet**
-        const totalCost = (electricityCost + wheatCost + laborCost + bagCost) - (branRevenue + bonkalitRevenue);
+        const totalCost = (electricityCost + wheatCost + laborCost + bagCost + adminCostPer50kg) - (branRevenue + bonkalitRevenue);
 
         // **Son Satış Fiyatı**
         const finalPrice = totalCost + this.target_profit;
@@ -109,6 +162,7 @@ export class CostCalculator {
             wheatRequired,
             branKg,
             bonkalitKg,
+            adminCostPer50kg,
         };
     }
 }
