@@ -107,7 +107,7 @@ export function PriceCalculator() {
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         <Label>Aylık Kırılan Buğday (kg)</Label>
                         <Input {...register("monthly_wheat")} />
-                        
+
                         <Label>Randıman (%)</Label>
                         <Input {...register("randiman")} />
 
@@ -140,6 +140,10 @@ export function PriceCalculator() {
                 </CardHeader>
                 <CardContent>
                     <p className="text-center text-lg font-bold">{administrativeCost.toFixed(2)} ₺</p>
+                    <p>🍽️ Mutfak Gideri: {formatNumber(administrativeCost.toFixed(2))} ₺</p>
+                    <p>🔧 Bakım Gideri: {formatNumber(administrativeCost.toFixed(2))} ₺</p>
+                    <p>🧵 Çuval İpi Maliyeti: {formatNumber(administrativeCost.toFixed(2))} ₺</p>
+                    <p>🚛 Araç Bakım Gideri: {formatNumber(administrativeCost.toFixed(2))} ₺</p>
                 </CardContent>
             </Card>
 
