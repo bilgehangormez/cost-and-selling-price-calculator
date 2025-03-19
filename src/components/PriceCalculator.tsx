@@ -11,7 +11,7 @@ import { CostCalculator } from "@/lib/calculator";
 export function PriceCalculator() {
     const [finalPrice, setFinalPrice] = useState<number | null>(null);
     const [costDetails, setCostDetails] = useState<Record<string, number | null>>({});
-    
+
     const { register, handleSubmit } = useForm({
         defaultValues: {
             electricity_kwh: "",
@@ -35,8 +35,6 @@ export function PriceCalculator() {
             monthly_wheat: ""
         }
     });
-
-    const formatNumber = (value: string) => parseFloat(value.replace(",", ".") || "0");
 
     const onSubmit = async (data: Record<string, string>) => {
         const calculator = new CostCalculator(
