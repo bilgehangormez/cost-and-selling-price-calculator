@@ -50,6 +50,25 @@ export function PriceCalculator() {
     }, [randimanValue]);
 
     const onSubmit = async (data: Record<string, string>) => {
+        const branPrice = formatNumber(data.bran_price);
+        const bonkalitPrice = formatNumber(data.bonkalit_price);
+
+        // **İdari maliyet hesaplaması**
+        const sackThreadCost = formatNumber(data.sack_thread_kg) * formatNumber(data.sack_thread_price);
+        const dieselCost = formatNumber(data.diesel_liters) * formatNumber(data.diesel_price);
+        const gasolineCost = formatNumber(data.gasoline_liters) * formatNumber(data.gasoline_price);
+        const totalAdministrativeCost =
+            formatNumber(data.kitchen_expense) +
+            formatNumber(data.maintenance_expense) +
+            sackThreadCost +
+            dieselCost +
+            gasolineCost +
+            formatNumber(data.vehicle_maintenance);
+
+        const monthlyWheat = formatNumber(data.monthly_wheat);
+        const adminCostPer50Kg = monthlyWheat > 0 ? (totalAdministrativeCost / monthlyWheat) * wheatRequired : 0;
+        setAdministrativeCost(adminCostPer50Kg);
+
         const calculator = new CostCalculator(
             data.electricity_kwh.replace(",", "."),
             data.electricity_price.replace(",", "."),
@@ -59,27 +78,15 @@ export function PriceCalculator() {
             data.bag_cost.replace(",", "."),
             data.bran_price.replace(",", "."),
             data.bonkalit_price.replace(",", "."),
-            data.target_profit.replace(",", "."),
-            data.kitchen_expense.replace(",", "."),
-            data.maintenance_expense.replace(",", "."),
-            data.sack_thread_kg.replace(",", "."),
-            data.sack_thread_price.replace(",", "."),
-            data.diesel_liters.replace(",", "."),
-            data.diesel_price.replace(",", "."),
-            data.gasoline_liters.replace(",", "."),
-            data.gasoline_price.replace(",", "."),
-            data.vehicle_maintenance.replace(",", "."),
-            data.monthly_wheat.replace(",", ".")
+            data.target_profit.replace(",", ".")
         );
 
         const result = await calculator.calculateCosts();
-        setFinalPrice(result.finalPrice);
-        setWheatRequired(result.wheatRequired); // Kullanım sağlandı
+        setFinalPrice(result.finalPrice + adminCostPer50Kg);
         setBranKg(result.branKg);
         setBonkalitKg(result.bonkalitKg);
-        setBranRevenue(result.branRevenue);
-        setBonkalitRevenue(result.bonkalitRevenue);
-        setAdministrativeCost(result.administrativeCost);
+        setBranRevenue(result.branKg * branPrice);
+        setBonkalitRevenue(result.bonkalitKg * bonkalitPrice);
     };
 
     return (
@@ -99,19 +106,9 @@ export function PriceCalculator() {
                         <div><Label>Buğday kg Fiyatı (₺)</Label><Input {...register("wheat_price")} /></div>
                         <div><Label>Kepek kg Fiyatı (₺)</Label><Input {...register("bran_price")} /></div>
                         <div><Label>Bonkalit kg Fiyatı (₺)</Label><Input {...register("bonkalit_price")} /></div>
-
-                        <CardHeader><CardTitle>📌 İdari Maliyetler</CardTitle></CardHeader>
-                        <div><Label>Aylık Mutfak Gideri (₺)</Label><Input {...register("kitchen_expense")} /></div>
-                        <div><Label>Tamir-Tadilat-Değirmen Gideri (₺)</Label><Input {...register("maintenance_expense")} /></div>
-                        <div><Label>Çuval İpi Gider Miktarı (kg)</Label><Input {...register("sack_thread_kg")} /></div>
-                        <div><Label>Çuval İpi Kg Fiyatı (₺)</Label><Input {...register("sack_thread_price")} /></div>
-                        <div><Label>Aylık Mazot Gideri (Lt)</Label><Input {...register("diesel_liters")} /></div>
-                        <div><Label>Mazot Lt Fiyatı (₺)</Label><Input {...register("diesel_price")} /></div>
-                        <div><Label>Aylık Benzin Gideri (Lt)</Label><Input {...register("gasoline_liters")} /></div>
-                        <div><Label>Benzin Lt Fiyatı (₺)</Label><Input {...register("gasoline_price")} /></div>
-                        <div><Label>Araç Bakımı Gideri (₺)</Label><Input {...register("vehicle_maintenance")} /></div>
-
-                        <button type="submit" className="w-full h-12 text-base rounded-xl bg-blue-500 text-white">Hesapla</button>
+                        <div><Label>50 kg Un İçin İşçilik Maliyeti (₺)</Label><Input {...register("labor_cost")} /></div>
+                        <div><Label>1 Adet 50 kg PP Çuval (₺)</Label><Input {...register("bag_cost")} /></div>
+                        <div><Label>50 kg Unda Hedeflenen Kâr (₺)</Label><Input {...register("target_profit")} /></div>
                     </form>
                 </CardContent>
             </Card>
