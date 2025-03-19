@@ -115,7 +115,7 @@ export function PriceCalculator() {
                 </CardContent>
             </Card>
 
-            {/* 📌 Orta Kısım: Otomatik Hesaplanan Değerler */}
+            {/* 📌 Orta Kısım: Otomatik Hesaplanan Değerler (ALT ALTA) */}
             <Card className="shadow-lg rounded-xl border p-4">
                 <CardHeader>
                     <CardTitle className="text-lg">🔹 Otomatik Hesaplanan Değerler</CardTitle>
@@ -124,15 +124,15 @@ export function PriceCalculator() {
                     <div className="flex flex-col gap-4">
                         <div>
                             <Label>Gerekli Buğday (kg)</Label>
-                            <Input type="text" value={wheatRequired.toFixed(2)} disabled className="w-full px-6 text-lg appearance-none bg-gray-200" />
+                            <input type="text" value={wheatRequired.toFixed(2)} disabled className="input-lg" />
                         </div>
                         <div>
                             <Label>Çıkan Kepek (kg)</Label>
-                            <Input type="text" value={branKg.toFixed(2)} disabled className="w-full px-6 text-lg appearance-none bg-gray-200" />
+                            <input type="text" value={branKg.toFixed(2)} disabled className="input-lg" />
                         </div>
                         <div>
                             <Label>Çıkan Bonkalit (kg)</Label>
-                            <Input type="text" value={bonkalitKg.toFixed(2)} disabled className="w-full px-6 text-lg appearance-none bg-gray-200" />
+                            <input type="text" value={bonkalitKg.toFixed(2)} disabled className="input-lg" />
                         </div>
                     </div>
                 </CardContent>
