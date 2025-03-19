@@ -106,19 +106,6 @@ export function PriceCalculator() {
                         <div><Label>Buğday kg Fiyatı (₺)</Label><Input {...register("wheat_price")} /></div>
                         <div><Label>Kepek kg Fiyatı (₺)</Label><Input {...register("bran_price")} /></div>
                         <div><Label>Bonkalit kg Fiyatı (₺)</Label><Input {...register("bonkalit_price")} /></div>
-
-                        <CardHeader><CardTitle>📌 İdari Maliyetler</CardTitle></CardHeader>
-                        <div><Label>Aylık Mutfak Gideri (₺)</Label><Input {...register("kitchen_expense")} /></div>
-                        <div><Label>Tamir-Tadilat-Değirmen Gideri (₺)</Label><Input {...register("maintenance_expense")} /></div>
-                        <div><Label>Çuval İpi Gider Miktarı (kg)</Label><Input {...register("sack_thread_kg")} /></div>
-                        <div><Label>Çuval İpi Kg Fiyatı (₺)</Label><Input {...register("sack_thread_price")} /></div>
-                        <div><Label>Aylık Mazot Gideri (Lt)</Label><Input {...register("diesel_liters")} /></div>
-                        <div><Label>Mazot Lt Fiyatı (₺)</Label><Input {...register("diesel_price")} /></div>
-                        <div><Label>Aylık Benzin Gideri (Lt)</Label><Input {...register("gasoline_liters")} /></div>
-                        <div><Label>Benzin Lt Fiyatı (₺)</Label><Input {...register("gasoline_price")} /></div>
-                        <div><Label>Araç Bakımı Gideri (₺)</Label><Input {...register("vehicle_maintenance")} /></div>
-
-                        <button type="submit" className="w-full h-12 text-base rounded-xl bg-blue-500 text-white">Hesapla</button>
                     </form>
                 </CardContent>
             </Card>
@@ -133,6 +120,12 @@ export function PriceCalculator() {
                         {finalPrice !== null ? `${finalPrice.toFixed(2)} ₺` : "Henüz hesaplanmadı"}
                     </div>
                     <p className="mt-2 text-center text-sm text-gray-500">İdari Maliyet Eklenmiş: {administrativeCost.toFixed(2)} ₺</p>
+                    <div className="mt-4 text-center text-lg">
+                        <p><strong>Çıkan Kepek (kg):</strong> {branKg.toFixed(3)}</p>
+                        <p><strong>Çıkan Bonkalit (kg):</strong> {bonkalitKg.toFixed(3)}</p>
+                        <p><strong>Kepek Geliri:</strong> {branRevenue.toFixed(2)} ₺</p>
+                        <p><strong>Bonkalit Geliri:</strong> {bonkalitRevenue.toFixed(2)} ₺</p>
+                    </div>
                 </CardContent>
             </Card>
         </div>
