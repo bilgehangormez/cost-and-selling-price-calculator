@@ -16,7 +16,6 @@ export function PriceCalculator() {
     const [branRevenue, setBranRevenue] = useState<number>(0);
     const [bonkalitRevenue, setBonkalitRevenue] = useState<number>(0);
     const [administrativeCost, setAdministrativeCost] = useState<number>(0);
-    const [bagCost, setBagCost] = useState<number>(0); // 50 kg PP çuval fiyatı
 
     const { register, handleSubmit } = useForm({
         defaultValues: {
@@ -53,9 +52,8 @@ export function PriceCalculator() {
         const wheatRequiredCalc = 5000 / randimanValue;
         setWheatRequired(wheatRequiredCalc);
 
-        // ✅ **Çuval maliyetini güncelle**
+        // ✅ **Çuval maliyetini al ve hesaplamaya ekle**
         const bagCostValue = formatNumber(data.bag_cost);
-        setBagCost(bagCostValue);
 
         // ✅ **İdari maliyet hesaplaması**
         const sackThreadCost = formatNumber(data.sack_thread_kg) * formatNumber(data.sack_thread_price);
@@ -76,7 +74,7 @@ export function PriceCalculator() {
             data.randiman,
             data.wheat_price,
             data.labor_cost,
-            bagCostValue.toString(), // **Çuval maliyeti string olarak gönderildi**
+            bagCostValue.toString(), // ✅ **Çuval maliyeti hesaplamaya dahil edildi!**
             data.bran_price,
             data.bonkalit_price,
             data.target_profit,
@@ -93,7 +91,7 @@ export function PriceCalculator() {
         );
 
         const result = await calculator.calculateCosts();
-        setFinalPrice(result.finalPrice + totalAdministrativeCost);
+        setFinalPrice(result.finalPrice + totalAdministrativeCost + bagCostValue); // ✅ **Çuval maliyeti eklenerek hesaplama güncellendi**
         setBranKg(result.branKg);
         setBonkalitKg(result.bonkalitKg);
         setBranRevenue(result.branKg * branPrice);
