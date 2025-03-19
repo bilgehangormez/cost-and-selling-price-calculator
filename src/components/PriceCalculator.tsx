@@ -12,9 +12,9 @@ export function PriceCalculator() {
     const [wheatRequired, setWheatRequired] = useState<number>(0);
     const [branKg, setBranKg] = useState<number>(0);
     const [bonkalitKg, setBonkalitKg] = useState<number>(0);
-    const [administrativeCost, setAdministrativeCost] = useState<number>(0);
     const [branRevenue, setBranRevenue] = useState<number>(0);
     const [bonkalitRevenue, setBonkalitRevenue] = useState<number>(0);
+    const [administrativeCost, setAdministrativeCost] = useState<number>(0);
 
     const { register, handleSubmit, watch } = useForm({
         defaultValues: {
@@ -53,7 +53,7 @@ export function PriceCalculator() {
         const branPrice = formatNumber(data.bran_price);
         const bonkalitPrice = formatNumber(data.bonkalit_price);
 
-        // **İdari maliyet hesaplaması**
+        // ✅ **İdari maliyet hesaplaması**
         const sackThreadCost = formatNumber(data.sack_thread_kg) * formatNumber(data.sack_thread_price);
         const dieselCost = formatNumber(data.diesel_liters) * formatNumber(data.diesel_price);
         const gasolineCost = formatNumber(data.gasoline_liters) * formatNumber(data.gasoline_price);
@@ -119,10 +119,6 @@ export function PriceCalculator() {
                         <div><Label>50 kg Un İçin İşçilik Maliyeti (₺)</Label><Input {...register("labor_cost")} /></div>
                         <div><Label>1 Adet 50 kg PP Çuval (₺)</Label><Input {...register("bag_cost")} /></div>
                         <div><Label>50 kg Unda Hedeflenen Kâr (₺)</Label><Input {...register("target_profit")} /></div>
-
-                        <button type="submit" className="w-full h-12 text-base rounded-xl bg-blue-500 text-white">
-                            Hesapla
-                        </button>
                     </form>
                 </CardContent>
             </Card>
