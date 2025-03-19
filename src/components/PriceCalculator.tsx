@@ -12,8 +12,6 @@ export function PriceCalculator() {
     const [wheatRequired, setWheatRequired] = useState<number>(0);
     const [branKg, setBranKg] = useState<number>(0);
     const [bonkalitKg, setBonkalitKg] = useState<number>(0);
-    const [branRevenue, setBranRevenue] = useState<number>(0);
-    const [bonkalitRevenue, setBonkalitRevenue] = useState<number>(0);
     const [administrativeCost, setAdministrativeCost] = useState<number>(0);
 
     const { register, handleSubmit, watch } = useForm({
@@ -50,9 +48,6 @@ export function PriceCalculator() {
     }, [randimanValue]);
 
     const onSubmit = async (data: Record<string, string>) => {
-        const branPrice = formatNumber(data.bran_price);
-        const bonkalitPrice = formatNumber(data.bonkalit_price);
-
         // ✅ **İdari maliyet hesaplaması**
         const sackThreadCost = formatNumber(data.sack_thread_kg) * formatNumber(data.sack_thread_price);
         const dieselCost = formatNumber(data.diesel_liters) * formatNumber(data.diesel_price);
@@ -95,8 +90,6 @@ export function PriceCalculator() {
         setFinalPrice(result.finalPrice + adminCostPer50Kg);
         setBranKg(result.branKg);
         setBonkalitKg(result.bonkalitKg);
-        setBranRevenue(result.branKg * branPrice);
-        setBonkalitRevenue(result.bonkalitKg * bonkalitPrice);
     };
 
     return (
@@ -114,8 +107,6 @@ export function PriceCalculator() {
                         <div><Label>1 kW Elektrik (₺)</Label><Input {...register("electricity_price")} /></div>
                         <div><Label>Randıman (%)</Label><Input {...register("randiman")} /></div>
                         <div><Label>Buğday kg Fiyatı (₺)</Label><Input {...register("wheat_price")} /></div>
-                        <div><Label>Kepek kg Fiyatı (₺)</Label><Input {...register("bran_price")} /></div>
-                        <div><Label>Bonkalit kg Fiyatı (₺)</Label><Input {...register("bonkalit_price")} /></div>
                         <div><Label>50 kg Un İçin İşçilik Maliyeti (₺)</Label><Input {...register("labor_cost")} /></div>
                         <div><Label>1 Adet 50 kg PP Çuval (₺)</Label><Input {...register("bag_cost")} /></div>
                         <div><Label>50 kg Unda Hedeflenen Kâr (₺)</Label><Input {...register("target_profit")} /></div>
