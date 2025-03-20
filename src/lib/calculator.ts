@@ -36,6 +36,12 @@ export class CostCalculator {
     private vehicle_maintenance: number;
     private monthly_wheat: number;
 
+    // Sayıyı normalize eden fonksiyon
+const normalizeNumber = (value: string): number => {
+    if (!value) return 0;
+    return parseFloat(value.replace(",", ".").replace(/[^\d.-]/g, "")) || 0;
+    };
+    
     constructor(
         electricity_kwh: string,
         electricity_price: string,
