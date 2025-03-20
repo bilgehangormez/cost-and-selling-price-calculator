@@ -80,14 +80,12 @@ export function PriceCalculator() {
     );
 
     const result = await calculator.calculateCosts();
-    // Final price; fazladan ekleme yapılmadan, hesap makinesinin döndürdüğü değer kullanılıyor.
     setFinalPrice(result.finalPrice);
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mx-auto p-6">
-        
         {/* Sol Kısım: Maliyet Girdileri */}
         <Card className="shadow-lg rounded-xl border p-4">
           <CardHeader>
