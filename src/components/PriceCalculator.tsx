@@ -80,12 +80,13 @@ export function PriceCalculator() {
     );
 
     const result = await calculator.calculateCosts();
-    setFinalPrice(result.finalPrice);
+    setFinalPrice(result.finalPrice + bagCostValue + laborCostPerBag);
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mx-auto p-6">
+        
         {/* Sol Kısım: Maliyet Girdileri */}
         <Card className="shadow-lg rounded-xl border p-4">
           <CardHeader>
@@ -179,11 +180,11 @@ export function PriceCalculator() {
                 </tr>
                 <tr>
                   <td>Çıkan Kepek (kg)</td>
-                  <td>{(wheatRequired * 0.18).toFixed(3)}</td>
+                  <td>{branKg.toFixed(3)}</td>
                 </tr>
                 <tr>
                   <td>Çıkan Bonkalit (kg)</td>
-                  <td>{(wheatRequired * 0.05).toFixed(3)}</td>
+                  <td>{bonkalitKg.toFixed(3)}</td>
                 </tr>
               </tbody>
             </table>
@@ -200,9 +201,9 @@ export function PriceCalculator() {
         </Card>
       </div>
 
-      {/* Hesapla Butonu: Formun en altında, ortalanmış */}
+      {/* Hesapla Butonunu, tüm formun en altında ortalanmış olarak yerleştiriyoruz */}
       <div className="mt-6 flex justify-center">
-        <Button type="submit" className="button-primary w-64 bg-antrazit text-white">
+        <Button type="submit" className="w-64 bg-gray-800 text-white hover:bg-gray-900">
           Hesapla
         </Button>
       </div>
