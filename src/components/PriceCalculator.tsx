@@ -41,13 +41,12 @@ export function PriceCalculator() {
   const formatNumber = (value: string) =>
     parseFloat(value.replace(",", ".") || "0");
 
-  // Randıman değiştiğinde otomatik hesaplama (form alanındaki randıman değiştiğinde)
+  // Randıman değiştiğinde otomatik hesaplama
   const randimanValue = watch("randiman");
   useEffect(() => {
     if (randimanValue) {
       const newWheatRequired = 5000 / formatNumber(randimanValue);
       setWheatRequired(newWheatRequired);
-      // Otomatik hesaplanan kepek ve bonkalit oranları (örneğin, %18 kepek, %5 bonkalit)
       setBranKg(newWheatRequired * 0.18);
       setBonkalitKg(newWheatRequired * 0.05);
     }
@@ -81,13 +80,13 @@ export function PriceCalculator() {
     );
 
     const result = await calculator.calculateCosts();
-    // Satış fiyatına, girilen çuval fiyatı ve işçilik maliyetini ekliyoruz
     setFinalPrice(result.finalPrice + bagCostValue + laborCostPerBag);
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mx-auto p-6">
+        
         {/* Sol Kısım: Maliyet Girdileri */}
         <Card className="shadow-lg rounded-xl border p-4">
           <CardHeader>
@@ -201,10 +200,10 @@ export function PriceCalculator() {
           </CardContent>
         </Card>
       </div>
-      
+
       {/* Hesapla Butonunu, tüm formun en altında ortalanmış olarak yerleştiriyoruz */}
       <div className="mt-6 flex justify-center">
-        <Button type="submit" className="w-64 bg-antrasit text-white hover:bg-antrasit/90">
+        <Button type="submit" className="w-64 bg-gray-800 text-white hover:bg-gray-900">
           Hesapla
         </Button>
       </div>
