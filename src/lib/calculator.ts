@@ -3,7 +3,7 @@ export interface CalculationResult {
     electricityCost: number;
     wheatCost: number;
     laborCost: number;
-    bagCost: number; // Kullanıcı girdisi olarak eklendi
+    bagCost: number;
     branRevenue: number;
     bonkalitRevenue: number;
     totalCost: number;
@@ -83,9 +83,8 @@ export class CostCalculator {
         this.vehicle_maintenance = normalizeNumber(vehicle_maintenance);
         this.monthly_wheat = normalizeNumber(monthly_wheat);
     }
-}
-    }
 
+    // ✅ calculateCosts fonksiyonunun SINIF İÇİNDE olduğundan emin ol
     public async calculateCosts(): Promise<CalculationResult> {
         const wheatRequired = 5000 / this.randiman;
 
@@ -97,7 +96,7 @@ export class CostCalculator {
         const electricityCost = this.electricity_kwh * this.electricity_price;
         const wheatCost = wheatRequired * this.wheat_price;
         const laborCost = this.labor_cost;
-        const bagCost = this.bag_cost; // Kullanıcıdan alınan değer
+        const bagCost = this.bag_cost;
 
         // Yan ürün gelirleri
         const branRevenue = branKg * this.bran_price;
