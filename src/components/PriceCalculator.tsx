@@ -80,7 +80,7 @@ export function PriceCalculator() {
     );
 
     const result = await calculator.calculateCosts();
-    setFinalPrice(result.finalPrice + bagCostValue + laborCostPerBag);
+    setFinalPrice(result.finalPrice);
   };
 
   return (
