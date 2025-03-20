@@ -15,13 +15,19 @@ export interface CalculationResult {
     administrativeCost: number;
 }
 
+// ✅ normalizeNumber fonksiyonunu sınıfın DIŞINA al
+const normalizeNumber = (value: string): number => {
+    if (!value) return 0;
+    return parseFloat(value.replace(",", ".").replace(/[^\d.-]/g, "")) || 0;
+};
+
 export class CostCalculator {
     private electricity_kwh: number;
     private electricity_price: number;
     private randiman: number;
     private wheat_price: number;
     private labor_cost: number;
-    private bag_cost: number; // Kullanıcı girdisi olarak alındı
+    private bag_cost: number;
     private bran_price: number;
     private bonkalit_price: number;
     private target_profit: number;
@@ -36,19 +42,13 @@ export class CostCalculator {
     private vehicle_maintenance: number;
     private monthly_wheat: number;
 
-    // Sayıyı normalize eden fonksiyon
-const normalizeNumber = (value: string): number => {
-    if (!value) return 0;
-    return parseFloat(value.replace(",", ".").replace(/[^\d.-]/g, "")) || 0;
-    };
-    
     constructor(
         electricity_kwh: string,
         electricity_price: string,
         randiman: string,
         wheat_price: string,
         labor_cost: string,
-        bag_cost: string, // Çuval maliyeti kullanıcıdan alınıyor
+        bag_cost: string,
         bran_price: string,
         bonkalit_price: string,
         target_profit: string,
@@ -82,6 +82,8 @@ const normalizeNumber = (value: string): number => {
         this.gasoline_price = normalizeNumber(gasoline_price);
         this.vehicle_maintenance = normalizeNumber(vehicle_maintenance);
         this.monthly_wheat = normalizeNumber(monthly_wheat);
+    }
+}
     }
 
     public async calculateCosts(): Promise<CalculationResult> {
