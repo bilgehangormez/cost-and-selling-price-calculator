@@ -63,25 +63,25 @@ const normalizeNumber = (value: string): number => {
         vehicle_maintenance: string,
         monthly_wheat: string
     ) {
-        this.electricity_kwh = parseFloat(electricity_kwh) || 0;
-        this.electricity_price = parseFloat(electricity_price) || 0;
-        this.randiman = parseFloat(randiman) || 75;
-        this.wheat_price = parseFloat(wheat_price) || 0;
-        this.labor_cost = parseFloat(labor_cost) || 0;
-        this.bag_cost = parseFloat(bag_cost) || 0; // Kullanıcı girdisi olarak eklendi
-        this.bran_price = parseFloat(bran_price) || 0;
-        this.bonkalit_price = parseFloat(bonkalit_price) || 0;
-        this.target_profit = parseFloat(target_profit) || 0;
-        this.kitchen_expense = parseFloat(kitchen_expense) || 0;
-        this.maintenance_expense = parseFloat(maintenance_expense) || 0;
-        this.sack_thread_kg = parseFloat(sack_thread_kg) || 0;
-        this.sack_thread_price = parseFloat(sack_thread_price) || 0;
-        this.diesel_liters = parseFloat(diesel_liters) || 0;
-        this.diesel_price = parseFloat(diesel_price) || 0;
-        this.gasoline_liters = parseFloat(gasoline_liters) || 0;
-        this.gasoline_price = parseFloat(gasoline_price) || 0;
-        this.vehicle_maintenance = parseFloat(vehicle_maintenance) || 0;
-        this.monthly_wheat = parseFloat(monthly_wheat) || 0;
+        this.electricity_kwh = normalizeNumber(electricity_kwh);
+        this.electricity_price = normalizeNumber(electricity_price);
+        this.randiman = normalizeNumber(randiman) || 75;
+        this.wheat_price = normalizeNumber(wheat_price);
+        this.labor_cost = normalizeNumber(labor_cost);
+        this.bag_cost = normalizeNumber(bag_cost);
+        this.bran_price = normalizeNumber(bran_price);
+        this.bonkalit_price = normalizeNumber(bonkalit_price);
+        this.target_profit = normalizeNumber(target_profit);
+        this.kitchen_expense = normalizeNumber(kitchen_expense);
+        this.maintenance_expense = normalizeNumber(maintenance_expense);
+        this.sack_thread_kg = normalizeNumber(sack_thread_kg);
+        this.sack_thread_price = normalizeNumber(sack_thread_price);
+        this.diesel_liters = normalizeNumber(diesel_liters);
+        this.diesel_price = normalizeNumber(diesel_price);
+        this.gasoline_liters = normalizeNumber(gasoline_liters);
+        this.gasoline_price = normalizeNumber(gasoline_price);
+        this.vehicle_maintenance = normalizeNumber(vehicle_maintenance);
+        this.monthly_wheat = normalizeNumber(monthly_wheat);
     }
 
     public async calculateCosts(): Promise<CalculationResult> {
