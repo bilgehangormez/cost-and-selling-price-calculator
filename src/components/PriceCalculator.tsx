@@ -38,8 +38,11 @@ export function PriceCalculator() {
     }
   });
 
-  const formatNumber = (value: string) =>
-    parseFloat(value.replace(",", ".") || "0");
+  const formatNumber = (value: string) => {
+  if (!value) return 0;
+  const normalizedValue = value.replace(",", ".");
+  return !isNaN(Number(normalizedValue)) ? parseFloat(normalizedValue) : 0;
+  };
 
   // Randıman değiştiğinde otomatik hesaplama
   const randimanValue = watch("randiman");
