@@ -80,7 +80,8 @@ export function PriceCalculator() {
     );
 
     const result = await calculator.calculateCosts();
-    setFinalPrice(result.finalPrice + bagCostValue + laborCostPerBag);
+    // Final price; fazladan ekleme yapılmadan, hesap makinesinin döndürdüğü değer kullanılıyor.
+    setFinalPrice(result.finalPrice);
   };
 
   return (
@@ -180,11 +181,11 @@ export function PriceCalculator() {
                 </tr>
                 <tr>
                   <td>Çıkan Kepek (kg)</td>
-                  <td>{branKg.toFixed(3)}</td>
+                  <td>{(wheatRequired * 0.18).toFixed(3)}</td>
                 </tr>
                 <tr>
                   <td>Çıkan Bonkalit (kg)</td>
-                  <td>{bonkalitKg.toFixed(3)}</td>
+                  <td>{(wheatRequired * 0.05).toFixed(3)}</td>
                 </tr>
               </tbody>
             </table>
@@ -201,9 +202,9 @@ export function PriceCalculator() {
         </Card>
       </div>
 
-      {/* Hesapla Butonunu, tüm formun en altında ortalanmış olarak yerleştiriyoruz */}
+      {/* Hesapla Butonu: Formun en altında, ortalanmış */}
       <div className="mt-6 flex justify-center">
-        <Button type="submit" className="w-64 bg-gray-800 text-white hover:bg-gray-900">
+        <Button type="submit" className="button-primary w-64 bg-antrazit text-white">
           Hesapla
         </Button>
       </div>
